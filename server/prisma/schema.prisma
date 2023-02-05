@@ -72,9 +72,10 @@ model Attendance {
 }
 
 model Extract {
-  id          String  @id @default(uuid())
+  id          String    @id @default(uuid())
   value       Decimal
   description String?
+  date        DateTime?
 
   attendanceId String?     @unique
   ownerId      String

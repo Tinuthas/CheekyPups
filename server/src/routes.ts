@@ -92,5 +92,31 @@ export async function appRoutes(app: FastifyInstance){
     return ({total: total._sum.value})
   })
 
+  app.post('/owner/pay', async (request) => {
+    const createOwnerPayBody = z.object({
+      owner_id: z.string(),
+      value: z.number(),
+      descriptionValue: z.string()
+    })
+    const {owner_id, value, descriptionValue} = createOwnerPayBody.parse(request.body)
+
+    var date = dayjs().toISOString()
+
+    let extract = await prisma.extract.create({
+      data: {
+        Owner: {
+          connect: {
+            id: owner_id
+          }
+        },
+        value,
+        description: descriptionValue,
+        date
+      }
+    })
+
+    return extract
+  })
+
 }
 
