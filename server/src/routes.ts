@@ -51,6 +51,7 @@ export async function appRoutes(app: FastifyInstance){
             create: {
               value,
               description: descriptionValue,
+              date: dayjs().toISOString(),
               Owner: {
                 connect: {
                   id: owner_id
@@ -114,9 +115,130 @@ export async function appRoutes(app: FastifyInstance){
         date
       }
     })
-
     return extract
   })
+
+  app.post('/dogs', async (request) => {
+    const createOwnerDogBody = z.object({
+      nameOwner: z.string(),
+      phoneOne: z.string(),
+      phoneTwo: z.string().nullable(),
+      emailAddress: z.string(),
+      address: z.string().nullable(),
+      nameDog: z.string(),
+      birthdayDate: z.coerce.date().nullable(),
+      gender: z.string().nullable(),
+      colour: z.string().nullable(),
+      breed: z.string(),
+      dateVaccine: z.coerce.date(),
+      typeVaccine: z.string()
+    })
+    const {
+      nameOwner, phoneOne, phoneTwo, emailAddress, address, nameDog,
+      birthdayDate, gender, colour, breed, dateVaccine, typeVaccine
+    } = createOwnerDogBody.parse(request.body)
+
+    const parsedBirthday = dayjs(birthdayDate).startOf('day')
+    const parsedVaccine = dayjs(dateVaccine).startOf('day')
+
+    let dog = await prisma.dog.create({
+      data:{
+        name: nameDog,
+        birthdayDate: parsedBirthday.toISOString(),
+        gender,
+        colour,
+        breed,
+        Owner: {
+          create: {
+            name: nameOwner,
+            phoneOne,
+            phoneTwo,
+            emailAddress,
+            address
+          }
+        },
+        vaccines: {
+          create: {
+            dateVaccine: parsedVaccine.toISOString(),
+            type: typeVaccine
+          }
+        }
+      }
+    })
+
+    return dog
+  })
+
+
+  app.post('/dogs/other', async (request) => {
+    const createOwnerDogBody = z.object({
+      owner_id: z.string(),
+      nameDog: z.string(),
+      birthdayDate: z.coerce.date(),
+      gender: z.string(),
+      colour: z.string(),
+      breed: z.string(),
+      dateVaccine: z.coerce.date(),
+      typeVaccine: z.string()
+    })
+    const {
+      owner_id, nameDog, birthdayDate, gender, colour, breed, dateVaccine, typeVaccine
+    } = createOwnerDogBody.parse(request.body)
+
+    const parsedBirthday = dayjs(birthdayDate).startOf('day')
+    const parsedVaccine = dayjs(dateVaccine).startOf('day')
+
+    let dog = await prisma.dog.create({
+      data:{
+        name: nameDog,
+        birthdayDate: parsedBirthday.toISOString(),
+        gender,
+        colour,
+        breed,
+        Owner: {
+          connect: {
+            id: owner_id
+          }
+        },
+        vaccines: {
+          create: {
+            dateVaccine: parsedVaccine.toISOString(),
+            type: typeVaccine
+          }
+        }
+      }
+    })
+
+    return dog
+  })
+
+  app.post('/vaccine', async (request) => {
+    const createVaccineBody = z.object({
+      dog_id: z.string(),
+      dateVaccine: z.coerce.date(),
+      typeVaccine: z.string()
+    })
+    const {
+      dog_id, dateVaccine, typeVaccine
+    } = createVaccineBody.parse(request.body)
+
+    const parsedVaccine = dayjs(dateVaccine).startOf('day')
+
+    let vaccine = await prisma.vaccine.create({
+      data:{
+        dateVaccine: parsedVaccine.toISOString(),
+        type: typeVaccine,
+        dog: {
+          connect: {
+            id: dog_id
+          }
+        }
+      }
+    })
+
+    return vaccine
+  })
+
 
 }
 
