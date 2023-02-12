@@ -5,6 +5,7 @@ import App from './App'
 import './index.css'
 import { About } from './pages/About'
 import { Attendance } from './pages/Attendance'
+import { Dogs } from './pages/Dogs'
 import { Home } from './pages/Home'
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
@@ -15,6 +16,7 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
           <Route index element={<Home/>}/>
           <Route path="about" element={<About/>}/>
           <Route path="attendance" element={<Attendance/>}/>
+          <Route path="dogs" element={<Dogs/>}/>
         </Route>
       </Routes>
     </BrowserRouter>

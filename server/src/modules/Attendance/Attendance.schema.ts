@@ -10,8 +10,24 @@ const createAttendanceBody = z.object({
   descriptionValue: z.string()
 })
 
+const filterAttendance = z.object({
+  dateStart: z.coerce.date(),
+  dateEnd: z.coerce.date(),
+})
+
+const dogsAttendance = z.object({
+  id: z.string(),
+  name: z.string(),
+  date: z.array(z.coerce.date())
+})
+
 export type AttendanceInput = z.infer<typeof createAttendanceBody>
 
+export type AttendanceFilterInput = z.infer<typeof filterAttendance>
+
+export type DogsAttendanceResult = z.infer<typeof dogsAttendance>
+
 export const {schemas: attendanceSchemas, $ref} = buildJsonSchemas({
-  createAttendanceBody
+  createAttendanceBody,
+  filterAttendance
 }, { $id: "AttendanceSchemas" })
