@@ -60,6 +60,7 @@ model Day {
 model Attendance {
   id         String  @id @default(uuid())
   fullDay    Boolean
+  paid       Boolean
   day_id     String
   dog_id     String
   extract_id String?

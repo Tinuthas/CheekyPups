@@ -1,11 +1,11 @@
 import logoImage from '../assets/logo.svg'
-import { Button } from './Button'
 import { List, X } from 'phosphor-react'
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { SubNavBar } from './SubNavbar'
 import { AlertConfirm } from './AlertConfirm'
 import { updateToken } from '../lib/axios'
+import { ButtonDark } from './ButtonDark'
 
 export function NavBar() {
 
@@ -16,9 +16,9 @@ export function NavBar() {
   );
 
   let Links = [
-    { name: "HOME", path: '/', },
-    { name: "ABOUT", path: 'About', },
-    { name: "DAYCARE", 
+    { name: "Home", path: '/', },
+    { name: "About", path: 'About', },
+    { name: "Daycare", 
       links: [
       {
         name: "Attendance", path: "Attendance",
@@ -37,7 +37,7 @@ export function NavBar() {
   }
 
   return(
-    <div className="shadow-md w-full top-0 left-0 ">
+    <div className="shadow w-full top-0 left-0 ">
       <div className="md:flex items-center justify-between bg-white md:h-[68px] py-4 md:px-10 px-7">
         <div className="text-pinkBackground font-bold flex items-center text-3xl drop-shadow-md cursor-pointer py-2">         
           <img src={logoImage} alt="Cheeky Pubs Logo" className='h-9'/>
@@ -63,7 +63,7 @@ export function NavBar() {
                 </li>
               ))
             }
-            <Button text={authenticated != "" ? "LOGOUT" : "LOGIN"}  onClick={handleLoginLogout}/>
+            <ButtonDark text={authenticated != "" ? "LOGOUT" : "LOGIN"}  onClick={handleLoginLogout}/>
            
           </ul>
         </div>

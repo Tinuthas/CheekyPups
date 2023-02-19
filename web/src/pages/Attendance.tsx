@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useState } from "react"
 import {api, getToken} from "../lib/axios";
 import dayjs from "dayjs";
+import colors from 'tailwindcss/colors'
 import TextField from '@mui/material/TextField';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { Button } from "../components/Button";
+import { ButtonLight } from "../components/ButtonLight";
 import { DataGrid, GridToolbar, useGridApiContext, useGridSelector, gridPageCountSelector, gridPageSelector,} from '@mui/x-data-grid';
 import Box from '@mui/material/Box';
 import Pagination from '@mui/material/Pagination';
@@ -38,7 +39,34 @@ export function CustomFooterStatusComponent(props: {total:number}) {
 }
 
   const theme = createTheme({
-    components: {
+    palette: {
+      //mode: 'dark',
+      primary: {
+        light: '#FF499E',
+        main: colors.neutral[700],
+        dark: colors.pink[600],
+        contrastText: colors.yellow[400],
+      },
+      secondary: {
+        light: colors.white,
+        main: '#FF499E',
+        dark: colors.pink[700],
+        contrastText: colors.yellow[400],
+      },
+      contrastThreshold: 3,
+      tonalOffset: 0.2,
+    },
+    typography: {
+      fontFamily: [
+        'Inter',
+        //'Roboto',
+        'Avenir',
+        '"Helvetica Neue"',
+        'Arial',
+        'sans-serif'
+      ].join(','),
+    }
+    /*components: {
       MuiIconButton: {
         styleOverrides: {
           sizeMedium: {
@@ -60,15 +88,12 @@ export function CustomFooterStatusComponent(props: {total:number}) {
           }
         }
       }
-    }
+    }*/
   });
 
 
 export function Attendance(){
 
-  const col = useMemo(()=>[
-    {field:'name', headerName: 'Name', width: 170}
-  ], [])
 
   const [attendances, setAttendances] = useState<any>([])
   const [columns, setColumns] = useState<any>([])
@@ -108,10 +133,21 @@ export function Attendance(){
 
         setAttendances(rows)
 
-        var base = [{field:'name', headerName: 'Name', width: 150}, {field:'total', headerName: 'Total', width: 60}]
+        var base = [{ 
+          field:'name', 
+          headerName: 'Name', 
+          width: 150
+        }, 
+        {
+          field:'total', 
+          headerName: 'Total', 
+          headerAlign: 'center',
+          align: 'center',
+          width: 60
+        }]
         for (const item of dates) {
           console.log(item)
-          base.push({field:item, headerName: item, width: 100})
+          base.push({field:item, headerName: item, width: 100, headerAlign: 'center', align: 'center'})
         }
         setColumns(base)
       }).catch(err => {
@@ -125,39 +161,40 @@ export function Attendance(){
       <div className="md:flex bg-white w-full p-4 md:p-8 mt-4 rounded">
         <div className="flex">
         <ThemeProvider theme={theme}>
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <div className="mr-2 md:mr-6">
-            <DatePicker
-              label="Date Start"
-              value={dateStart}
-              onChange={(newValue) => {
-                setDateStart(newValue || new Date());
-              }}
-              inputFormat="DD/MM/YYYY"
-              renderInput={(params) => <TextField {...params} 
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <div className="mr-2 md:mr-6">
+              <DatePicker
+                label="Date Start"
+                value={dateStart}
+                onChange={(newValue) => {
+                  setDateStart(newValue || new Date());
+                }}
+                inputFormat="DD/MM/YYYY"
+                renderInput={(params) => <TextField {...params} 
+                />
+              }
               />
-            }
-            />
-          </div>
-          <div className="md:mr-2">
-            <DatePicker
-              label="Date End"
-              value={dateEnd}
-              onChange={(newValue) => {
-                setDateEnd(newValue || new Date());
-              }}
-              inputFormat="DD/MM/YYYY"
-              renderInput={(params) => <TextField {...params} />}
-            />
-          </div>
-        </LocalizationProvider>
+            </div>
+            <div className="md:mr-2">
+              <DatePicker
+                label="Date End"
+                value={dateEnd}
+                onChange={(newValue) => {
+                  setDateEnd(newValue || new Date());
+                }}
+                inputFormat="DD/MM/YYYY"
+                renderInput={(params) => <TextField {...params} />}
+              />
+            </div>
+          </LocalizationProvider>
         </ThemeProvider>
         </div>
         
-        <Button text="Search" onClick={clickSearchByDates}/>
+        <ButtonLight text="Search" onClick={clickSearchByDates}/>
       </div>
         
       <div className="md:m-9 h-[60vh] w-full bg-white rounded">
+      <ThemeProvider theme={theme}>
         <DataGrid
           columns={columns}
           rows={attendances}
@@ -169,6 +206,7 @@ export function Attendance(){
             footer: { total: attendances.length },
           }}
         />
+        </ThemeProvider>
       </div>
     </div>
   )
