@@ -6,6 +6,7 @@ const createAttendanceBody = z.object({
   dog_id: z.string(),
   date: z.string(),
   fullDay: z.boolean(),
+  paid: z.boolean(),
   value: z.number(),
   descriptionValue: z.string()
 })

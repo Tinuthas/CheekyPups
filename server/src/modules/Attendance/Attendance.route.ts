@@ -36,7 +36,7 @@ export async function attendanceRoutes(app: FastifyInstance) {
   }
 
   async function addAttendance(input: AttendanceInput){
-    const {owner_id, dog_id, date, fullDay, value, descriptionValue} = input
+    const {owner_id, dog_id, date, fullDay, paid, value, descriptionValue} = input
 
     const parsedDate = dayjs(date).startOf('day')
 
@@ -44,6 +44,7 @@ export async function attendanceRoutes(app: FastifyInstance) {
       {
         data: {
           fullDay,
+          paid,
           day: {
             connectOrCreate: {
               where: {
@@ -105,6 +106,7 @@ async function getAttendances(input: AttendanceFilterInput){
     select: {
       id: true,
       fullDay: true,
+      paid: true,
       dog: {
         select: {
           id: true,
@@ -132,7 +134,7 @@ async function getAttendances(input: AttendanceFilterInput){
   })
 
  
-  let dogsAttendance = new Map<string, { id: string, attendanceIds:[id: string], dog_id:string, name: string, dates:[date:Date], fullDates:[fullDate:boolean] }>();
+  let dogsAttendance = new Map<string, { id: string, attendanceIds:[id: string], dog_id:string, name: string, dates:[date:Date], fullDates:[fullDate:boolean], paids:[paid:boolean] }>();
   console.log('teste')
   for (let index = 0; index < attendances.length; index++) {
     const element = attendances[index];
@@ -141,6 +143,7 @@ async function getAttendances(input: AttendanceFilterInput){
       dogsAttendance.get(element.dog.id)?.attendanceIds.push(element.id)
       dogsAttendance.get(element.dog.id)?.dates.push(element.day.date)
       dogsAttendance.get(element.dog.id)?.fullDates.push(element.fullDay)
+      dogsAttendance.get(element.dog.id)?.paids.push(element.paid)
     }else{
       console.log(dayjs(element.day.date).format('DD/MM/YYYY'))
       dogsAttendance.set(element.dog.id, {
@@ -149,12 +152,12 @@ async function getAttendances(input: AttendanceFilterInput){
         dog_id: element.dog.id,
         name: element.dog.name,
         dates: [element.day.date],
-        fullDates: [element.fullDay]
+        fullDates: [element.fullDay],
+        paids: [element.paid]
       })
     }
   }
 
-  console.log(dogsAttendance.size)
   const convertList: { id: string, attendanceIds: [id: string]; dog_id: string; name: string; dates: [date: Date]; fullDates: [fullDate: boolean]; }[] = [];
   dogsAttendance.forEach((value, key) => convertList.push(value));
 
