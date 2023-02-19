@@ -2,10 +2,18 @@ import logoImage from '../assets/logo.svg'
 import { Button } from './Button'
 import { List, X } from 'phosphor-react'
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { SubNavBar } from './SubNavbar'
+import { AlertConfirm } from './AlertConfirm'
+import { updateToken } from '../lib/axios'
 
 export function NavBar() {
+
+  const navigate = useNavigate();
+  const [open, setOpen] = useState(false)
+  const [authenticated, setauthenticated] = useState(
+    localStorage.getItem(localStorage.getItem("authenticated") || "")
+  );
 
   let Links = [
     { name: "HOME", path: '/', },
@@ -21,7 +29,12 @@ export function NavBar() {
     }
   ]
 
-  const [open, setOpen] = useState(false)
+  function handleLoginLogout() {
+    localStorage.setItem("authenticated", "");
+    updateToken()
+    setauthenticated("")
+    navigate("/login");
+  }
 
   return(
     <div className="shadow-md w-full fixed top-0 left-0 ">
@@ -36,7 +49,7 @@ export function NavBar() {
           }
         </div>
         <div className={`transition-all duration-300 ease-in ${open ? 'opacity-100':'top-[-500px] opacity-0'} md:opacity-100`}>
-          <ul className={`md:flex md:items-center md:pb-0 pb-12 absolute md:static bg-white md:z-auto z-[-1] left-0 w-full md:w-auto md:pl-0 pl-9`}>
+          <ul className={`md:flex md:items-center md:pb-0 pb-12 absolute md:static bg-white md:z-auto z-auto left-0 w-full md:w-auto md:pl-0 pl-9`}>
             {
               Links.map((link) => (  
                 <li key={link.name}  className='md:ml-8 text-xl md:my-0 my-7' >
@@ -45,12 +58,13 @@ export function NavBar() {
                       <SubNavBar name={link.name} list={link.links} dismissClick={()=>setOpen(false)}/>
                     </>
                   :
-                    <Link to={link.path} onClick={()=>setOpen(false)} className='text-neutral-600 hover:text-neutral-400 duration-300 font-medium'>{link.name}</Link>
+                    <Link to={link.path} onClick={()=>setOpen(false)} className='z-[1] text-neutral-600 hover:text-neutral-400 duration-300 font-medium'>{link.name}</Link>
                   }
                 </li>
               ))
             }
-            <Button text='LOGIN' />
+            <Button text={authenticated != "" ? "LOGOUT" : "LOGIN"}  onClick={handleLoginLogout}/>
+           
           </ul>
         </div>
         

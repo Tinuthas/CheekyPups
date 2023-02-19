@@ -7,6 +7,7 @@ import { About } from './pages/About'
 import { Attendance } from './pages/Attendance'
 import { Dogs } from './pages/Dogs'
 import { Home } from './pages/Home'
+import { Login } from './pages/Login'
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
@@ -18,6 +19,7 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
           <Route path="attendance" element={<Attendance/>}/>
           <Route path="dogs" element={<Dogs/>}/>
         </Route>
+        <Route path='login' element={<Login/>}/>
       </Routes>
     </BrowserRouter>
   </React.StrictMode>,

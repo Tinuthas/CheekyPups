@@ -132,7 +132,7 @@ async function getAttendances(input: AttendanceFilterInput){
   })
 
  
-  let dogsAttendance = new Map<string, { attendanceIds:[id: string], dog_id:string, name: string, dates:[date:Date], fullDates:[fullDate:boolean] }>();
+  let dogsAttendance = new Map<string, { id: string, attendanceIds:[id: string], dog_id:string, name: string, dates:[date:Date], fullDates:[fullDate:boolean] }>();
   console.log('teste')
   for (let index = 0; index < attendances.length; index++) {
     const element = attendances[index];
@@ -142,8 +142,9 @@ async function getAttendances(input: AttendanceFilterInput){
       dogsAttendance.get(element.dog.id)?.dates.push(element.day.date)
       dogsAttendance.get(element.dog.id)?.fullDates.push(element.fullDay)
     }else{
-      console.log(element.dog.name)
+      console.log(dayjs(element.day.date).format('DD/MM/YYYY'))
       dogsAttendance.set(element.dog.id, {
+        id: element.dog.id,
         attendanceIds: [element.id],
         dog_id: element.dog.id,
         name: element.dog.name,
@@ -154,7 +155,7 @@ async function getAttendances(input: AttendanceFilterInput){
   }
 
   console.log(dogsAttendance.size)
-  const convertList: { attendanceIds: [id: string]; dog_id: string; name: string; dates: [date: Date]; fullDates: [fullDate: boolean]; }[] = [];
+  const convertList: { id: string, attendanceIds: [id: string]; dog_id: string; name: string; dates: [date: Date]; fullDates: [fullDate: boolean]; }[] = [];
   dogsAttendance.forEach((value, key) => convertList.push(value));
 
 
