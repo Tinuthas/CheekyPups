@@ -26,6 +26,16 @@ export function NavBar() {
       {
         name: "Dogs", path: "Dogs",
       }]
+    },
+    {
+      name: "Manager", links: [
+        {
+          name: "Owners", path: "Owners",
+        },
+        {
+          name: "Payments", path: "Payments",
+        }
+      ]
     }
   ]
 

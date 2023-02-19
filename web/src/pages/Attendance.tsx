@@ -67,34 +67,10 @@ export function CustomFooterStatusComponent(props: {total:number}) {
         'sans-serif'
       ].join(','),
     }
-    /*components: {
-      MuiIconButton: {
-        styleOverrides: {
-          sizeMedium: {
-            color: '#262626'
-          }
-        }
-      },
-      MuiOutlinedInput: {
-        styleOverrides: {
-          root: {
-            color:'#262626'
-          }
-        }
-      },
-      MuiInputLabel: {
-        styleOverrides: {
-          root: {
-            color:'#262626'
-          }
-        }
-      }
-    }*/
   });
 
 
 export function Attendance(){
-
 
   const [attendances, setAttendances] = useState<any>([])
   const [columns, setColumns] = useState<any>([])
@@ -145,7 +121,14 @@ export function Attendance(){
           headerName: 'Total', 
           headerAlign: 'center',
           align: 'center',
-          width: 60
+          width: 50
+        },
+        {
+          field:'paid', 
+          headerName: 'Paid', 
+          headerAlign: 'center',
+          align: 'center',
+          width: 50
         }]
         for (const item of dates) {
           console.log(item)
@@ -193,6 +176,8 @@ export function Attendance(){
         </div>
         
         <ButtonLight text="Search" onClick={clickSearchByDates}/>
+
+        <ButtonLight text="Add Attendance" onClick={clickSearchByDates}/>
       </div>
         
       <div className="md:m-9 h-[60vh] w-full bg-white rounded">

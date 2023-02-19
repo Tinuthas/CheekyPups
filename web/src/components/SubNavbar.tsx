@@ -19,7 +19,7 @@ export function SubNavBar({name, list, dismissClick} : SubNavBarProps) {
   }
   
   return(
-    <div onMouseLeave={() => dismissAll()}>
+    <div onMouseLeave={() => setOpen(false)}>
       <a className='text-neutral-600 hover:text-neutral-400 duration-300 font-medium focus:text-pinkBackground cursor-pointer inline-block h-12 pt-5 md:h-6 md:pt-0 w-full' onClick={()=>setOpen(!open)}>{name}</a>
       <div className={`bg-white transition-all duration-300 ease-in md:absolute 
       md:top-19 md:items-center md:rounded-lg md:p-3 cursor-pointer 
