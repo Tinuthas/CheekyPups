@@ -19,6 +19,7 @@ type Attendances = Array<{
   name: string
   dates: string[];
   fullDates: boolean[];
+  paids: boolean[];
 }>
 
 export function CustomFooterStatusComponent(props: {total:number}) {
@@ -119,14 +120,15 @@ export function Attendance(){
         att.map((item, index) => {
           var listDates:any = {}
           listDates['total'] = 0
+          listDates['paid'] = 0
           for (let i = 0; i < item.dates.length; i++) {
             
             listDates[dayjs(item.dates[i]).format('DD/MM/YYYY')] = item.fullDates[i]? 'D' : '½D'
             dates.add(dayjs(item.dates[i]).format('DD/MM/YYYY'))
             listDates['total'] = listDates['total'] + 1
+            listDates['paid'] = item.paids[i]? listDates['paid'] + 1 : listDates['paid']
           }
           var obj = Object.assign({}, item, listDates);
-          console.log('total')
           console.log(obj)
           rows.push(obj)
         })
