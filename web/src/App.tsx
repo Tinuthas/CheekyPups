@@ -18,14 +18,14 @@ function App() {
   }, [])
 
     return (
-      <>
+      <div className='bg-pinkBackground w-full h-screen'>
         <header>
           <NavBar />
         </header>
-        <main className='bg-pinkBackground w-full h-screen mt-[68px]'> 
+        <main className='bg-pinkBackground'> 
           <Outlet />
         </main>
-        </>
+      </div>
     )
  
 }
