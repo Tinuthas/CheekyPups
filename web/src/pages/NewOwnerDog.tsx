@@ -1,13 +1,16 @@
+import { AxiosError } from "axios";
 import dayjs from "dayjs";
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ButtonLight } from "../components/ButtonLight";
-
+import { ZodError } from "zod";
+import { api, getToken } from "../lib/axios";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { InputLabel } from "../components/InputLabel";
 
 export function NewOwnerDog(){
 
   const navigate = useNavigate();
-  const [errorMessage, setErrorMessage] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phoneOne, setPhoneOne] = useState("");
@@ -21,8 +24,37 @@ export function NewOwnerDog(){
   const [dateVaccine, setDateVaccine] = useState(new Date());
   const [typeVaccine, setTypeVaccine] = useState("");
 
-  function createNewOwnerDog() {
+  function handleNewOwnerDog(event: FormEvent) {
+    event.preventDefault();
 
+    if(name == '' || email == '' || phoneOne == '' || dogName == '' || breed == '' || dateVaccine.toDateString() == '') {
+      toast.error("You need to fill some fields", {position: 'top-center', autoClose: 2000,});
+      return
+    }
+    try{
+      createNewOwnerDog({nameOwner: name, emailAddress: email, phoneOne, phoneTwo, address, nameDog: dogName, birthdayDate: birthdayDate.toISOString(), gender, colour, breed, dateVaccine: dateVaccine.toISOString(), typeVaccine})
+    }catch(err: any) {
+      const validation:ZodError = err
+      validation.errors.map(error => {
+        toast.error(error.message, { position: "top-center",autoClose: 5000, });
+      })
+    }
+  }
+  
+  function createNewOwnerDog(body:Object) {
+    console.log(body)
+    api.post('/dogs', body, {
+      headers: { 'Content-Type': 'application/json', 'Authorization': getToken() }
+    }).then( response =>{
+      
+      toast.success(`Owner ${name} is created`, { position: "top-center", autoClose: 5000, })
+    }).catch((err: AxiosError) => {
+      console.log(err)
+      console.log(err.response?.data)
+      const data = err.response?.data as {message: string}
+      toast.error(`Unidentified error: ${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
+      return 
+    })
   }
 
   return (
@@ -32,163 +64,34 @@ export function NewOwnerDog(){
         <div className="flex flex-col items-center">
           <h1 className="font-semibold text-3xl md:text-4xl text-neutral-700 my-5">New Owner</h1>
         </div>
-    
-        <form className="flex flex-col" onSubmit={createNewOwnerDog}>
-
-        <div className="flex flex-col xl:flex-row md:justify-around">
-          <div className="flex-col xl:w-[500px]" >
-            <div className="mb-2 md:flex md:flex-row md:items-center xl:justify-between">
-              <label htmlFor="text" className="block text-sm font-semibold text-neutral-800">
-                Name
-              </label>
-              <input
-                placeholder="Owner Name"
-                onChange={event => setName(event.target.value)} autoFocus type="text"
-                className="block w-full px-4 py-2 mt-2 md:ml-6 text-neutral-600 bg-white border-[1px] border-neutral-700 rounded"
-              />
+        <form className="flex flex-col" onSubmit={handleNewOwnerDog}>
+          <div className="flex flex-col xl:flex-row md:justify-around">
+            <div className="flex-col xl:w-[580px] 2xl:w-[680px]" >
+              <InputLabel onChange={event => setName(event.target.value)} placeholder="Owner Name" type="text" labelName={"Name"} value={name}/>
+              <InputLabel onChange={event => setEmail(event.target.value)} placeholder="Owner Email" type="email" labelName={"Email"} value={email}/>
+              <InputLabel onChange={event => setPhoneOne(event.target.value)} placeholder="+353 8x xxx xxxx" type="tel" labelName={"Phone One"} value={phoneOne}/>
+              <InputLabel onChange={event => setPhoneTwo(event.target.value)} placeholder="+353 8x xxx xxxx" type="tel" labelName={"Phone Two"} value={phoneTwo}/>
+              <InputLabel onChange={event => setAddress(event.target.value)} placeholder="Owner Address" type="text" labelName={"Address"} value={address}/>
             </div>
-          
-          
-
-          <div className="mb-2 md:flex md:flex-row md:items-center xl:justify-between">
-            <label htmlFor="email" className="block text-sm font-semibold text-neutral-800">
-              Email
-            </label>
-            <input
-              placeholder="Owner Email"
-              onChange={event => setEmail(event.target.value)} autoFocus type="email"
-              className="block w-full px-4 py-2 mt-2 md:ml-6 text-neutral-600 bg-white border-[1px] border-neutral-700 rounded"
-            />
+            <div className="flex-col xl:w-[580px] 2xl:w-[680px]">
+              <InputLabel onChange={event => setDogName(event.target.value)} placeholder="Ex. Einstein" type="text" labelName={"Dog Name"} value={dogName}/>
+              <InputLabel onChange={event => setBirthdayDate(dayjs(event.target.value).toDate())} placeholder="Ex. Einstein" type="date" labelName={"Birthday Date"} value={birthdayDate.toDateString()}/>
+              <InputLabel onChange={event => setGender(event.target.value)} placeholder="Ex. Male, Female" type="text" labelName="Gender" value={gender}/>
+              <InputLabel onChange={event => setColour(event.target.value)} placeholder="Ex. Black, White" type="text" labelName="Colour" value={colour}/>
+              <InputLabel onChange={event => setBreed(event.target.value)} placeholder="Ex. Collin, Cockapoo" type="text" labelName="Breed" value={breed}/>
+            </div>
           </div>
-
-          <div className="mb-2 md:flex md:flex-row md:items-center xl:justify-between">
-            <label htmlFor="text" className="block text-sm w-[100px] font-semibold text-neutral-800">
-              Phone One
-            </label>
-            <input
-              placeholder="+353 8x xxx xxxx"
-              onChange={event => setPhoneOne(event.target.value)} autoFocus type="tel"
-              className="block w-full px-4 py-2 mt-2 md:ml-6 text-neutral-600 bg-white border-[1px] border-neutral-700 rounded"
-            />
-          </div>
-
-          <div className="mb-2 md:flex md:flex-row md:items-center xl:justify-between">
-            <label htmlFor="text" className="block text-sm w-[100px] font-semibold text-neutral-800">
-              Phone Two
-            </label>
-            <input
-              placeholder="+353 8x xxx xxxx"
-              onChange={event => setPhoneTwo(event.target.value)} autoFocus type="tel"
-              className="block w-full px-4 py-2 mt-2 md:ml-6 text-neutral-600 bg-white border-[1px] border-neutral-700 rounded"
-            />
-          </div>
-
-          <div className="mb-2 md:flex md:flex-row md:items-center xl:justify-between">
-            <label htmlFor="text" className="block text-sm font-semibold text-neutral-800">
-              Address
-            </label>
-            <input
-              placeholder="Owner Address"
-              onChange={event => setAddress(event.target.value)} autoFocus type="text"
-              className="block w-full px-4 py-2 mt-2 md:ml-6 text-neutral-600 bg-white border-[1px] border-neutral-700 rounded"
-            />
-          </div>
-
-          </div>
-          <div className="flex-col xl:w-[500px]">
-
-          <div className="mb-2 md:flex md:flex-row md:items-center xl:justify-between">
-            <label htmlFor="text" className="block text-sm w-[100px] font-semibold text-neutral-800">
-              Dog Name
-            </label>
-            <input
-              placeholder="Ex. Einstein"
-              onChange={event => setDogName(event.target.value)} autoFocus type="text"
-              className="block w-full px-4 py-2 mt-2 md:ml-6 text-neutral-600 bg-white border-[1px] border-neutral-700 rounded"
-            />
-          </div>
-
-          <div className="mb-2 md:flex md:flex-row md:items-center xl:justify-between">
-            <label htmlFor="date" className="block text-sm w-[140px] font-semibold text-neutral-800">
-              Birthday Date
-            </label>
-            <input
-              onChange={event => setBirthdayDate(dayjs(event.target.value).toDate())} autoFocus type="date"
-              className="block w-full px-4 py-2 mt-2 md:ml-6 text-neutral-600 bg-white border-[1px] border-neutral-700 rounded"
-            />
-          </div>
-
-          <div className="mb-2 md:flex md:flex-row md:items-center xl:justify-between">
-            <label htmlFor="text" className="block text-sm font-semibold text-neutral-800">
-              Gender
-            </label>
-            <input
-              placeholder="Ex. Male, Female"
-              onChange={event => setGender(event.target.value)} autoFocus type="text"
-              className="block w-full px-4 py-2 mt-2 md:ml-6 text-neutral-600 bg-white border-[1px] border-neutral-700 rounded"
-            />
-          </div>
-
-          <div className="mb-2 md:flex md:flex-row md:items-center xl:justify-between">
-            <label htmlFor="text" className="block text-sm font-semibold text-neutral-800">
-              Colour
-            </label>
-            <input
-              placeholder="Ex. Black, White"
-              onChange={event => setColour(event.target.value)} autoFocus type="text"
-              className="block w-full px-4 py-2 mt-2 md:ml-6 text-neutral-600 bg-white border-[1px] border-neutral-700 rounded"
-            />
-          </div>
-
-          <div className="mb-2 md:flex md:flex-row md:items-center xl:justify-between">
-            <label htmlFor="text" className="block text-sm font-semibold text-neutral-800">
-              Breed
-            </label>
-            <input
-              placeholder="Ex. Collin, Cockapoo"
-              onChange={event => setBreed(event.target.value)} autoFocus type="text"
-              className="block w-full px-4 py-2 mt-2 md:ml-6 text-neutral-600 bg-white border-[1px] border-neutral-700 rounded"
-            />
-          </div>
-
-          </div>
-          </div>
-
           <div className="flex flex-col md:items-center">
-          <div className="w-full xl:w-[500px]">
-          <div className="mb-2 md:flex md:flex-row md:items-center">
-            <label htmlFor="date" className="block text-sm font-semibold text-neutral-800">
-              Vaccine Date
-            </label>
-            <input
-              onChange={event => setDateVaccine(dayjs(event.target.value).toDate())} autoFocus type="date"
-              className="block w-full px-4 py-2 mt-2 md:ml-6 text-neutral-600 bg-white border-[1px] border-neutral-700 rounded"
-            />
+            <div className="w-full xl:w-[580px] 2xl:w-[680px]">
+              <InputLabel onChange={event => setDateVaccine(dayjs(event.target.value).toDate())} placeholder="Ex. Einstein" type="date" labelName={"Vaccine Date"} value={dateVaccine.toDateString()}/>
+              <InputLabel onChange={event => setTypeVaccine(event.target.value)} placeholder="Ex. 7N1KC" type="text" labelName="Type Vaccine" value={typeVaccine}/>
+            </div>
           </div>
-
-          <div className="mb-2 md:flex md:flex-row md:items-center">
-            <label htmlFor="text" className="block text-sm font-semibold text-neutral-800">
-              Type Vaccine
-            </label>
-            <input
-              placeholder="Ex. 7N1KC"
-              onChange={event => setTypeVaccine(event.target.value)} autoFocus type="text"
-              className="block w-full px-4 py-2 mt-2 md:ml-6 text-neutral-600 bg-white border-[1px] border-neutral-700 rounded"
-            />
-          </div>
-          </div>
-          </div>
-
-          <div className={`mt-6 ${errorMessage !== "" ? 'opacity-100':'hidden opacity-0'}`}>
-            <span className='text-red-500 font-semibold text-base'>{errorMessage}</span>
-          </div>
-
           <div className="mt-6 flex flex-col items-center">
             <button className="w-full md:w-[500px] px-4 py-2 tracking-wide text-white transition-colors duration-200 transform bg-pinkBackground rounded hover:bg-pink-600 focus:outline-none focus:bg-bg-pink-600">
               Create New Owner
             </button>
 
-           
           </div>
         </form>
         <div className="flex flex-col items-center">
@@ -196,6 +99,7 @@ export function NewOwnerDog(){
             Go Back
           </button>
         </div>
+        <ToastContainer />
         
       </div>
     </div>
