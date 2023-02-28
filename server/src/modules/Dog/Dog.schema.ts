@@ -21,7 +21,7 @@ const createOwnerDogBody = z.object({
 })
 
 const createDogBody = z.object({
-  owner_id: z.string(),
+  owner_id: z.number(),
   ...dogBase
 })
 

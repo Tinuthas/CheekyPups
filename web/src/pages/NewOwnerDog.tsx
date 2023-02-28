@@ -4,7 +4,7 @@ import { FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ZodError } from "zod";
 import { api, getToken } from "../lib/axios";
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { InputLabel } from "../components/InputLabel";
 
@@ -99,7 +99,6 @@ export function NewOwnerDog(){
             Go Back
           </button>
         </div>
-        <ToastContainer />
         
       </div>
     </div>

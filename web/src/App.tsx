@@ -3,6 +3,8 @@ import { Outlet, useNavigate} from 'react-router-dom'
 import './styles/global.css'
 import './lib/datagrind'
 import { useEffect, useState } from 'react'
+import { ToastContainer } from 'react-toastify'
+import { ConfirmDialog } from 'primereact/confirmdialog'
 
 function App() {
 
@@ -24,6 +26,7 @@ function App() {
         </header>
         <main className='bg-pinkBackground'> 
           <Outlet />
+          <ToastContainer />
         </main>
       </div>
     )

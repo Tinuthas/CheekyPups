@@ -11,7 +11,7 @@ datasource db {
 }
 
 model Dog {
-  id           String       @id @default(uuid())
+  id           Int          @id @default(autoincrement())
   name         String
   birthdayDate DateTime?
   gender       String?
@@ -20,13 +20,13 @@ model Dog {
   daysDog      Attendance[]
   vaccines     Vaccine[]
   Owner        Owner        @relation(fields: [ownerId], references: [id])
-  ownerId      String
+  ownerId      Int
 
   @@map("dogs")
 }
 
 model Owner {
-  id           String    @id @default(uuid())
+  id           Int       @id @default(autoincrement())
   name         String
   phoneOne     String
   phoneTwo     String?
@@ -39,17 +39,17 @@ model Owner {
 }
 
 model Vaccine {
-  id          String   @id @default(uuid())
+  id          Int      @id @default(autoincrement())
   dateVaccine DateTime
   type        String
-  dogId       String
+  dogId       Int
   dog         Dog      @relation(fields: [dogId], references: [id])
 
   @@map("vaccines")
 }
 
 model Day {
-  id      String       @id @default(uuid())
+  id      Int          @id @default(autoincrement())
   date    DateTime
   dayDogs Attendance[]
 
@@ -58,12 +58,12 @@ model Day {
 }
 
 model Attendance {
-  id         String  @id @default(uuid())
+  id         Int     @id @default(autoincrement())
   fullDay    Boolean
   paid       Boolean
-  day_id     String
-  dog_id     String
-  extract_id String?
+  day_id     Int
+  dog_id     Int
+  extract_id Int?
 
   day     Day      @relation(fields: [day_id], references: [id])
   dog     Dog      @relation(fields: [dog_id], references: [id])
@@ -73,13 +73,13 @@ model Attendance {
 }
 
 model Extract {
-  id          String    @id @default(uuid())
+  id          Int       @id @default(autoincrement())
   value       Decimal
   description String?
   date        DateTime?
 
-  attendanceId String?     @unique
-  ownerId      String
+  attendanceId Int?        @unique
+  ownerId      Int
   attendance   Attendance? @relation(fields: [attendanceId], references: [id])
   Owner        Owner       @relation(fields: [ownerId], references: [id])
 

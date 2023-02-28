@@ -33,6 +33,7 @@ async function createDogAndOwnerHandle(request: FastifyRequest<{Body: DogOwnerIn
   try{
     return await createDogAndOwner(request.body)
   }catch(err) {
+    console.log(err)
     reply.code(400).send('Error in create dog and owner')
   }
 }
@@ -41,7 +42,8 @@ async function createDogHandle(request: FastifyRequest<{Body: DogInput}>, reply:
   try{
     return await createDog(request.body)
   }catch(err) {
-    reply.code(400).send('Error in create dog')
+    console.log(err)
+    reply.code(400).send(err)
   }
 }
 
@@ -51,9 +53,12 @@ async function createDogAndOwner(input: DogOwnerInput) {
     birthdayDate, gender, colour, breed, dateVaccine, typeVaccine
   } = input
 
+  console.log("HERE")
+
   const parsedBirthday = dayjs(birthdayDate).startOf('day')
   const parsedVaccine = dayjs(dateVaccine).startOf('day')
 
+  console.log('create dog')
   let dog = await prisma.dog.create({
     data:{
       name: nameDog,
@@ -78,6 +83,9 @@ async function createDogAndOwner(input: DogOwnerInput) {
       }
     }
   })
+
+  console.log('return dog')
+  console.log(dog)
 
   return dog
 }
