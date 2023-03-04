@@ -5,6 +5,7 @@ import colors from 'tailwindcss/colors';
 import { Delete, Edit } from '@mui/icons-material';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { ColumnHeader, CreateNewModal } from './CreateNewModal';
 
 const theme = createTheme({
   palette: {
@@ -40,18 +41,26 @@ interface DataTableProps {
   headers: object[],
   data: object[],
   title: string,
+  createData: ColumnHeader[],
   setData?: (data:object[]) => void,
   updateRow?:(data:object) => void,
 }
 
-const DataTableCustom = ({headers, data, setData, title, updateRow}: DataTableProps) => {
+const DataTableCustom = ({headers, data, setData, createData, title, updateRow}: DataTableProps) => {
 
+  const [createModalOpen, setCreateModalOpen] = useState(false);
   const [open, setOpen] = React.useState(false);
   const [openIndex, setOpenIndex] = React.useState(-1);
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
   const [validationErrors, setValidationErrors] = useState<{
     [cellId: string]: string;
   }>({});
+
+  const handleCreateNewRow = (values: any) => {
+    data.push(values);
+    if(setData != undefined)
+          setData([...data]);
+  };
 
   const handleSaveRowEdits: MaterialReactTableProps['onEditingRowSave'] =
     async ({ exitEditingMode, row, values }) => {
@@ -147,10 +156,26 @@ const DataTableCustom = ({headers, data, setData, title, updateRow}: DataTablePr
           </Box>
         )}
         renderTopToolbarCustomActions={() => (
-          <Box>
-            {title}
-          </Box>
+          <>
+            <Box sx={{ fontSize: 20, fontWeight: 'medium', paddingTop: 1, paddingLeft: 1 }}>
+              {title}
+            </Box>
+            <Button
+              color="secondary"
+              onClick={() => setCreateModalOpen(true)}
+              variant="contained"
+            >
+              Create New Account
+            </Button>
+          </>
+          
         )}
+      />
+      <CreateNewModal
+        columns={createData}
+        open={createModalOpen}
+        onClose={() => setCreateModalOpen(false)}
+        onSubmit={handleCreateNewRow}
       />
       </div>
       

@@ -33,6 +33,39 @@ const headers = [
   }
 ]
 
+const columnHeaders = [
+  {
+    accessorKey: 'name',
+    label: 'Name',
+    name: 'Owner Name',
+    type: "text",
+  },
+  {
+    accessorKey: 'emailAddress',
+    label: 'Email',
+    name: 'Owner Email',
+    type: "email",
+  },
+  {
+    accessorKey: 'phoneOne',
+    label: 'Phone One',
+    name: '+353 8x xxx xxxx',
+    type: "tel",
+  },
+  {
+    accessorKey: 'phoneTwo',
+    label: 'Phone Two',
+    name: '+353 8x xxx xxxx',
+    type: "tel",
+  }, 
+  {
+    accessorKey: 'address',
+    label: 'Address',
+    name: 'Owner Address',
+    type: "text",
+  }
+]
+
 export function Owners(){
 
   const navigate = useNavigate();
@@ -95,7 +128,7 @@ export function Owners(){
       </div>
       
       <div className="md:flex bg-white w-full mt-4 rounded">
-        <DataTableCustom headers={headers} data={owners} setData={(data) => setOwners(data)} title="Owners" updateRow={(data) => updateDataRow(data)}/>
+        <DataTableCustom headers={headers} data={owners} setData={(data) => setOwners(data)} title="Owners" updateRow={(data) => updateDataRow(data)} createData={columnHeaders}/>
       </div>
     </div>
   )
