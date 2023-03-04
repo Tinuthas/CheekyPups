@@ -10,14 +10,6 @@ const ownerCore = {
   phoneOne: z.string()
 }
 
-const totalOwnerSchema = z.object({
-  owner_id: z.number()
-})
-
-const totalOwnerResponse = z.object({
-  total: z.string()
-})
-
 const createOwnerSchema = z.object({
   ...ownerCore,
   phoneTwo: z.string().nullable(),
@@ -39,34 +31,11 @@ const createOwnerResponseSchema = z.object({
   ...ownerCore
 })
 
-const payBody = {
-  value: z.number(),
-  description: z.string()
-}
-
-const createOwnerPayBody = z.object({
-  owner_id: z.number(),
-  ...payBody
-})
-
-const ownerPayResponseSchema = z.object({
-  ...payBody,
-  date: z.coerce.date()
-})
-
-export type TotalOwnerInput = z.infer<typeof totalOwnerSchema>
-
-export type PayOwnerInput = z.infer<typeof createOwnerPayBody>
-
 export type UpdateOwnerInput = z.infer<typeof updateOwnerBody>
 
 export const {schemas: ownerSchemas, $ref} = buildJsonSchemas({
   createOwnerSchema,
   createOwnerResponseSchema,
-  totalOwnerSchema,
-  totalOwnerResponse,
-  createOwnerPayBody,
-  ownerPayResponseSchema,
   updateOwnerBody,
   updateOwnerId
 }, { $id: "OwnerSchemas" })

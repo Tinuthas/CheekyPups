@@ -134,19 +134,19 @@ async function getAttendances(input: AttendanceFilterInput){
   })
 
  
-  let dogsAttendance = new Map<string, { id: string, attendanceIds:[id: string], dog_id:string, name: string, dates:[date:Date], fullDates:[fullDate:boolean], paids:[paid:boolean] }>();
+  let dogsAttendance = new Map<string, { id: number, attendanceIds:[id: number], dog_id:number, name: string, dates:[date:Date], fullDates:[fullDate:boolean], paids:[paid:boolean] }>();
   console.log('teste')
   for (let index = 0; index < attendances.length; index++) {
     const element = attendances[index];
     console.log(element.dog.id)
-    if (dogsAttendance.has(element.dog.id)) {
-      dogsAttendance.get(element.dog.id)?.attendanceIds.push(element.id)
-      dogsAttendance.get(element.dog.id)?.dates.push(element.day.date)
-      dogsAttendance.get(element.dog.id)?.fullDates.push(element.fullDay)
-      dogsAttendance.get(element.dog.id)?.paids.push(element.paid)
+    if (dogsAttendance.has(element.dog.id.toString())) {
+      dogsAttendance.get(element.dog.id.toString())?.attendanceIds.push(element.id)
+      dogsAttendance.get(element.dog.id.toString())?.dates.push(element.day.date)
+      dogsAttendance.get(element.dog.id.toString())?.fullDates.push(element.fullDay)
+      dogsAttendance.get(element.dog.id.toString())?.paids.push(element.paid)
     }else{
       console.log(dayjs(element.day.date).format('DD/MM/YYYY'))
-      dogsAttendance.set(element.dog.id, {
+      dogsAttendance.set(element.dog.id.toString(), {
         id: element.dog.id,
         attendanceIds: [element.id],
         dog_id: element.dog.id,
@@ -158,7 +158,7 @@ async function getAttendances(input: AttendanceFilterInput){
     }
   }
 
-  const convertList: { id: string, attendanceIds: [id: string]; dog_id: string; name: string; dates: [date: Date]; fullDates: [fullDate: boolean]; }[] = [];
+  const convertList: { id: number, attendanceIds: [id: number]; dog_id: number; name: string; dates: [date: Date]; fullDates: [fullDate: boolean]; }[] = [];
   dogsAttendance.forEach((value, key) => convertList.push(value));
 
 
