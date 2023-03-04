@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { string } from "zod";
 import { prisma } from "../../lib/prisma";
-import { $ref, UpdateOwnerInput } from "./Owner.schema";
+import { $ref, CreateOwnerInput, UpdateOwnerInput } from "./Owner.schema";
 
 export async function ownerRoutes(app: FastifyInstance) {
   
@@ -13,7 +13,15 @@ export async function ownerRoutes(app: FastifyInstance) {
       body: $ref('updateOwnerBody'),
       querystring: $ref('updateOwnerId'),
     },
-    preHandler: [app.authenticate]}, updateOwnerHandle)
+    preHandler: [app.authenticate]
+  }, updateOwnerHandle)
+
+  app.post('/', {
+    schema: {
+      body: $ref('createOwnerSchema')
+    },
+    preHandler: [app.authenticate]
+  }, createOwnerHandle)
 }
 
 async function getAllOwners() {
@@ -24,6 +32,15 @@ async function getAllOwners() {
 async function updateOwnerHandle(request: FastifyRequest<{Body: UpdateOwnerInput, Querystring: {id:number}}>, reply: FastifyReply) {
   try{
     return await updateOwner(request.body, request.query.id)
+  }catch(err) {
+    console.log(err)
+    reply.code(400).send('Error in update user')
+  }
+}
+
+async function createOwnerHandle(request: FastifyRequest<{Body: CreateOwnerInput}>, reply: FastifyReply) {
+  try{
+    return await createOwner(request.body)
   }catch(err) {
     console.log(err)
     reply.code(400).send('Error in update user')
@@ -42,6 +59,22 @@ async function updateOwner(input: UpdateOwnerInput, id: number) {
       phoneTwo,
       emailAddress,
       name,
+      address
+    }
+  })
+
+  return owner
+}
+
+async function createOwner(input: UpdateOwnerInput) {
+  const {name, phoneOne, phoneTwo, emailAddress, address} = input
+
+  let owner = await prisma.owner.create({
+    data: {
+      name,
+      phoneOne,
+      phoneTwo,
+      emailAddress,
       address
     }
   })

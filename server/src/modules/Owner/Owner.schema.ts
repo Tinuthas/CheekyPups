@@ -33,9 +33,11 @@ const createOwnerResponseSchema = z.object({
 
 export type UpdateOwnerInput = z.infer<typeof updateOwnerBody>
 
+export type CreateOwnerInput = z.infer<typeof createOwnerSchema>
+
 export const {schemas: ownerSchemas, $ref} = buildJsonSchemas({
   createOwnerSchema,
   createOwnerResponseSchema,
   updateOwnerBody,
-  updateOwnerId
+  updateOwnerId,
 }, { $id: "OwnerSchemas" })
