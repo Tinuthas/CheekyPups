@@ -8,9 +8,15 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { ButtonLight } from "../components/ButtonLight";
+import { Add } from '@mui/icons-material';
 import { DataGrid, GridToolbar, useGridApiContext, useGridSelector, gridPageCountSelector, gridPageSelector,} from '@mui/x-data-grid';
 import Box from '@mui/material/Box';
 import Pagination from '@mui/material/Pagination';
+import MaterialReactTable, { MRT_ColumnDef } from "material-react-table";
+import { IconButton } from "@mui/material";
+import { CreateNewModal } from "../components/CreateNewModal";
+import { AxiosError } from "axios";
+import { toast } from "react-toastify";
 
 type Attendances = Array<{
   id:string;
@@ -76,6 +82,7 @@ export function Attendance(){
   const [columns, setColumns] = useState<any>([])
   const [dateStart, setDateStart] = useState(dayjs().startOf('week').toDate());
   const [dateEnd, setDateEnd] = useState(dayjs().endOf('week').toDate());
+  const [createModalOpen, setCreateModalOpen] = useState(false);
 
   useEffect(() => {
     clickSearchByDates()
@@ -110,35 +117,63 @@ export function Attendance(){
         })
 
         setAttendances(rows)
-
-        var base = [{ 
-          field:'name', 
-          headerName: 'Name', 
-          width: 150
-        }, 
-        {
-          field:'total', 
-          headerName: 'Total', 
-          headerAlign: 'center',
-          align: 'center',
-          width: 50
-        },
-        {
-          field:'paid', 
-          headerName: 'Paid', 
-          headerAlign: 'center',
-          align: 'center',
-          width: 50
-        }]
-        for (const item of dates) {
-          console.log(item)
-          base.push({field:item, headerName: item, width: 100, headerAlign: 'center', align: 'center'})
+        if(rows.length != 0 ) {
+          var base = [{ 
+            accessorKey:'name', 
+            header: 'Name', 
+            size: 150
+          }, 
+          {
+            accessorKey:'total', 
+            header: 'Total', 
+            muiTableHeadCellProps: {
+              align: 'center',
+            },
+            muiTableBodyCellProps: {
+              align: 'center',
+            },
+            size: 50
+          },
+          {
+            accessorKey:'paid', 
+            header: 'Paid', 
+            muiTableHeadCellProps: {
+              align: 'center',
+            },
+            muiTableBodyCellProps: {
+              align: 'center',
+            },
+            size: 50
+          }]
+          for (const item of dates) {
+            console.log(item)
+            base.push({
+              accessorKey:item, 
+              header: item, 
+              size: 100, 
+              muiTableHeadCellProps: {
+                align: 'center',
+              },
+              muiTableBodyCellProps: {
+                align: 'center',
+              }})
+          }
+          setColumns(base)
         }
-        setColumns(base)
+        
       }).catch(err => {
         console.log(err)
       })
   }
+
+  const handleCreateNewRow = (values: any) => {
+    /*
+    createRow(values).then(() => {
+      data.push(values);
+      if(setData != undefined)
+        setData([...data]);
+    })*/
+  };
 
   return (
     <div className="md:p-10 pt-4 h-full flex flex-col items-center">
@@ -180,9 +215,75 @@ export function Attendance(){
         <ButtonLight text="Add Attendance" onClick={clickSearchByDates}/>
       </div>
         
-      <div className="md:m-9 h-[60vh] w-full bg-white rounded">
+      
       <ThemeProvider theme={theme}>
-        <DataGrid
+        <div className="md:m-9 bg-white rounded w-full">
+          <MaterialReactTable
+            columns={columns as MRT_ColumnDef<(typeof attendances)[0]>[]}
+            data={attendances}
+            enableColumnResizing
+            renderTopToolbarCustomActions={() => (
+              <>
+                <Box sx={{ fontSize: 16, fontWeight: 'medium', paddingTop: 0, paddingLeft: 1 }}>
+                  {"Attendances"}
+                  <IconButton onClick={() => setCreateModalOpen(true)}>
+                    <Add />
+                  </IconButton>
+                </Box>
+                
+              </>
+              
+            )}
+          />
+          <CreateNewModal
+            columns={[
+                {
+                  accessorKey: 'dogId',
+                  label: 'Dog',
+                  name: 'Choose dog',
+                  type: "select",
+                  required: true,
+                  getDataSelect: (inputValue: string) => new Promise<any[]>((resolve, reject) => { 
+                    api.get('dogs/select', { params: { name: inputValue}, headers: { Authorization: getToken()}}).then(response =>{
+                      var data = response.data
+                      var listData:any[] = []
+                      data.forEach((element:any) => {
+                        listData.push({value: element.id, label: element.name})
+                      });
+                      resolve(listData)
+                    }).catch((err: AxiosError) => {
+                      const data = err.response?.data as {message: string}
+                      toast.error(`Unidentified error: ${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
+                      throw new Error(`Unidentified error: ${data.message || err.response?.data || err.message}`);
+                    })
+                  })
+                },
+                {
+                  accessorKey: 'date',
+                  label: 'Date',
+                  name: '',
+                  type: "date",
+                },
+                {
+                  accessorKey: 'descriptionValue',
+                  label: 'Description',
+                  name: '',
+                  type: "text",
+                  required: true,
+                }]}
+            open={createModalOpen}
+            onClose={() => setCreateModalOpen(false)}
+            onSubmit={handleCreateNewRow}
+          />
+        </div>
+      </ThemeProvider>
+     
+    </div>
+  )
+}
+
+/*
+<DataGrid
           columns={columns}
           rows={attendances}
           components={{
@@ -192,10 +293,5 @@ export function Attendance(){
           componentsProps={{
             footer: { total: attendances.length },
           }}
-        />
-        </ThemeProvider>
-      </div>
-    </div>
-  )
-}
+        />*/
 

@@ -80,7 +80,7 @@ export const CreateNewModal = ({
         },
       },
     }}>
-      <DialogTitle textAlign="center">Add New</DialogTitle>
+      <DialogTitle textAlign="center">Add</DialogTitle>
       <DialogContent>
         <form onSubmit={(e) => e.preventDefault()}>
           <Stack
