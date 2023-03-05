@@ -64,9 +64,6 @@ const DataTableCustom = ({headers, data, setData, createData, title, updateRow, 
       if(setData != undefined)
         setData([...data]);
     })
-    /*data.push(values);
-    if(setData != undefined)
-      setData([...data]);*/
   };
 
   const handleSaveRowEdits: MaterialReactTableProps['onEditingRowSave'] =
@@ -79,7 +76,6 @@ const DataTableCustom = ({headers, data, setData, createData, title, updateRow, 
             if(setData != undefined)
               setData([...data]);
           })
-        //send/receive api updates here, then refetch or update local table data for re-render
         exitEditingMode(); //required to exit editing mode and close modal
       }
     };

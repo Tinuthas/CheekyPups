@@ -29,6 +29,7 @@
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.8.1",
     "react-router-native": "^6.8.1",
+    "react-select": "^5.7.0",
     "react-toastify": "^9.1.1",
     "sort-by": "^1.2.0",
     "zod": "^3.20.6"

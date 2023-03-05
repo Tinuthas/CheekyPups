@@ -9,6 +9,7 @@ export interface ColumnHeader {
   accessorKey: string,
   type: string,
   required?: boolean,
+  getDataSelect?: Promise<any>,
 }
 
 interface CreateModalProps {
@@ -86,7 +87,9 @@ export const CreateNewModal = ({
                 placeholder={column.name} 
                 type={column.type} 
                 labelName={column.label} 
-                accessorKey={column.accessorKey}/>
+                accessorKey={column.accessorKey}
+                getData={column.getDataSelect}
+                />
              
             ))}
           </Stack>

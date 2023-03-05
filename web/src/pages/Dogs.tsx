@@ -11,11 +11,15 @@ import { api, getToken } from '../lib/axios';
 const headers = [
   {
     accessorKey: 'name',
-    header: 'Dog Name',
+    header: 'Name',
   },
   {
     accessorKey: 'birthdayDate',
     header: 'Birthday',
+  },
+  {
+    accessorKey: 'gender',
+    header: 'Gender',
   },
   {
     accessorKey: 'colour',
@@ -24,6 +28,60 @@ const headers = [
   {
     accessorKey: 'breed',
     header: 'Breed'
+  }
+]
+
+const selectPromise = new Promise<any[]>((resolve, reject) => { 
+  resolve([{ value: 'chocolate', label: 'Chocolate' },
+  { value: 'strawberry', label: 'Strawberry' }, { value: 'name', label: 'Declan' },  { value: 'name2', label: 'Declan2' }])
+})
+
+/*const selectPromise = Promise.resolve([{ value: 'chocolate', label: 'Chocolate' },
+{ value: 'strawberry', label: 'Strawberry' }, { value: 'name', label: 'Declan' }])*/
+
+const columnHeaders = [
+  {
+    accessorKey: 'owner',
+    label: 'Owner',
+    name: 'Choose owner',
+    type: "select",
+    required: true,
+    getDataSelect: selectPromise
+  },
+  {
+    accessorKey: 'name',
+    label: 'Dog Name',
+    name: 'Ex. Einstein',
+    type: "text",
+    required: true,
+  },
+  {
+    accessorKey: 'birthdayDate',
+    label: 'Birthday Date',
+    name: '',
+    type: "date",
+    required: true,
+  },
+  {
+    accessorKey: 'gender',
+    label: 'Gender',
+    name: 'Ex. Male, Female',
+    type: "text",
+    required: true,
+  },
+  {
+    accessorKey: 'colour',
+    label: 'Colour',
+    name: 'Ex. Black, White',
+    type: "text",
+    required: true,
+  },
+  {
+    accessorKey: 'breed',
+    label: 'Breed',
+    name: 'Ex. Collin, Cockapoo',
+    type: "text",
+    required: true,
   }
 ]
 
@@ -60,23 +118,27 @@ export function Dogs(){
     })
   }, [])
 
-  function onClickRowOwner(id: string) {
-    console.log(id)
-  }
-
   function updateDataRow(data: object) {
     console.log(data)
   }
 
+  /*
+    <div className="md:flex bg-white w-full p-4 md:p-8 mt-4 rounded">
+      <ButtonLight text="New Owner" onClick={newDog}/>
+    </div>
+  */
+
   return (
     <div className="md:p-10 pt-4 h-full flex flex-col items-center">
-      <h1 className="font-semibold text-3xl md:text-4xl text-white">Dogs List</h1>
-      <div className="md:flex bg-white w-full p-4 md:p-8 mt-4 rounded">
-        <ButtonLight text="New Owner" onClick={newDog}/>
-      </div>
+      <h1 className="font-medium text-3xl md:text-4xl text-white">Dogs</h1>
       
       <div className="md:flex bg-white w-full mt-4 rounded">
-        <DataTableCustom title='Dogs' data={dogs} headers={headers} setData={(data) => setDogs(data)} updateRow={(data) => updateDataRow(data)}/>
+        <DataTableCustom 
+          title='Dogs' 
+          data={dogs} 
+          headers={headers} 
+          createData={columnHeaders}
+          setData={(data) => setDogs(data)} />
       </div>
     </div>
   )
