@@ -53,8 +53,6 @@ async function createDogAndOwner(input: DogOwnerInput) {
     birthdayDate, gender, colour, breed, dateVaccine, typeVaccine
   } = input
 
-  console.log("HERE")
-
   const parsedBirthday = dayjs(birthdayDate).startOf('day')
   const parsedVaccine = dayjs(dateVaccine).startOf('day')
 

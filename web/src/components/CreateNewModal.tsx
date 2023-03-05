@@ -1,5 +1,6 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField } from "@mui/material";
 import { useState } from "react";
+import { toast } from "react-toastify";
 import { InputLabel } from "./InputLabelDialog";
 
 export interface ColumnHeader {
@@ -7,6 +8,7 @@ export interface ColumnHeader {
   name: string,
   accessorKey: string,
   type: string,
+  required?: boolean,
 }
 
 interface CreateModalProps {
@@ -32,12 +34,41 @@ export const CreateNewModal = ({
 
   const handleSubmit = () => {
     //put your validation logic here
-    onSubmit(values);
-    onClose();
+    console.log(Object.entries(values))
+    var validationEmail = false
+    var validationRequired = false
+
+    Object.entries(values).forEach((element:any, index) => {
+      console.log(element)
+      if(columns[index].required == true) {
+        if(validateRequired(element[1]) == false)
+          validationRequired = true
+      }
+      if(columns[index].type.includes('email')){
+        if(validateEmail(element[1]) == null) 
+        validationEmail = true
+      }
+    });
+    if(validationRequired) {
+      toast.error("You need to fill some fields", {position: 'top-center', autoClose: 2000,});
+    }else if(validationEmail) {
+      toast.error("Incorrect Email Field", {position: 'top-center', autoClose: 2000,});
+    }else{
+      onSubmit(values);
+      onClose();
+    }
   };
 
   return (
-    <Dialog open={open}>
+    <Dialog open={open} sx={{
+      "& .MuiDialog-container": {
+        "& .MuiPaper-root": {
+          width: "100%",
+          margin: "auto",
+          maxWidth: "500px",  // Set your width here
+        },
+      },
+    }}>
       <DialogTitle textAlign="center">Add New</DialogTitle>
       <DialogContent>
         <form onSubmit={(e) => e.preventDefault()}>
@@ -48,10 +79,14 @@ export const CreateNewModal = ({
               gap: '1.5rem',
             }}
           >
-            {columns.map((column, index) => (
-              <>
-                <InputLabel onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })} placeholder={column.name} type={column.type} labelName={column.label} />
-              </>
+            {columns.map((column) => (
+              <InputLabel 
+                key={column.accessorKey}
+                onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })} 
+                placeholder={column.name} 
+                type={column.type} 
+                labelName={column.label} 
+                accessorKey={column.accessorKey}/>
              
             ))}
           </Stack>
@@ -76,3 +111,5 @@ const validateEmail = (email: string) =>
       /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
     );
 const validateAge = (age: number) => age >= 18 && age <= 50;
+
+//(e) => setValues({ ...values, [e.target.name]: e.target.value })

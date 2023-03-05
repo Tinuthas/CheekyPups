@@ -2,7 +2,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import MaterialReactTable, { MaterialReactTableProps, MRT_ColumnDef, MRT_Row } from 'material-react-table';
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton, Tooltip } from '@mui/material';
 import colors from 'tailwindcss/colors';
-import { Delete, Edit } from '@mui/icons-material';
+import { Delete, Edit, Add } from '@mui/icons-material';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { ColumnHeader, CreateNewModal } from './CreateNewModal';
@@ -44,22 +44,28 @@ interface DataTableProps {
   createData: ColumnHeader[],
   setData?: (data:object[]) => void,
   updateRow?:(data:object) => void,
+  createRow?:(data:object) => Promise<any>,
 }
 
-const DataTableCustom = ({headers, data, setData, createData, title, updateRow}: DataTableProps) => {
+const DataTableCustom = ({headers, data, setData, createData, title, updateRow, createRow}: DataTableProps) => {
 
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [open, setOpen] = React.useState(false);
   const [openIndex, setOpenIndex] = React.useState(-1);
-  const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
   const [validationErrors, setValidationErrors] = useState<{
     [cellId: string]: string;
   }>({});
 
   const handleCreateNewRow = (values: any) => {
-    data.push(values);
+    if(createRow != undefined)
+    createRow(values).then(() => {
+      data.push(values);
+      if(setData != undefined)
+        setData([...data]);
+    })
+    /*data.push(values);
     if(setData != undefined)
-          setData([...data]);
+      setData([...data]);*/
   };
 
   const handleSaveRowEdits: MaterialReactTableProps['onEditingRowSave'] =
@@ -127,29 +133,35 @@ const DataTableCustom = ({headers, data, setData, createData, title, updateRow}:
             {
               openIndex == row.index && open && (
                 <Dialog
-              fullScreen={fullScreen}
-              open={open}
-              onClose={() => setOpen(false)}
-              aria-labelledby="responsive-dialog-title"
-            >
-              <DialogTitle id="responsive-dialog-title">
-                {"Are you absolutely sure?"}
-              </DialogTitle>
-              <DialogContent>
-                <DialogContentText>
-                This action cannot be undone. This will permanently delete 
-                and remove your data from our servers.
-                </DialogContentText>
-              </DialogContent>
-              <DialogActions>
-                <Button autoFocus onClick={() => setOpen(false)}>
-                  Cancel
-                </Button>
-                <Button onClick={() => handleDeleteRow(row)} autoFocus>
-                  Delete
-                </Button>
-              </DialogActions>
-            </Dialog>
+                  open={open}
+                  onClose={() => setOpen(false)}
+                  sx={{
+                    "& .MuiDialog-container": {
+                      "& .MuiPaper-root": {
+                        width: "100%",
+                        margin: "auto",
+                        maxWidth: "500px",  // Set your width here
+                      },
+                    },
+                  }}>
+                  <DialogTitle id="responsive-dialog-title">
+                    {"Are you absolutely sure?"}
+                  </DialogTitle>
+                  <DialogContent>
+                    <DialogContentText>
+                    This action cannot be undone. This will permanently delete 
+                    and remove your data from our servers.
+                    </DialogContentText>
+                  </DialogContent>
+                <DialogActions>
+                  <Button autoFocus onClick={() => setOpen(false)}>
+                    Cancel
+                  </Button>
+                  <Button onClick={() => handleDeleteRow(row)} autoFocus>
+                    Delete
+                  </Button>
+                </DialogActions>
+              </Dialog>
               )
             }
             
@@ -157,16 +169,13 @@ const DataTableCustom = ({headers, data, setData, createData, title, updateRow}:
         )}
         renderTopToolbarCustomActions={() => (
           <>
-            <Box sx={{ fontSize: 20, fontWeight: 'medium', paddingTop: 1, paddingLeft: 1 }}>
+            <Box sx={{ fontSize: 16, fontWeight: 'medium', paddingTop: 0, paddingLeft: 1 }}>
               {title}
+              <IconButton onClick={() => setCreateModalOpen(true)}>
+                <Add />
+              </IconButton>
             </Box>
-            <Button
-              color="secondary"
-              onClick={() => setCreateModalOpen(true)}
-              variant="contained"
-            >
-              Create New Account
-            </Button>
+            
           </>
           
         )}
