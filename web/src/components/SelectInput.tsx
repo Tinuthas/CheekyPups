@@ -3,15 +3,20 @@ import AsyncSelect from 'react-select/async';
 
 interface SelectInputProps {
   getData?:(inputValue: string) => Promise<any>,
+  onChange(event: React.ChangeEvent<HTMLInputElement>):void;
 }
 
-export function SelectInput({getData}:SelectInputProps) {
-  const [selectedOption, setSelectedOption] = useState('')
+export function SelectInput({getData, onChange}:SelectInputProps) {
+  const [selectedOption, setSelectedOption] = useState<any>()
 
   const handleChange = (selectedOption: any) => {
-    console.log(selectedOption)
     setSelectedOption(selectedOption);
   };
+
+  const handleBlue = (event: React.ChangeEvent<HTMLInputElement>) => {
+    event.target.value = selectedOption.value
+    onChange(event)
+  }
 
   const promiseOptions = (inputValue: string) =>
     new Promise<any[]>((resolve, reject) => {
@@ -37,6 +42,7 @@ export function SelectInput({getData}:SelectInputProps) {
       defaultOptions 
       loadOptions={promiseOptions}
       onChange={handleChange}
+      onBlur={handleBlue}
       classNames={{ control: (state) => "block w-full h-12 mt-2 transition-all focus:outline-none",}}
       theme={(theme) => ({
         ...theme,

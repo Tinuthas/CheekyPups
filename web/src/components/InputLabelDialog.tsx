@@ -23,7 +23,7 @@ export const InputLabel = ({labelName, type, placeholder, accessorKey, onChange,
       </label>
       {
         type.includes('select') ?
-          <SelectInput getData={getData}/>
+          <SelectInput getData={getData} onChange={setEventChange}/>
         :
           <input
             placeholder={placeholder}

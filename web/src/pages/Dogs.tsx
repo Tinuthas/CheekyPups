@@ -47,11 +47,7 @@ const selectPromise = (inputValue: string) => new Promise<any[]>((resolve, rejec
     toast.error(`Unidentified error: ${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
     throw new Error(`Unidentified error: ${data.message || err.response?.data || err.message}`);
   })
-
 })
-
-/*const selectPromise = Promise.resolve([{ value: 'chocolate', label: 'Chocolate' },
-{ value: 'strawberry', label: 'Strawberry' }, { value: 'name', label: 'Declan' }])*/
 
 const columnHeaders = [
   {
@@ -74,21 +70,18 @@ const columnHeaders = [
     label: 'Birthday Date',
     name: '',
     type: "date",
-    required: true,
   },
   {
     accessorKey: 'gender',
     label: 'Gender',
     name: 'Ex. Male, Female',
     type: "text",
-    required: true,
   },
   {
     accessorKey: 'colour',
     label: 'Colour',
     name: 'Ex. Black, White',
     type: "text",
-    required: true,
   },
   {
     accessorKey: 'breed',
@@ -101,12 +94,7 @@ const columnHeaders = [
 
 export function Dogs(){
 
-  const navigate = useNavigate();
   const [dogs, setDogs] = useState([{}])
-
-  function newDog() {
-    navigate('new')
-  }
 
   useEffect(() => {
     api.get('dogs', {
@@ -114,18 +102,14 @@ export function Dogs(){
         Authorization: getToken()
       }
     }).then(response =>{
-      console.log(response.data)
       var data = response.data
       var listData = JSON.parse(JSON.stringify(data));
       for(const i in listData) {
         listData[i].birthdayDate = dayjs(listData[i].birthdayDate).format('DD/MM/YYYY')
         delete listData[i].ownerId;
       }
-      console.log(listData)
       setDogs(listData)
     }).catch((err: AxiosError) => {
-      console.log(err)
-      console.log(err.response?.data)
       const data = err.response?.data as {message: string}
       toast.error(`Unidentified error: ${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
       return 
@@ -133,7 +117,71 @@ export function Dogs(){
   }, [])
 
   function updateDataRow(data: object) {
-    console.log(data)
+    const promise = new Promise((resolve, reject) => {
+      api.put('dogs', data, {
+        params: {
+          id: (data as any).id
+        },
+        headers: {
+          Authorization: getToken()
+        }
+      }).then(response => {
+        toast.success(`Updated: ${response.data?.name}`, { position: "top-center", autoClose: 1000, })
+        resolve(`Updated: ${response.data?.name}`);
+      }).catch((err: AxiosError) => {
+        const data = err.response?.data as {message: string}
+        toast.error(`Unidentified error: ${data.message || err.response?.data ||err.message}`, { position: "top-center", autoClose: 5000, })
+        throw new Error(`Unidentified error: ${data.message || err.response?.data || err.message}`);
+      })
+    })
+    return promise
+  }
+
+
+  function createNewRow(data: any) {
+    const newData = {};
+    delete Object.assign(newData, data, {['owner_id']: Number(data['owner']) })['owner'];
+    //return new Promise((resolve) => resolve('success'))
+    const promise = new Promise((resolve, reject) => {
+      api.post('dogs', newData, {
+        headers: {
+          Authorization: getToken()
+        }
+      }).then(response => {
+        toast.success(`Created: ${response.data?.name}`, { position: "top-center", autoClose: 1000, })
+        resolve(`Created: ${response.data?.name}`);
+      }).catch((err: AxiosError) => {
+        const data = err.response?.data as {message: string}
+        toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
+        throw new Error(`Unidentified error: ${data.message || err.response?.data || err.message}`);
+      })
+    });
+    return promise
+  }
+
+  function deleteDataRow(id: number) {
+    console.log('id')
+    console.log(id)
+
+    const promise = new Promise((resolve, reject) => {
+      api.delete('dogs', {
+        params: {
+          id,
+        },
+        headers: {
+          Authorization: getToken()
+        }
+      }).then(response => {
+        toast.success(`Deleted: ${response.data?.name}`, { position: "top-center", autoClose: 1000, })
+        resolve(`Deleted: ${response.data?.name}`);
+      }).catch((err: AxiosError) => {
+        console.log(err)
+        const data = err.response?.data as {message: string}
+        toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
+        throw new Error(`Unidentified error: ${data.message || err.response?.data || err.message}`);
+      })
+    });
+    return promise
   }
 
   /*
@@ -152,6 +200,7 @@ export function Dogs(){
           data={dogs} 
           headers={headers} 
           createData={columnHeaders}
+          createRow={(data) => createNewRow(data)}
           setData={(data) => setDogs(data)} />
       </div>
     </div>

@@ -140,7 +140,7 @@ export function Owners(){
     return promise
   }
 
-  function deleteOwner(id: number) {
+  function deleteDataRow(id: number) {
     console.log('id')
     console.log(id)
     const promise = new Promise((resolve, reject) => {
@@ -183,7 +183,7 @@ export function Owners(){
           updateRow={(data) => updateDataRow(data)} 
           createData={columnHeaders}
           createRow={(data) => createNewRow(data)}
-          deleteRow={(id) => deleteOwner(id)}
+          deleteRow={(id) => deleteDataRow(id)}
         />
       </div>
     </div>
