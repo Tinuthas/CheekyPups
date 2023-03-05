@@ -16,6 +16,14 @@ export async function ownerRoutes(app: FastifyInstance) {
     preHandler: [app.authenticate]
   }, updateOwnerHandle)
 
+  app.delete('/', {
+    schema: {
+      params: {
+        id: { type: 'number' }, // converts the id param to number
+      },
+    }
+  }, deleteOwnerHandle)
+
   app.post('/', {
     schema: {
       body: $ref('createOwnerSchema')
@@ -34,7 +42,16 @@ async function updateOwnerHandle(request: FastifyRequest<{Body: UpdateOwnerInput
     return await updateOwner(request.body, request.query.id)
   }catch(err) {
     console.log(err)
-    reply.code(400).send('Error in update user')
+    reply.code(400).send('Error in update owner')
+  }
+}
+
+async function deleteOwnerHandle(request: FastifyRequest<{Querystring: {id:number}}>, reply: FastifyReply) {
+  try{
+    return await deleteOwner(request.query.id)
+  }catch(err) {
+    console.log(err)
+    reply.code(400).send('Error in delete owner')
   }
 }
 
@@ -43,7 +60,7 @@ async function createOwnerHandle(request: FastifyRequest<{Body: CreateOwnerInput
     return await createOwner(request.body)
   }catch(err) {
     console.log(err)
-    reply.code(400).send('Error in update user')
+    reply.code(400).send('Error in create owner')
   }
 }
 
@@ -64,6 +81,15 @@ async function updateOwner(input: UpdateOwnerInput, id: number) {
   })
 
   return owner
+}
+
+async function deleteOwner(id: number) {
+  const deleteOwner = await prisma.owner.delete({
+    where: {
+      id
+    },
+  })
+  return deleteOwner
 }
 
 async function createOwner(input: UpdateOwnerInput) {
