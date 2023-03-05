@@ -14,6 +14,10 @@ const headers = [
     header: 'Name',
   },
   {
+    accessorKey: 'owner',
+    header: 'Owner',
+  },
+  {
     accessorKey: 'birthdayDate',
     header: 'Birthday',
   },
@@ -30,6 +34,8 @@ const headers = [
     header: 'Breed'
   }
 ]
+
+const hideColumns = { owner: false }
 
 const selectPromise = (inputValue: string) => new Promise<any[]>((resolve, reject) => { 
 
@@ -51,7 +57,7 @@ const selectPromise = (inputValue: string) => new Promise<any[]>((resolve, rejec
 
 const columnHeaders = [
   {
-    accessorKey: 'owner',
+    accessorKey: 'ownerId',
     label: 'Owner',
     name: 'Choose owner',
     type: "select",
@@ -116,7 +122,9 @@ export function Dogs(){
     })
   }, [])
 
-  function updateDataRow(data: object) {
+  function updateDataRow(data: any) {
+    const cloneData = JSON.parse(JSON.stringify(data))
+    delete cloneData.owner;
     const promise = new Promise((resolve, reject) => {
       api.put('dogs', data, {
         params: {
@@ -139,8 +147,8 @@ export function Dogs(){
 
 
   function createNewRow(data: any) {
-    const newData = {};
-    delete Object.assign(newData, data, {['owner_id']: Number(data['owner']) })['owner'];
+    var newData = {};
+    delete Object.assign(newData, data, {['owner_id']: Number(data['ownerId']) })['ownerId'];
     //return new Promise((resolve) => resolve('success'))
     const promise = new Promise((resolve, reject) => {
       api.post('dogs', newData, {
@@ -160,9 +168,6 @@ export function Dogs(){
   }
 
   function deleteDataRow(id: number) {
-    console.log('id')
-    console.log(id)
-
     const promise = new Promise((resolve, reject) => {
       api.delete('dogs', {
         params: {
@@ -200,7 +205,10 @@ export function Dogs(){
           data={dogs} 
           headers={headers} 
           createData={columnHeaders}
+          hideColumns={hideColumns}
           createRow={(data) => createNewRow(data)}
+          updateRow={(data) => updateDataRow(data)}
+          deleteRow={(id) => deleteDataRow(id)}
           setData={(data) => setDogs(data)} />
       </div>
     </div>

@@ -1,8 +1,9 @@
 
 import dayjs from "dayjs";
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+import { z } from "zod";
 import { prisma } from "../../lib/prisma";
-import { $ref, DogInput, DogOwnerInput, DogVaccineInput } from "./Dog.schema";
+import { $ref, DogInput, DogOwnerInput, DogVaccineInput, UpdateDogInput } from "./Dog.schema";
 
 export async function dogRoutes(app: FastifyInstance) {
 
@@ -28,12 +29,41 @@ export async function dogRoutes(app: FastifyInstance) {
     },
     preHandler: [app.authenticate]
   }, createDogVaccineHandle)
-    
+
+  app.put('/', {
+    schema: {
+      body: $ref('updateDogBody'),
+      querystring: $ref('updateDogId'),
+    },
+    preHandler: [app.authenticate]
+  }, updateDogHandle)
+
+  app.delete('/', {
+    schema: {
+      params: {
+        id: { type: 'number' }, // converts the id param to number
+      },
+    }
+  }, deleteDogHandle)    
    
 }
 
 async function getAllDogs() {
-  return await prisma.dog.findMany()
+  var dogs = await prisma.dog.findMany({
+    include: {
+      Owner: {
+        select: {
+          name: true,
+        },
+        
+      },
+    },
+  })
+
+  const filterDogs = dogs.map(({ id, name, birthdayDate, gender, colour, breed, ownerId, Owner }) => 
+  ({ id, name, birthdayDate, gender, colour, breed, ownerId, owner: Owner.name }));
+
+  return filterDogs
 }
 
 async function createDogAndOwnerHandle(request: FastifyRequest<{Body: DogOwnerInput}>, reply: FastifyReply) {
@@ -139,9 +169,10 @@ async function createDog(input: DogInput) {
 
   var parsedBirthday = null
   if(birthdayDate != null) {
-    parsedBirthday = dayjs(birthdayDate).startOf('day').toISOString()
+    var dateParts:any[] = birthdayDate.split('/')
+    var dateObject = new Date(+dateParts[2], dateParts[1] - 1, +dateParts[0])
+    parsedBirthday = dayjs(dateObject).startOf('day').toISOString()
   }
-  
 
   let dog = await prisma.dog.create({
     data:{
@@ -159,4 +190,51 @@ async function createDog(input: DogInput) {
   })
 
   return dog
+}
+
+async function updateDogHandle(request: FastifyRequest<{Body: UpdateDogInput, Querystring: {id:number}}>, reply: FastifyReply) {
+  try{
+    return await updateDog(request.body, request.query.id)
+  }catch(err) {
+    console.log(err)
+    reply.code(400).send('Error in update dog')
+  }
+}
+
+async function updateDog(input: UpdateDogInput, id: number) {
+  const {name, birthdayDate, gender, colour, breed} = input
+
+  var parsedBirthday = null
+  if(birthdayDate != null) {
+    var dateParts:any[] = birthdayDate.split('/')
+    var dateObject = new Date(+dateParts[2], dateParts[1] - 1, +dateParts[0])
+    parsedBirthday = dayjs(dateObject).startOf('day').toISOString()
+  }
+
+  let dog = await prisma.dog.update({
+    where: {
+      id: id
+    },
+    data: {name, birthdayDate: parsedBirthday, gender, colour, breed}
+  })
+
+  return dog
+}
+
+async function deleteDogHandle(request: FastifyRequest<{Querystring: {id:number}}>, reply: FastifyReply) {
+  try{
+    return await deleteDog(request.query.id)
+  }catch(err) {
+    console.log(err)
+    reply.code(400).send('Error in delete dog')
+  }
+}
+
+async function deleteDog(id: number) {
+  const deleteDog = await prisma.dog.delete({
+    where: {
+      id: Number(id)
+    },
+  })
+  return deleteDog
 }

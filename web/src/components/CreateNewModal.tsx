@@ -1,4 +1,5 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField } from "@mui/material";
+import dayjs from "dayjs";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import { InputLabel } from "./InputLabelDialog";
@@ -35,12 +36,12 @@ export const CreateNewModal = ({
 
   const handleSubmit = () => {
     //put your validation logic here
-    console.log(Object.entries(values))
+    //console.log(Object.entries(values))
     var validationEmail = false
     var validationRequired = false
+    var validationDate = false
 
     Object.entries(values).forEach((element:any, index) => {
-      console.log(element)
       if(columns[index].required == true) {
         if(validateRequired(element[1]) == false)
           validationRequired = true
@@ -49,11 +50,20 @@ export const CreateNewModal = ({
         if(validateEmail(element[1]) == null) 
         validationEmail = true
       }
+      if(columns[index].type.includes('date')){
+        if(element[1].length == 0) {
+          values[element[0]] = null
+        }else{
+          values[element[0]] = dayjs(element[1]).format('DD/MM/YYYY')
+        }
+      }
     });
     if(validationRequired) {
       toast.error("You need to fill some fields", {position: 'top-center', autoClose: 2000,});
     }else if(validationEmail) {
       toast.error("Incorrect Email Field", {position: 'top-center', autoClose: 2000,});
+    }else if(validationDate) {
+      toast.error("Incorrect Date Field", {position: 'top-center', autoClose: 2000,});
     }else{
       onSubmit(values);
       onClose();
@@ -114,5 +124,8 @@ const validateEmail = (email: string) =>
       /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
     );
 const validateAge = (age: number) => age >= 18 && age <= 50;
+
+const validateDate = (date: string) => !/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(date)
+
 
 //(e) => setValues({ ...values, [e.target.name]: e.target.value })

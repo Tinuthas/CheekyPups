@@ -15,17 +15,13 @@ export function SelectInput({getData, onChange}:SelectInputProps) {
 
   const handleBlue = (event: React.ChangeEvent<HTMLInputElement>) => {
     event.target.value = selectedOption.value
+    event.target.placeholder = selectedOption.label
     onChange(event)
   }
 
   const promiseOptions = (inputValue: string) =>
     new Promise<any[]>((resolve, reject) => {
-      console.log("get data")
-      console.log(getData)
-      console.log("select")
-      console.log(inputValue)
       if(getData != undefined){
-        console.log('execute')
         getData(inputValue).then((data) => {
           resolve(data)
         })

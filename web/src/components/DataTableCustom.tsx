@@ -42,13 +42,14 @@ interface DataTableProps {
   data: object[],
   title: string,
   createData: ColumnHeader[],
+  hideColumns?: any,
   setData?: (data:object[]) => void,
   updateRow?:(data:object) => Promise<any>,
   createRow?:(data:object) => Promise<any>,
   deleteRow?:(id:number) => Promise<any>,
 }
 
-const DataTableCustom = ({headers, data, setData, createData, title, updateRow, createRow, deleteRow}: DataTableProps) => {
+const DataTableCustom = ({headers, data, setData, createData, title, updateRow, createRow, deleteRow, hideColumns}: DataTableProps) => {
 
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [open, setOpen] = React.useState(false);
@@ -110,6 +111,7 @@ const DataTableCustom = ({headers, data, setData, createData, title, updateRow, 
         enableEditing
         onEditingRowSave={handleSaveRowEdits}
         onEditingRowCancel={handleCancelRowEdits}
+        initialState={{ columnVisibility: hideColumns }}
         positionActionsColumn="last"
         displayColumnDefOptions={{
           'mrt-row-actions': {
