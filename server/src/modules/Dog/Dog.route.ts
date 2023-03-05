@@ -3,11 +3,18 @@ import dayjs from "dayjs";
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
 import { prisma } from "../../lib/prisma";
-import { $ref, DogInput, DogOwnerInput, DogVaccineInput, UpdateDogInput } from "./Dog.schema";
+import { $ref, DogInput, DogOwnerInput, DogVaccineInput, FilterDogInput, UpdateDogInput } from "./Dog.schema";
 
 export async function dogRoutes(app: FastifyInstance) {
 
   app.get('/', {preHandler: [app.authenticate]}, getAllDogs)
+
+  app.get('/select', {
+    schema: {
+      querystring: $ref('filterDogName')
+    },
+    preHandler: [app.authenticate]
+  }, getSearchDogsHandle)
 
   app.post('/', {
     schema: {
@@ -64,6 +71,35 @@ async function getAllDogs() {
   ({ id, name, birthdayDate, gender, colour, breed, ownerId, owner: Owner.name }));
 
   return filterDogs
+}
+
+async function getSearchDogsHandle(request: FastifyRequest<{Querystring: FilterDogInput}>, reply: FastifyReply) {
+  try{
+    return await getSearchByName(request.query.name)
+  }catch(err) {
+    console.log(err)
+    reply.code(400).send('Error in search owner by name')
+  }
+}
+
+
+async function getSearchByName(name:string) {
+  const result = await prisma.dog.findMany({
+    take: 5,
+    where: {
+      name: {
+        contains: name
+      }
+    },
+    select: {
+      id: true,
+      name: true,
+    },
+    orderBy: {
+      id: "desc",
+    }
+  })
+  return result
 }
 
 async function createDogAndOwnerHandle(request: FastifyRequest<{Body: DogOwnerInput}>, reply: FastifyReply) {
