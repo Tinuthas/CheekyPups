@@ -3,7 +3,6 @@ import { List, X } from 'phosphor-react'
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { SubNavBar } from './SubNavbar'
-import { AlertConfirm } from './AlertConfirm'
 import { updateToken } from '../lib/axios'
 import { ButtonDark } from './ButtonDark'
 
@@ -25,9 +24,15 @@ export function NavBar() {
       },
       {
         name: "Dogs", path: "Dogs",
+      },
+      {
+        name: "Owners", path: "Owners",
+      },
+      {
+        name: "Payments", path: "Payments",
       }]
     },
-    {
+    /*{
       name: "Manager", links: [
         {
           name: "Owners", path: "Owners",
@@ -36,7 +41,7 @@ export function NavBar() {
           name: "Payments", path: "Payments",
         }
       ]
-    }
+    }*/
   ]
 
   function handleLoginLogout() {
