@@ -2,7 +2,7 @@ import { useState } from 'react'
 import AsyncSelect from 'react-select/async';
 
 interface SelectInputProps {
-  getData?:Promise<any>,
+  getData?:(inputValue: string) => Promise<any>,
 }
 
 export function SelectInput({getData}:SelectInputProps) {
@@ -17,25 +17,16 @@ export function SelectInput({getData}:SelectInputProps) {
     new Promise<any[]>((resolve, reject) => {
       console.log("get data")
       console.log(getData)
+      console.log("select")
+      console.log(inputValue)
       if(getData != undefined){
         console.log('execute')
-        getData.then((data) => {
+        getData(inputValue).then((data) => {
           resolve(data)
         })
-        /*getData().then(() => {
-          console.log('result')
-        }).catch(() => {
-          console.log('error')
-        })*/
       }
         
-      
-      
 
-      /*setTimeout(() => {
-        resolve([{ value: 'chocolate', label: 'Chocolate' },
-        { value: 'strawberry', label: 'Strawberry' }, { value: 'name', label: 'Declan' }]);
-      }, 1000);*/
   });
 
 

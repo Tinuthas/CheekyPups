@@ -31,9 +31,23 @@ const headers = [
   }
 ]
 
-const selectPromise = new Promise<any[]>((resolve, reject) => { 
-  resolve([{ value: 'chocolate', label: 'Chocolate' },
-  { value: 'strawberry', label: 'Strawberry' }, { value: 'name', label: 'Declan' },  { value: 'name2', label: 'Declan2' }])
+const selectPromise = (inputValue: string) => new Promise<any[]>((resolve, reject) => { 
+
+  api.get('owners/select', { params: { name: inputValue}, headers: { Authorization: getToken()}}).then(response =>{
+    var data = response.data
+    var listData:any[] = []
+    data.forEach((element:any) => {
+      listData.push({value: element.id, label: element.name})
+    });
+    resolve(listData)
+  }).catch((err: AxiosError) => {
+    console.log(err)
+    console.log(err.response?.data)
+    const data = err.response?.data as {message: string}
+    toast.error(`Unidentified error: ${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
+    throw new Error(`Unidentified error: ${data.message || err.response?.data || err.message}`);
+  })
+
 })
 
 /*const selectPromise = Promise.resolve([{ value: 'chocolate', label: 'Chocolate' },

@@ -6,7 +6,7 @@ interface InputLabelProps{
   type: string;
   accessorKey: string;
   onChange(event: React.ChangeEvent<HTMLInputElement>):void;
-  getData?:Promise<any>;
+  getData?:(inputValue: string) => Promise<any>;
 }
 
 export const InputLabel = ({labelName, type, placeholder, accessorKey, onChange, getData}: InputLabelProps) => {

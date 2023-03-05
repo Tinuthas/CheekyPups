@@ -2,11 +2,17 @@ import dayjs from "dayjs";
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { string } from "zod";
 import { prisma } from "../../lib/prisma";
-import { $ref, CreateOwnerInput, UpdateOwnerInput } from "./Owner.schema";
+import { $ref, CreateOwnerInput, FilterOwnerInput, UpdateOwnerInput } from "./Owner.schema";
 
 export async function ownerRoutes(app: FastifyInstance) {
   
   app.get('/', {preHandler: [app.authenticate]}, getAllOwners)
+  app.get('/select', {
+    schema: {
+      querystring: $ref('filterOwnerName')
+    },
+    preHandler: [app.authenticate]
+  }, getSearchOwnersHandle)
 
   app.put('/', {
     schema: {
@@ -36,6 +42,15 @@ async function getAllOwners() {
   return await prisma.owner.findMany()
 }
 
+async function getSearchOwnersHandle(request: FastifyRequest<{Querystring: FilterOwnerInput}>, reply: FastifyReply) {
+  try{
+    return await getSearchByName(request.query.name)
+  }catch(err) {
+    console.log(err)
+    reply.code(400).send('Error in search owner by name')
+  }
+}
+
 
 async function updateOwnerHandle(request: FastifyRequest<{Body: UpdateOwnerInput, Querystring: {id:number}}>, reply: FastifyReply) {
   try{
@@ -62,6 +77,25 @@ async function createOwnerHandle(request: FastifyRequest<{Body: CreateOwnerInput
     console.log(err)
     reply.code(400).send('Error in create owner')
   }
+}
+
+async function getSearchByName(name:string) {
+  const result = await prisma.owner.findMany({
+    take: 5,
+    where: {
+      name: {
+        contains: name
+      }
+    },
+    select: {
+      id: true,
+      name: true,
+    },
+    orderBy: {
+      id: "desc",
+    }
+  })
+  return result
 }
 
 async function updateOwner(input: UpdateOwnerInput, id: number) {

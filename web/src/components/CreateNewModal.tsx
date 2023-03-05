@@ -9,7 +9,7 @@ export interface ColumnHeader {
   accessorKey: string,
   type: string,
   required?: boolean,
-  getDataSelect?: Promise<any>,
+  getDataSelect?: (inputValue: string) => Promise<any>,
 }
 
 interface CreateModalProps {

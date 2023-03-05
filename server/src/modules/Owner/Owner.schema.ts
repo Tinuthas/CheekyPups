@@ -31,13 +31,20 @@ const createOwnerResponseSchema = z.object({
   ...ownerCore
 })
 
+const filterOwnerName = z.object({
+  name: z.string(),
+})
+
 export type UpdateOwnerInput = z.infer<typeof updateOwnerBody>
 
 export type CreateOwnerInput = z.infer<typeof createOwnerSchema>
+
+export type FilterOwnerInput = z.infer<typeof filterOwnerName>
 
 export const {schemas: ownerSchemas, $ref} = buildJsonSchemas({
   createOwnerSchema,
   createOwnerResponseSchema,
   updateOwnerBody,
   updateOwnerId,
+  filterOwnerName,
 }, { $id: "OwnerSchemas" })
