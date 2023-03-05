@@ -84,9 +84,10 @@ async function updateOwner(input: UpdateOwnerInput, id: number) {
 }
 
 async function deleteOwner(id: number) {
+  var idNumber:number = Number(id)
   const deleteOwner = await prisma.owner.delete({
     where: {
-      id
+      id: idNumber
     },
   })
   return deleteOwner

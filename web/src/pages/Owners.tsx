@@ -102,25 +102,27 @@ export function Owners(){
   }, [])
 
   function updateDataRow(data: object) {
-    console.log(data)
-    api.put('owners', data, {
-      params: {
-        id: (data as any).id
-      },
-      headers: {
-        Authorization: getToken()
-      }
-    }).then(response => {
-      toast.success(`Updated: ${response.data?.name}`, { position: "top-center", autoClose: 1000, })
-    }).catch((err: AxiosError) => {
-      const data = err.response?.data as {message: string}
-      toast.error(`Unidentified error: ${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
-      return 
+    const promise = new Promise((resolve, reject) => {
+      api.put('owners', data, {
+        params: {
+          id: (data as any).id
+        },
+        headers: {
+          Authorization: getToken()
+        }
+      }).then(response => {
+        toast.success(`Updated: ${response.data?.name}`, { position: "top-center", autoClose: 1000, })
+        resolve(`Updated: ${response.data?.name}`);
+      }).catch((err: AxiosError) => {
+        const data = err.response?.data as {message: string}
+        toast.error(`Unidentified error: ${data.message || err.response?.data ||err.message}`, { position: "top-center", autoClose: 5000, })
+        throw new Error(`Unidentified error: ${data.message || err.response?.data || err.message}`);
+      })
     })
+    return promise
   }
 
   function createNewRow(data: object) {
-    console.log(data)
     const promise = new Promise((resolve, reject) => {
       api.post('owners', data, {
         headers: {
@@ -128,10 +130,35 @@ export function Owners(){
         }
       }).then(response => {
         toast.success(`Created: ${response.data?.name}`, { position: "top-center", autoClose: 1000, })
+        resolve(`Created: ${response.data?.name}`);
       }).catch((err: AxiosError) => {
         const data = err.response?.data as {message: string}
-        toast.error(`Unidentified error: ${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
-        throw new Error(`Unidentified error: ${data.message || err.message}`);
+        toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
+        throw new Error(`Unidentified error: ${data.message || err.response?.data || err.message}`);
+      })
+    });
+    return promise
+  }
+
+  function deleteOwner(id: number) {
+    console.log('id')
+    console.log(id)
+    const promise = new Promise((resolve, reject) => {
+      api.delete('owners', {
+        params: {
+          id,
+        },
+        headers: {
+          Authorization: getToken()
+        }
+      }).then(response => {
+        toast.success(`Deleted: ${response.data?.name}`, { position: "top-center", autoClose: 1000, })
+        resolve(`Deleted: ${response.data?.name}`);
+      }).catch((err: AxiosError) => {
+        console.log(err)
+        const data = err.response?.data as {message: string}
+        toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
+        throw new Error(`Unidentified error: ${data.message || err.response?.data || err.message}`);
       })
     });
     return promise
@@ -156,6 +183,7 @@ export function Owners(){
           updateRow={(data) => updateDataRow(data)} 
           createData={columnHeaders}
           createRow={(data) => createNewRow(data)}
+          deleteRow={(id) => deleteOwner(id)}
         />
       </div>
     </div>

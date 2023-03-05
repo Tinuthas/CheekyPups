@@ -43,11 +43,12 @@ interface DataTableProps {
   title: string,
   createData: ColumnHeader[],
   setData?: (data:object[]) => void,
-  updateRow?:(data:object) => void,
+  updateRow?:(data:object) => Promise<any>,
   createRow?:(data:object) => Promise<any>,
+  deleteRow?:(id:number) => Promise<any>,
 }
 
-const DataTableCustom = ({headers, data, setData, createData, title, updateRow, createRow}: DataTableProps) => {
+const DataTableCustom = ({headers, data, setData, createData, title, updateRow, createRow, deleteRow}: DataTableProps) => {
 
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [open, setOpen] = React.useState(false);
@@ -74,10 +75,11 @@ const DataTableCustom = ({headers, data, setData, createData, title, updateRow, 
         values.id = (data[row.index] as any).id
         data[row.index] = values;
         if(updateRow != undefined)
-          updateRow(values)
+          updateRow(values).then(() => {
+            if(setData != undefined)
+              setData([...data]);
+          })
         //send/receive api updates here, then refetch or update local table data for re-render
-        if(setData != undefined)
-          setData([...data]);
         exitEditingMode(); //required to exit editing mode and close modal
       }
     };
@@ -89,10 +91,14 @@ const DataTableCustom = ({headers, data, setData, createData, title, updateRow, 
   const handleDeleteRow = useCallback(
     (row: MRT_Row) => {
       console.log('Index '+row.index)
-      //send api delete request here, then refetch or update local table data for re-render
-      data.splice(row.index, 1);
-      if(setData != undefined)
-        setData([...data]);
+      console.log((data[row.index] as any).id)
+
+      if(deleteRow != undefined)
+        deleteRow((data[row.index] as any).id).then(() => {
+          data.splice(row.index, 1);
+          if(setData != undefined)
+            setData([...data]);
+        })
       setOpen(false);
     },
     [data],
