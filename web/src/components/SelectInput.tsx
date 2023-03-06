@@ -14,6 +14,7 @@ export function SelectInput({getData, onChange}:SelectInputProps) {
   };
 
   const handleBlue = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if(selectedOption == undefined || selectedOption.value == "") return
     event.target.value = selectedOption.value
     event.target.placeholder = selectedOption.label
     onChange(event)

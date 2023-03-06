@@ -49,16 +49,17 @@ export function CustomFooterStatusComponent(props: {total:number}) {
     palette: {
       //mode: 'dark',
       primary: {
-        light: '#FF499E',
-        main: colors.neutral[700],
-        dark: colors.pink[600],
-        contrastText: colors.yellow[400],
+        light: colors.neutral[700],
+        //main: colors.neutral[700],
+        main:  '#FF499E',
+        dark: colors.neutral[700],
+        contrastText: colors.white,
       },
       secondary: {
         light: colors.white,
         main: '#FF499E',
-        dark: colors.pink[700],
-        contrastText: colors.yellow[400],
+        dark: colors.neutral[700],
+        contrastText: colors.white,
       },
       contrastThreshold: 3,
       tonalOffset: 0.2,
@@ -83,6 +84,8 @@ export function Attendance(){
   const [dateStart, setDateStart] = useState(dayjs().startOf('week').toDate());
   const [dateEnd, setDateEnd] = useState(dayjs().endOf('week').toDate());
   const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [valueField, setValueField] = useState(12.5)
+  const [dateValueField, setDateValueField] = useState(dayjs().format('YYYY-MM-DD'));
 
   useEffect(() => {
     clickSearchByDates()
@@ -209,10 +212,7 @@ export function Attendance(){
           </LocalizationProvider>
         </ThemeProvider>
         </div>
-        
         <ButtonLight text="Search" onClick={clickSearchByDates}/>
-
-        <ButtonLight text="Add Attendance" onClick={clickSearchByDates}/>
       </div>
         
       
@@ -263,13 +263,40 @@ export function Attendance(){
                   label: 'Date',
                   name: '',
                   type: "date",
+                  value: dateValueField,
+                  setValue: (value) => setDateValueField(value),
+                },
+                {
+                  accessorKey: 'fullDay',
+                  label: 'Half Day',
+                  name: 'Full Day',
+                  type: "checkbox",
+                  setLocalStatus: (status) => {
+                    if(status) 
+                      setValueField(17.50)
+                    else
+                      setValueField(12.50)
+                  }
+                },
+                {
+                  accessorKey: 'value',
+                  label: 'Value',
+                  name: '',
+                  type: "number",
+                  value: valueField,
+                  setValue: (value) => setValueField(value),
+                },
+                {
+                  accessorKey: 'paid',
+                  label: 'Paid',
+                  name: 'Paid',
+                  type: "checkbox",
                 },
                 {
                   accessorKey: 'descriptionValue',
                   label: 'Description',
                   name: '',
                   type: "text",
-                  required: true,
                 }]}
             open={createModalOpen}
             onClose={() => setCreateModalOpen(false)}

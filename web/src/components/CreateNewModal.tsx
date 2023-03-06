@@ -9,8 +9,11 @@ export interface ColumnHeader {
   name: string,
   accessorKey: string,
   type: string,
+  value?: any,
+  setValue?(value:any):void,
   required?: boolean,
   getDataSelect?: (inputValue: string) => Promise<any>,
+  setLocalStatus?(status:boolean):void
 }
 
 interface CreateModalProps {
@@ -29,7 +32,7 @@ export const CreateNewModal = ({
 }: CreateModalProps) => {
   const [values, setValues] = useState<any>(() =>
     columns.reduce((acc, column) => {
-      acc[column.accessorKey ?? ''] = '';
+      acc[column.accessorKey ?? ''] = column.value ?? '';
       return acc;
     }, {} as any),
   );
@@ -99,7 +102,10 @@ export const CreateNewModal = ({
                 labelName={column.label} 
                 accessorKey={column.accessorKey}
                 getData={column.getDataSelect}
-                />
+                value={column.value}
+                setValue={column.setValue}
+                setLocalStatus={column.setLocalStatus}
+              />
              
             ))}
           </Stack>

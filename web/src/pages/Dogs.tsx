@@ -168,6 +168,8 @@ export function Dogs(){
   }
 
   function deleteDataRow(id: number) {
+    console.log('delete id')
+    console.log(id)
     const promise = new Promise((resolve, reject) => {
       api.delete('dogs', {
         params: {

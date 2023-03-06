@@ -11,16 +11,17 @@ const theme = createTheme({
   palette: {
     //mode: 'dark',
     primary: {
-      light: '#FF499E',
-      main: colors.neutral[700],
-      dark: colors.pink[600],
-      contrastText: colors.yellow[400],
+      light: colors.neutral[700],
+      //main: colors.neutral[700],
+      main:  '#FF499E',
+      dark: colors.neutral[700],
+      contrastText: colors.white,
     },
     secondary: {
       light: colors.white,
       main: '#FF499E',
-      dark: colors.pink[700],
-      contrastText: colors.yellow[400],
+      dark: colors.neutral[700],
+      contrastText: colors.white,
     },
     contrastThreshold: 3,
     tonalOffset: 0.2,
