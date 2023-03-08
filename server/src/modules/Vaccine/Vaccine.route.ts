@@ -34,7 +34,18 @@ export async function vaccineRoutes(app: FastifyInstance) {
 
 async function getAllVaccines(request: FastifyRequest, reply: FastifyReply) {
   try{
-    return await prisma.vaccine.findMany()
+    var vaccines = await prisma.vaccine.findMany({
+      include: {
+        dog: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    })
+
+    const filterVaccines = vaccines.map(({ id, dateVaccine, type, dog }) => ({ id, dateVaccine, type, dog: dog.name }));
+    return filterVaccines
   }catch(err) {
     reply.code(400).send("Error in get vaccines")
   }
@@ -82,13 +93,14 @@ async function updateVaccineHandle(request: FastifyRequest<{Body: UpdateVaccineI
 
 async function updateVaccine(input: UpdateVaccineInput, id: number) {
   const {dateVaccine, type } = input
+  console.log({dateVaccine, type })
 
   var dateParts:any[] = dateVaccine.split('/')
   var dateObject = new Date(+dateParts[2], dateParts[1] - 1, +dateParts[0])
   var parsedVaccine = dayjs(dateObject).startOf('day').toISOString()
-  
+  console.log(parsedVaccine)
 
-  let dog = await prisma.vaccine.update({
+  let vaccine = await prisma.vaccine.update({
     where: {
       id: id
     },
@@ -97,8 +109,9 @@ async function updateVaccine(input: UpdateVaccineInput, id: number) {
       type
     }
   })
+  console.log(vaccine)
 
-  return dog
+  return vaccine
 }
 
 async function deleteVaccineHandle(request: FastifyRequest<{Querystring: {id:number}}>, reply: FastifyReply) {

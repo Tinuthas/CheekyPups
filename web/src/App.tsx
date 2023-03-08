@@ -4,7 +4,7 @@ import './styles/global.css'
 import './lib/datagrind'
 import { useEffect, useState } from 'react'
 import { ToastContainer } from 'react-toastify'
-import { ConfirmDialog } from 'primereact/confirmdialog'
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
 
@@ -25,7 +25,7 @@ function App() {
           <NavBar />
         </header>
         <main className='bg-pinkBackground'> 
-          <Outlet />
+          <Outlet /> 
           <ToastContainer />
         </main>
       </div>

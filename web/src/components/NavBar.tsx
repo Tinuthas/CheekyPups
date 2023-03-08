@@ -30,6 +30,9 @@ export function NavBar() {
       },
       {
         name: "Payments", path: "Payments",
+      },
+      {
+        name: "Vaccines", path: "Vaccines",
       }]
     },
     /*{

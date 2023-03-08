@@ -3,7 +3,6 @@ import MaterialReactTable, { MaterialReactTableProps, MRT_ColumnDef, MRT_Row } f
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton, Tooltip } from '@mui/material';
 import colors from 'tailwindcss/colors';
 import { Delete, Edit, Add } from '@mui/icons-material';
-import useMediaQuery from '@mui/material/useMediaQuery';
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { ColumnHeader, CreateNewModal } from './CreateNewModal';
 
@@ -42,7 +41,7 @@ interface DataTableProps {
   headers: object[],
   data: object[],
   title: string,
-  createData: ColumnHeader[],
+  createData?: ColumnHeader[],
   hideColumns?: any,
   setData?: (data:object[]) => void,
   updateRow?:(data:object) => Promise<any>,
@@ -59,13 +58,14 @@ const DataTableCustom = ({headers, data, setData, createData, title, updateRow, 
     [cellId: string]: string;
   }>({});
 
-  const handleCreateNewRow = (values: any) => {
-    if(createRow != undefined)
-    createRow(values).then(() => {
-      data.push(values);
-      if(setData != undefined)
-        setData([...data]);
-    })
+  const handleCreateNewRow = (values: any, valuesData: any) => {
+    if(createRow != undefined){
+      createRow(valuesData).then(() => {
+        data.push(values);
+        if(setData != undefined)
+          setData([...data]);
+      })
+    }
   };
 
   const handleSaveRowEdits: MaterialReactTableProps['onEditingRowSave'] =
@@ -185,12 +185,14 @@ const DataTableCustom = ({headers, data, setData, createData, title, updateRow, 
           
         )}
       />
-      <CreateNewModal
-        columns={createData}
-        open={createModalOpen}
-        onClose={() => setCreateModalOpen(false)}
-        onSubmit={handleCreateNewRow}
-      />
+      {createData != undefined ? 
+        <CreateNewModal
+          columns={createData}
+          open={createModalOpen}
+          onClose={() => setCreateModalOpen(false)}
+          onSubmit={handleCreateNewRow}
+        /> : null
+      }
       </div>
       
     </ThemeProvider>

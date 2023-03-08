@@ -19,7 +19,7 @@ export interface ColumnHeader {
 interface CreateModalProps {
   columns: Array<ColumnHeader>;
   onClose: () => void;
-  onSubmit: (values: any) => void;
+  onSubmit: (values: any, valuesData: any) => void;
   open: boolean;
 }
 
@@ -36,10 +36,12 @@ export const CreateNewModal = ({
       return acc;
     }, {} as any),
   );
+  
+  const [selectInput, setSelectInput] = useState<any>({})
 
   const handleSubmit = () => {
     //put your validation logic here
-    //console.log(Object.entries(values))
+    console.log(Object.entries(values))
     var validationEmail = false
     var validationRequired = false
     var validationDate = false
@@ -68,7 +70,12 @@ export const CreateNewModal = ({
     }else if(validationDate) {
       toast.error("Incorrect Date Field", {position: 'top-center', autoClose: 2000,});
     }else{
-      onSubmit(values);
+
+      const valuesData = { ...values };
+      Object.entries(selectInput).forEach((element:any, index) => {
+        values[element[0]] = element[1]
+      })
+      onSubmit(values, valuesData);
       onClose();
     }
   };
@@ -101,6 +108,7 @@ export const CreateNewModal = ({
                 type={column.type} 
                 labelName={column.label} 
                 accessorKey={column.accessorKey}
+                onSelect={(key, value) => setSelectInput({ ...selectInput, [key]: value })}
                 getData={column.getDataSelect}
                 value={column.value}
                 setValue={column.setValue}

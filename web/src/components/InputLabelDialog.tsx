@@ -12,11 +12,12 @@ interface InputLabelProps{
   value?: any;
   setValue?(value:any):void;
   onChange(event: React.ChangeEvent<HTMLInputElement>):void;
+  onSelect?(key: any, value:any):void;
   getData?:(inputValue: string) => Promise<any>;
   setLocalStatus?(status:boolean):void;
 }
 
-export const InputLabel = ({labelName, type, placeholder, accessorKey, value, setValue, onChange, getData, setLocalStatus}: InputLabelProps) => {
+export const InputLabel = ({labelName, type, placeholder, accessorKey, value, setValue, onChange, onSelect, getData, setLocalStatus}: InputLabelProps) => {
 
   const [status, setStatus] = useState(false)
 
@@ -31,6 +32,11 @@ export const InputLabel = ({labelName, type, placeholder, accessorKey, value, se
     if(value != null && setValue != undefined){
       setValue(event.target.value)
     }
+    if(type == "select"){
+      if(onSelect != undefined)
+        onSelect(accessorKey.toLowerCase().replace('id', ''), event.target.placeholder)
+    }
+      
     onChange(event)
   }
 

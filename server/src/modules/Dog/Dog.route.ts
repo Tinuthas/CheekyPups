@@ -62,7 +62,6 @@ async function getAllDogs() {
         select: {
           name: true,
         },
-        
       },
     },
   })

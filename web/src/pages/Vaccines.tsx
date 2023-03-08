@@ -1,46 +1,30 @@
-import { DataGrid, GridRowsProp, GridColDef } from '@mui/x-data-grid';
-import { AxiosError } from 'axios';
-import dayjs from 'dayjs';
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
-import { ButtonLight } from '../components/ButtonLight';
-import DataTableCustom from '../components/DataTableCustom';
-import { api, getToken } from '../lib/axios';
+import { AxiosError } from "axios";
+import dayjs from "dayjs";
+import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import DataTableCustom from "../components/DataTableCustom";
+import { api, getToken } from "../lib/axios";
 
 const headers = [
   {
-    accessorKey: 'name',
-    header: 'Name',
-  },
-  {
-    accessorKey: 'owner',
-    header: 'Owner',
+    accessorKey: 'dog',
+    header: 'Dog',
     enableEditing: false,
   },
   {
-    accessorKey: 'birthdayDate',
-    header: 'Birthday',
+    accessorKey: 'dateVaccine',
+    header: 'Date Expiration',
   },
   {
-    accessorKey: 'gender',
-    header: 'Gender',
+    accessorKey: 'type',
+    header: 'Type',
   },
-  {
-    accessorKey: 'colour',
-    header: 'Colour',
-  },
-  {
-    accessorKey: 'breed',
-    header: 'Breed'
-  }
 ]
 
-const hideColumns = { owner: false }
 
 const selectPromise = (inputValue: string) => new Promise<any[]>((resolve, reject) => { 
 
-  api.get('owners/select', { params: { name: inputValue}, headers: { Authorization: getToken()}}).then(response =>{
+  api.get('dogs/select', { params: { name: inputValue}, headers: { Authorization: getToken()}}).then(response =>{
     var data = response.data
     var listData:any[] = []
     data.forEach((element:any) => {
@@ -48,8 +32,6 @@ const selectPromise = (inputValue: string) => new Promise<any[]>((resolve, rejec
     });
     resolve(listData)
   }).catch((err: AxiosError) => {
-    console.log(err)
-    console.log(err.response?.data)
     const data = err.response?.data as {message: string}
     toast.error(`Unidentified error: ${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
     throw new Error(`Unidentified error: ${data.message || err.response?.data || err.message}`);
@@ -58,53 +40,34 @@ const selectPromise = (inputValue: string) => new Promise<any[]>((resolve, rejec
 
 const columnHeaders = [
   {
-    accessorKey: 'owner',
-    label: 'Owner',
-    name: 'Choose owner',
+    accessorKey: 'dog',
+    label: 'Dog',
+    name: 'Choose dog',
     type: "select",
     required: true,
     getDataSelect: selectPromise
   },
   {
-    accessorKey: 'name',
-    label: 'Dog Name',
-    name: 'Ex. Einstein',
-    type: "text",
-    required: true,
-  },
-  {
-    accessorKey: 'birthdayDate',
-    label: 'Birthday Date',
+    accessorKey: 'dateVaccine',
+    label: 'Vaccine Expiration Date',
     name: '',
     type: "date",
   },
   {
-    accessorKey: 'gender',
-    label: 'Gender',
-    name: 'Ex. Male, Female',
+    accessorKey: 'type',
+    label: 'Type',
+    name: 'Ex. 7N1KC',
     type: "text",
-  },
-  {
-    accessorKey: 'colour',
-    label: 'Colour',
-    name: 'Ex. Black, White',
-    type: "text",
-  },
-  {
-    accessorKey: 'breed',
-    label: 'Breed',
-    name: 'Ex. Collin, Cockapoo',
-    type: "text",
-    required: true,
   }
 ]
 
-export function Dogs(){
 
-  const [dogs, setDogs] = useState([{}])
+export function Vaccines(){
+
+  const [vaccines, setVaccines] = useState([{}])
 
   useEffect(() => {
-    api.get('dogs', {
+    api.get('vaccine', {
       headers: {
         Authorization: getToken()
       }
@@ -112,10 +75,10 @@ export function Dogs(){
       var data = response.data
       var listData = JSON.parse(JSON.stringify(data));
       for(const i in listData) {
-        listData[i].birthdayDate = dayjs(listData[i].birthdayDate).format('DD/MM/YYYY')
+        listData[i].dateVaccine = dayjs(listData[i].birthdayDate).format('DD/MM/YYYY')
         delete listData[i].ownerId;
       }
-      setDogs(listData)
+      setVaccines(listData)
     }).catch((err: AxiosError) => {
       const data = err.response?.data as {message: string}
       toast.error(`Unidentified error: ${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
@@ -125,9 +88,11 @@ export function Dogs(){
 
   function updateDataRow(data: any) {
     const cloneData = JSON.parse(JSON.stringify(data))
-    delete cloneData.owner;
+    
+    delete cloneData.dog;
+    console.log(cloneData)
     const promise = new Promise((resolve, reject) => {
-      api.put('dogs', cloneData, {
+      api.put('vaccine', cloneData, {
         params: {
           id: (data as any).id
         },
@@ -135,8 +100,9 @@ export function Dogs(){
           Authorization: getToken()
         }
       }).then(response => {
-        toast.success(`Updated: ${response.data?.name}`, { position: "top-center", autoClose: 1000, })
-        resolve(`Updated: ${response.data?.name}`);
+        console.log('success')
+        toast.success(`Updated vaccine: ${response.data?.id}`, { position: "top-center", autoClose: 1000, })
+        resolve(`Updated vaccine: ${response.data?.id}`);
       }).catch((err: AxiosError) => {
         const data = err.response?.data as {message: string}
         toast.error(`Unidentified error: ${data.message || err.response?.data ||err.message}`, { position: "top-center", autoClose: 5000, })
@@ -146,33 +112,11 @@ export function Dogs(){
     return promise
   }
 
-
-  function createNewRow(data: any) {
-    var newData = {};
-    delete Object.assign(newData, data, {['owner_id']: Number(data['owner']) })['owner'];
-    //return new Promise((resolve) => resolve('success'))
-    const promise = new Promise((resolve, reject) => {
-      api.post('dogs', newData, {
-        headers: {
-          Authorization: getToken()
-        }
-      }).then(response => {
-        toast.success(`Created: ${response.data?.name}`, { position: "top-center", autoClose: 1000, })
-        resolve(`Created: ${response.data?.name}`);
-      }).catch((err: AxiosError) => {
-        const data = err.response?.data as {message: string}
-        toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
-        throw new Error(`Unidentified error: ${data.message || err.response?.data || err.message}`);
-      })
-    });
-    return promise
-  }
-
   function deleteDataRow(id: number) {
     console.log('delete id')
     console.log(id)
     const promise = new Promise((resolve, reject) => {
-      api.delete('dogs', {
+      api.delete('vaccine', {
         params: {
           id,
         },
@@ -180,8 +124,8 @@ export function Dogs(){
           Authorization: getToken()
         }
       }).then(response => {
-        toast.success(`Deleted: ${response.data?.name}`, { position: "top-center", autoClose: 1000, })
-        resolve(`Deleted: ${response.data?.name}`);
+        toast.success(`Deleted vaccine: ${response.data?.id}`, { position: "top-center", autoClose: 1000, })
+        resolve(`Deleted vaccine: ${response.data?.id}`);
       }).catch((err: AxiosError) => {
         console.log(err)
         const data = err.response?.data as {message: string}
@@ -192,30 +136,45 @@ export function Dogs(){
     return promise
   }
 
-  /*
-    <div className="md:flex bg-white w-full p-4 md:p-8 mt-4 rounded">
-      <ButtonLight text="New Owner" onClick={newDog}/>
-    </div>
-  */
+  function createNewRow(data: any) {
+    var newData = {dog_id: Number(data['dog']), dateVaccine: data.dateVaccine, typeVaccine: data.type};
+    //delete Object.assign(newData, data, {['dog_id']: Number(data['dog']) })['dog'];
+    //delete Object.assign(newData, data, {['typeVaccine']: data['type'] })['type'];
+    //console.log(newData)
+    //return new Promise((resolve) => resolve('success'))
+    const promise = new Promise((resolve, reject) => {
+      api.post('vaccine', newData, {
+        headers: {
+          Authorization: getToken()
+        }
+      }).then(response => {
+        toast.success(`Created vaccine: ${response.data?.name}`, { position: "top-center", autoClose: 1000, })
+        resolve(`Created vaccine: ${response.data?.name}`);
+      }).catch((err: AxiosError) => {
+        const data = err.response?.data as {message: string}
+        toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
+        throw new Error(`Unidentified error: ${data.message || err.response?.data || err.message}`);
+      })
+    });
+    return promise
+  }
 
   return (
     <div className="md:p-10 pt-4 h-full flex flex-col items-center">
-      <h1 className="font-medium text-3xl md:text-4xl text-white">Dogs</h1>
-      
+      <h1 className="font-medium text-3xl md:text-4xl text-white">Vaccines</h1>
+
       <div className="md:flex bg-white w-full mt-4 rounded">
         <DataTableCustom 
-          title='Dogs' 
-          data={dogs} 
+          title='Vaccines' 
+          data={vaccines} 
           headers={headers} 
           createData={columnHeaders}
-          hideColumns={hideColumns}
+          //hideColumns={hideColumns}
           createRow={(data) => createNewRow(data)}
           updateRow={(data) => updateDataRow(data)}
           deleteRow={(id) => deleteDataRow(id)}
-          setData={(data) => setDogs(data)} />
+          setData={(data) => setVaccines(data)} />
       </div>
     </div>
   )
 }
-
-//        <DataTableCustom headers={["Name", "Birth Date", "Gender", "Colour", "Bread"]} onClick={(id) => onClickRowOwner(id)} data={dogs}/>
