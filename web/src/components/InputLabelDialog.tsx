@@ -23,12 +23,17 @@ export const InputLabel = ({labelName, type, placeholder, accessorKey, value, se
 
   function setEventChange(event: React.ChangeEvent<HTMLInputElement>) {
     event.target.name = accessorKey
-    if(type == "checkbox"){
-      setStatus(event.target.checked)
-      if(setLocalStatus != undefined)
-        setLocalStatus(event.target.checked)
-      event.target.value = event.target.checked.toString()
+    if(type == "checkbox"){ 
+      var checked = event.target.checked
+      if(setLocalStatus != undefined){
+        setLocalStatus(checked)
+        setStatus(checked)
+      }
+        
+      console.log(checked)
+      event.target.value = checked.toString()
     }
+    
     if(value != null && setValue != undefined){
       setValue(event.target.value)
     }

@@ -2,7 +2,6 @@ import {z} from 'zod'
 import {buildJsonSchemas} from 'fastify-zod'
 
 const createAttendanceBody = z.object({
-  owner_id: z.number(),
   dog_id: z.number(),
   date: z.string(),
   fullDay: z.boolean(),

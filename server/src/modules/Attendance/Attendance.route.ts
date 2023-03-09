@@ -36,9 +36,23 @@ export async function attendanceRoutes(app: FastifyInstance) {
   }
 
   async function addAttendance(input: AttendanceInput){
-    const {owner_id, dog_id, date, fullDay, paid, value, descriptionValue} = input
+    const {dog_id, date, fullDay, paid, value, descriptionValue} = input
 
-    const parsedDate = dayjs(date).startOf('day')
+    //const parsedDate = dayjs(date).startOf('day')
+
+    let dog = await prisma.dog.findUnique({
+      where: {
+        id: Number(dog_id)
+      },
+      select: {
+        ownerId: true
+      }
+    })
+
+    var dateParts:any[] = date.split('/')
+    var dateObject = new Date(+dateParts[2], dateParts[1] - 1, +dateParts[0])
+    var parsedDate = dayjs(dateObject).startOf('day').toISOString()
+    console.log(parsedDate)
 
     let attendance = await prisma.attendance.create(
       {
@@ -48,10 +62,10 @@ export async function attendanceRoutes(app: FastifyInstance) {
           day: {
             connectOrCreate: {
               where: {
-                date: parsedDate.toISOString(),
+                date: parsedDate,
               },
               create: {
-                date: parsedDate.toISOString(),
+                date: parsedDate,
               }
             }
           },
@@ -67,7 +81,7 @@ export async function attendanceRoutes(app: FastifyInstance) {
               date: dayjs().toISOString(),
               Owner: {
                 connect: {
-                  id: owner_id
+                  id: dog?.ownerId
                 }
               }
               

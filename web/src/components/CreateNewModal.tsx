@@ -1,4 +1,4 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField } from "@mui/material";
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, fabClasses, Stack, TextField } from "@mui/material";
 import dayjs from "dayjs";
 import { useState } from "react";
 import { toast } from "react-toastify";
@@ -30,37 +30,56 @@ export const CreateNewModal = ({
   onClose,
   onSubmit,
 }: CreateModalProps) => {
-  const [values, setValues] = useState<any>(() =>
-    columns.reduce((acc, column) => {
-      acc[column.accessorKey ?? ''] = column.value ?? '';
-      return acc;
-    }, {} as any),
-  );
+
+
+  const emptyValues = () =>
+  columns.reduce((acc, column) => {
+    acc[column.accessorKey ?? ''] = column.value ?? '';
+    return acc;
+  }, {} as any)
+
+  /*const initialValues = columns.reduce((acc, column) => {
+    acc[column.accessorKey ?? ''] = column.value ?? '';
+    return acc;
+  }, {} as any)*/
+
+  const [values, setValues] = useState<any>(emptyValues);
   
   const [selectInput, setSelectInput] = useState<any>({})
 
+  const handleClose = () => {
+    console.log()
+    setValues(emptyValues)
+    onClose()
+  }
+
   const handleSubmit = () => {
     //put your validation logic here
-    console.log(Object.entries(values))
+    //console.log(Object.entries(values))
     var validationEmail = false
     var validationRequired = false
     var validationDate = false
-
     Object.entries(values).forEach((element:any, index) => {
-      if(columns[index].required == true) {
-        if(validateRequired(element[1]) == false)
-          validationRequired = true
-      }
-      if(columns[index].type.includes('email')){
-        if(validateEmail(element[1]) == null) 
-        validationEmail = true
-      }
-      if(columns[index].type.includes('date')){
-        if(element[1].length == 0) {
-          values[element[0]] = null
-        }else{
-          values[element[0]] = dayjs(element[1]).format('DD/MM/YYYY')
+      if(columns[index] != null){
+        if(columns[index].required == true) {
+          if(validateRequired(element[1]) == false)
+            validationRequired = true
         }
+        if(columns[index].type.includes('email')){
+          if(validateEmail(element[1]) == null) 
+          validationEmail = true
+        }
+        if(columns[index].value != undefined) {
+          values[element[0]] = columns[index].value
+        }
+        if(columns[index].type.includes('date')){
+          if(element[1].length == 0) {
+            values[element[0]] = null
+          }else{
+            values[element[0]] = dayjs(element[1]).format('DD/MM/YYYY')
+          }
+        }
+        
       }
     });
     if(validationRequired) {
@@ -76,7 +95,7 @@ export const CreateNewModal = ({
         values[element[0]] = element[1]
       })
       onSubmit(values, valuesData);
-      onClose();
+      handleClose();
     }
   };
 
@@ -120,7 +139,7 @@ export const CreateNewModal = ({
         </form>
       </DialogContent>
       <DialogActions sx={{ p: '1.25rem' }}>
-        <Button onClick={onClose}>Cancel</Button>
+        <Button onClick={handleClose}>Cancel</Button>
         <Button color="secondary" onClick={handleSubmit} variant="contained">
           Add
         </Button>

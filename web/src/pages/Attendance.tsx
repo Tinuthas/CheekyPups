@@ -18,6 +18,9 @@ import { CreateNewModal } from "../components/CreateNewModal";
 import { AxiosError } from "axios";
 import { toast } from "react-toastify";
 
+const HALF_DAY = 12.5
+const FULL_FAY = 17.5
+
 type Attendances = Array<{
   id:string;
   attendanceIds: string[];
@@ -84,7 +87,7 @@ export function Attendance(){
   const [dateStart, setDateStart] = useState(dayjs().startOf('week').toDate());
   const [dateEnd, setDateEnd] = useState(dayjs().endOf('week').toDate());
   const [createModalOpen, setCreateModalOpen] = useState(false);
-  const [valueField, setValueField] = useState(12.5)
+  const [valueField, setValueField] = useState(HALF_DAY)
   const [dateValueField, setDateValueField] = useState(dayjs().format('YYYY-MM-DD'));
 
   useEffect(() => {
@@ -123,44 +126,29 @@ export function Attendance(){
         if(rows.length != 0 ) {
           var base = [{ 
             accessorKey:'name', 
-            header: 'Name', 
-            size: 150
+            header: 'Dog name',
           }, 
           {
             accessorKey:'total', 
-            header: 'Total', 
-            muiTableHeadCellProps: {
-              align: 'center',
-            },
-            muiTableBodyCellProps: {
-              align: 'center',
-            },
-            size: 50
+            header: 'Total',
+            size:150,
+            maxSize: 150,
           },
           {
             accessorKey:'paid', 
             header: 'Paid', 
-            muiTableHeadCellProps: {
-              align: 'center',
-            },
-            muiTableBodyCellProps: {
-              align: 'center',
-            },
-            size: 50
+            size:150,
+            maxSize: 150,
           }]
           for (const item of dates) {
-            console.log(item)
             base.push({
               accessorKey:item, 
-              header: item, 
-              size: 100, 
-              muiTableHeadCellProps: {
-                align: 'center',
-              },
-              muiTableBodyCellProps: {
-                align: 'center',
-              }})
+              header: item,
+              size:100,
+              maxSize: 200,
+            })
           }
+          console.log(base)
           setColumns(base)
         }
         
@@ -169,19 +157,37 @@ export function Attendance(){
       })
   }
 
+
   const handleCreateNewRow = (values: any) => {
-    /*
-    createRow(values).then(() => {
-      data.push(values);
-      if(setData != undefined)
-        setData([...data]);
-    })*/
+    console.log(values)
+    var newValues = {
+      dog_id: Number(values.dogId), 
+      date: values.date, 
+      fullDay: (values.fullDay?.toLowerCase?.() === 'true'), 
+      paid: (values.paid?.toLowerCase?.() === 'true'),  
+      value: values.value, 
+      descriptionValue: values.descriptionValue
+    }
+    api.post('attendance', newValues, {
+      headers: {
+        Authorization: getToken()
+      }
+    }).then(response => {
+      toast.success(`Attedanted: ${values.dog}`, { position: "top-center", autoClose: 1000, })
+      clickSearchByDates()
+      //attendances.push(newValues);
+      //setAttendances([...attendances]);
+    }).catch((err: AxiosError) => {
+      const data = err.response?.data as {message: string}
+      toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
+      throw new Error(`Unidentified error: ${data.message || err.response?.data || err.message}`);
+    })
   };
 
   return (
     <div className="md:p-10 pt-4 h-full flex flex-col items-center">
       <h1 className="font-medium text-3xl md:text-4xl text-white">Attendances</h1>
-      <div className="md:flex bg-white w-full p-4 md:p-8 mt-4 rounded">
+      <div className="md:flex bg-white p-4 md:p-8 mt-4 rounded">
         <div className="flex">
         <ThemeProvider theme={theme}>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -198,7 +204,7 @@ export function Attendance(){
               }
               />
             </div>
-            <div className="md:mr-2">
+            <div className="">
               <DatePicker
                 label="Date End"
                 value={dateEnd}
@@ -217,24 +223,32 @@ export function Attendance(){
         
       
       <ThemeProvider theme={theme}>
-        <div className="md:m-9 bg-white rounded w-full">
+        <div className="md:m-9 w-full lg:w-auto bg-white rounded">
           <MaterialReactTable
             columns={columns as MRT_ColumnDef<(typeof attendances)[0]>[]}
             data={attendances}
             enableColumnResizing
             renderTopToolbarCustomActions={() => (
-              <>
-                <Box sx={{ fontSize: 16, fontWeight: 'medium', paddingTop: 0, paddingLeft: 1 }}>
-                  {"Attendances"}
-                  <IconButton onClick={() => setCreateModalOpen(true)}>
-                    <Add />
-                  </IconButton>
-                </Box>
-                
-              </>
-              
+              <Box sx={{ fontSize: 16, fontWeight: 'medium', paddingTop: 0, paddingLeft: 1 }}>
+                {"Attendances"}
+                <IconButton onClick={() => {
+                    setValueField(HALF_DAY)
+                    setCreateModalOpen(true)
+                  }}>
+                  <Add />
+                </IconButton>
+              </Box>
             )}
+            muiTablePaperProps={{
+              elevation: 0, //change the mui box shadow
+              //customize paper styles
+              sx: {
+                borderRadius: '4',
+                border: '1px dashed #ffffff',
+              },
+            }}
           />
+          {createModalOpen ? 
           <CreateNewModal
             columns={[
                 {
@@ -271,11 +285,8 @@ export function Attendance(){
                   label: 'Half Day',
                   name: 'Full Day',
                   type: "checkbox",
-                  setLocalStatus: (status) => {
-                    if(status) 
-                      setValueField(17.50)
-                    else
-                      setValueField(12.50)
+                  setLocalStatus: (status) => {      
+                    status === true ? setValueField(FULL_FAY) : setValueField(HALF_DAY)               
                   }
                 },
                 {
@@ -284,7 +295,7 @@ export function Attendance(){
                   name: '',
                   type: "number",
                   value: valueField,
-                  setValue: (value) => setValueField(value),
+                  setValue: (value) => setValueField(Number(value)),
                 },
                 {
                   accessorKey: 'paid',
@@ -301,7 +312,8 @@ export function Attendance(){
             open={createModalOpen}
             onClose={() => setCreateModalOpen(false)}
             onSubmit={handleCreateNewRow}
-          />
+          />: null
+          }
         </div>
       </ThemeProvider>
      
