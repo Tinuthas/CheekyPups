@@ -5,6 +5,7 @@ import colors from 'tailwindcss/colors';
 import { Delete, Edit, Add } from '@mui/icons-material';
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { ColumnHeader, CreateNewModal } from './CreateNewModal';
+import { DeleteModal } from './DeleteModel';
 
 const theme = createTheme({
   palette: {
@@ -137,36 +138,11 @@ const DataTableCustom = ({headers, data, setData, createData, title, updateRow, 
             </Tooltip>
             {
               openIndex == row.index && open && (
-                <Dialog
+                <DeleteModal 
                   open={open}
                   onClose={() => setOpen(false)}
-                  sx={{
-                    "& .MuiDialog-container": {
-                      "& .MuiPaper-root": {
-                        width: "100%",
-                        margin: "auto",
-                        maxWidth: "500px",  // Set your width here
-                      },
-                    },
-                  }}>
-                  <DialogTitle id="responsive-dialog-title">
-                    {"Are you absolutely sure?"}
-                  </DialogTitle>
-                  <DialogContent>
-                    <DialogContentText>
-                    This action cannot be undone. This will permanently delete 
-                    and remove your data from our servers.
-                    </DialogContentText>
-                  </DialogContent>
-                <DialogActions>
-                  <Button autoFocus onClick={() => setOpen(false)}>
-                    Cancel
-                  </Button>
-                  <Button onClick={() => handleDeleteRow(row)} autoFocus>
-                    Delete
-                  </Button>
-                </DialogActions>
-              </Dialog>
+                  onSubmit={() => handleDeleteRow(row)}
+                />
               )
             }
             

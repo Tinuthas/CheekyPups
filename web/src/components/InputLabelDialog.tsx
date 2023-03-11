@@ -29,8 +29,6 @@ export const InputLabel = ({labelName, type, placeholder, accessorKey, value, se
         setLocalStatus(checked)
         setStatus(checked)
       }
-        
-      console.log(checked)
       event.target.value = checked.toString()
     }
     

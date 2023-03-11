@@ -17,6 +17,8 @@ import { IconButton } from "@mui/material";
 import { CreateNewModal } from "../components/CreateNewModal";
 import { AxiosError } from "axios";
 import { toast } from "react-toastify";
+import MenuItemCustom from "../components/MenuItemCustom";
+import clsx from 'clsx'
 
 const HALF_DAY = 12.5
 const FULL_FAY = 17.5
@@ -79,6 +81,12 @@ export function CustomFooterStatusComponent(props: {total:number}) {
     }
   });
 
+interface AttendanceData {
+  name:string;
+  total: number;
+  paid: number;
+}
+
 
 export function Attendance(){
 
@@ -89,10 +97,44 @@ export function Attendance(){
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [valueField, setValueField] = useState(HALF_DAY)
   const [dateValueField, setDateValueField] = useState(dayjs().format('YYYY-MM-DD'));
+  const [marginTable, setMarginTable] = useState(0)
+  const [openDelete, setOpenDelete] = useState(false)
+
+  console.log(marginTable)
 
   useEffect(() => {
     clickSearchByDates()
   }, [])
+
+  function clickDateAttendance(cell:any, row: any) {
+    console.log('clicked')
+    console.log(row)
+    console.log(cell)
+  }
+
+  function cellComponent(item: string) {
+    var column:MRT_ColumnDef<any> = {
+      accessorKey:item, 
+      header: item,
+      Header: ({ column }) => <div className="w-[90px] p-0 text-center">{column.columnDef.header}</div>,
+      Cell: ({ renderedCellValue, row }) => (
+        <div className="w-[133.055px]">
+          { renderedCellValue != null ?
+            <MenuItemCustom handleDelete={() => console.log(row)}>
+            { renderedCellValue?.toString().toUpperCase().includes('P') ?
+              <span className="font-black text-green-600">{renderedCellValue.toString().toUpperCase().replace('P', '')}</span>
+            : <span className="font-black text-stone-500">{renderedCellValue}</span>
+            }
+            </MenuItemCustom>
+          : null}
+          
+        </div>
+       
+      )
+    }
+    return column
+
+  }
 
   function clickSearchByDates(){
     api.get<Attendances>('attendance', {
@@ -106,47 +148,46 @@ export function Attendance(){
         var att = response.data
         var rows: any[] = []
         const dates = new Set<string>();
+        var marginDates = 0
         att.map((item, index) => {
           var listDates:any = {}
           listDates['total'] = 0
           listDates['paid'] = 0
           for (let i = 0; i < item.dates.length; i++) {
-            
-            listDates[dayjs(item.dates[i]).format('DD/MM/YYYY')] = item.fullDates[i]? 'D' : '½D'
+
+            listDates[dayjs(item.dates[i]).format('DD/MM/YYYY')] = item.paids[i] ? (item.fullDates[i] ? 'DP' : '½DP') : item.fullDates[i] ? 'D' : '½D'
             dates.add(dayjs(item.dates[i]).format('DD/MM/YYYY'))
             listDates['total'] = listDates['total'] + 1
             listDates['paid'] = item.paids[i]? listDates['paid'] + 1 : listDates['paid']
           }
+          marginDates = listDates['total'] > marginDates ? listDates['total'] : marginDates
           var obj = Object.assign({}, item, listDates);
           console.log(obj)
           rows.push(obj)
         })
-
+        console.log(marginDates)
+        setMarginTable(marginDates)
         setAttendances(rows)
         if(rows.length != 0 ) {
-          var base = [{ 
+          var base:MRT_ColumnDef<any>[] = [{ 
             accessorKey:'name', 
             header: 'Dog name',
           }, 
           {
             accessorKey:'total', 
             header: 'Total',
-            size:150,
-            maxSize: 150,
+            size: 125,
+            Header: ({ column }) => <div className="w-[32px] p-0 text-center">{column.columnDef.header}</div>,
+            Cell: ({ renderedCellValue }) => <div className="w-[32px] text-center">{renderedCellValue}</div>
           },
           {
             accessorKey:'paid', 
-            header: 'Paid', 
-            size:150,
-            maxSize: 150,
+            header: 'Paid',
+            size: 120,
+            Cell: ({ renderedCellValue }) => <div className="w-[28px] text-center">{renderedCellValue}</div>
           }]
           for (const item of dates) {
-            base.push({
-              accessorKey:item, 
-              header: item,
-              size:100,
-              maxSize: 200,
-            })
+            base.push(cellComponent(item))
           }
           console.log(base)
           setColumns(base)
@@ -223,11 +264,21 @@ export function Attendance(){
         
       
       <ThemeProvider theme={theme}>
-        <div className="md:m-9 w-full lg:w-auto bg-white rounded">
+        <div className={clsx('w-full mt-9 transition-all', {
+          'md:px-28 lg:px-56 xl:px-[450px]': marginTable == 0,
+          'md:px-16 lg:px-48 xl:px-[300px]': marginTable == 1,
+          'md:px-20 lg:px-36 xl:px-60': marginTable == 2,
+          'md:px-16 lg:px-44 xl:px-36': marginTable == 3,
+          'md:px-12 lg:px-40 xl:px-16': marginTable == 4,
+          'md:px-8 lg:px-24 xl:px-0 desktop:px-8': marginTable == 5,
+          'px-0' : marginTable >= 5,
+        })}>
+          <div className="bg-white rounded">
+
+          
           <MaterialReactTable
             columns={columns as MRT_ColumnDef<(typeof attendances)[0]>[]}
             data={attendances}
-            enableColumnResizing
             renderTopToolbarCustomActions={() => (
               <Box sx={{ fontSize: 16, fontWeight: 'medium', paddingTop: 0, paddingLeft: 1 }}>
                 {"Attendances"}
@@ -245,6 +296,17 @@ export function Attendance(){
               sx: {
                 borderRadius: '4',
                 border: '1px dashed #ffffff',
+              },
+            }}
+            layoutMode="grid"
+            muiTableHeadCellProps={{
+              sx: {
+                flex: '0 0 auto',
+              },
+            }}
+            muiTableBodyCellProps={{
+              sx: {
+                flex: '0 0 auto',
               },
             }}
           />
@@ -314,6 +376,7 @@ export function Attendance(){
             onSubmit={handleCreateNewRow}
           />: null
           }
+        </div>
         </div>
       </ThemeProvider>
      
