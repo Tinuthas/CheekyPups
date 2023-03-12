@@ -1,9 +1,10 @@
 
 import dayjs from "dayjs";
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+import { request } from "http";
 import { z } from "zod";
 import { prisma } from "../../lib/prisma";
-import { $ref, DogInput, DogOwnerInput, DogVaccineInput, FilterDogInput, UpdateDogInput } from "./Dog.schema";
+import { $ref, DogInput, DogOwnerInput, DogProfileInput, DogVaccineInput, FilterDogInput, UpdateDogInput } from "./Dog.schema";
 
 export async function dogRoutes(app: FastifyInstance) {
 
@@ -44,6 +45,14 @@ export async function dogRoutes(app: FastifyInstance) {
     },
     preHandler: [app.authenticate]
   }, updateDogHandle)
+
+  app.put('/profile', {
+    schema: {
+      body: $ref('updateDogProfileBody'),
+      querystring: $ref('updateDogId'),
+    },
+    preHandler: [app.authenticate]
+  }, updateDogProfileHandle)
 
   app.delete('/', {
     schema: {
@@ -273,3 +282,27 @@ async function deleteDog(id: number) {
   })
   return deleteDog
 }
+
+async function updateDogProfileHandle(request: FastifyRequest<{Body: DogProfileInput ,Querystring: {id:number}}>, reply: FastifyReply) {
+  try{
+    return await updateDogProfile(request.body, request.query.id)
+  }catch(err) {
+    console.log(err)
+    reply.code(400).send('Error in delete dog')
+  }
+}
+
+async function updateDogProfile(input: DogProfileInput, id: number) {
+  const dog = await prisma.dog.update({
+    where: {
+      id: Number(id)
+    },
+    data: {
+      avatarUrl: input.avatarUrl
+    }
+  })
+
+  return dog
+}
+
+

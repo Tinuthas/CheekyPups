@@ -19,6 +19,13 @@ export async function attendanceRoutes(app: FastifyInstance) {
     preHandler: [app.authenticate]
   }, getAttendancesByDate)
 
+  app.get('/id', {
+    schema: {
+      querystring: $ref('updateAttendanceId'),
+    },
+    preHandler: [app.authenticate]
+  }, getUniqueAttendanceHandle)
+
   app.put('/', {
     schema: {
       body: $ref('updateAttendanceBody'),
@@ -151,6 +158,7 @@ export async function attendanceRoutes(app: FastifyInstance) {
 }
 
 
+
 async function getAttendances(input: AttendanceFilterInput){
   var {dateStart, dateEnd} = input
   const parsedDateStart = dayjs(dateStart).startOf('day').toISOString()
@@ -195,13 +203,13 @@ async function getAttendances(input: AttendanceFilterInput){
     ]
   })
 
-  let dogsAttendance = new Map<string, { id: number, attendanceIds:[id: number], dog_id:number, name: string, dates:[date:Date], fullDates:[fullDate:boolean], paids:[paid:boolean] }>();
+  let dogsAttendance = new Map<string, { id: number, attendanceIds:[id: number], dog_id:number, name: string, dates:[date:string], fullDates:[fullDate:boolean], paids:[paid:boolean] }>();
   for (let index = 0; index < attendances.length; index++) {
     const element = attendances[index];
     console.log(element.dog.id)
     if (dogsAttendance.has(element.dog.id.toString())) {
       dogsAttendance.get(element.dog.id.toString())?.attendanceIds.push(element.id)
-      dogsAttendance.get(element.dog.id.toString())?.dates.push(element.day.date)
+      dogsAttendance.get(element.dog.id.toString())?.dates.push(dayjs(element.day.date).format('DD/MM/YYYY'))
       dogsAttendance.get(element.dog.id.toString())?.fullDates.push(element.fullDay)
       dogsAttendance.get(element.dog.id.toString())?.paids.push(element.paid)
     }else{
@@ -211,19 +219,54 @@ async function getAttendances(input: AttendanceFilterInput){
         attendanceIds: [element.id],
         dog_id: element.dog.id,
         name: element.dog.name,
-        dates: [element.day.date],
+        dates: [dayjs(element.day.date).format('DD/MM/YYYY')],
         fullDates: [element.fullDay],
         paids: [element.paid]
       })
     }
   }
 
-  const convertList: { id: number, attendanceIds: [id: number]; dog_id: number; name: string; dates: [date: Date]; fullDates: [fullDate: boolean]; }[] = [];
+  const convertList: { id: number, attendanceIds: [id: number]; dog_id: number; name: string; dates: [date: string]; fullDates: [fullDate: boolean]; }[] = [];
   dogsAttendance.forEach((value, key) => convertList.push(value));
 
 
   return convertList
 }
+
+async function getUniqueAttendanceHandle(request: FastifyRequest<{Querystring: {id:number}}>, reply: FastifyReply) {
+  try{
+    return await getUniqueAttendance(request.query.id)
+  }catch(err) {
+    console.log(err)
+    reply.code(400).send('Error in get unique attendance')
+  }
+}
+
+async function getUniqueAttendance(id: number) {
+  let attendance = prisma.attendance.findUnique({
+    where: {
+      id: Number(id)
+    },
+    select: {
+      id: true,
+      paid: true,
+      fullDay: true,
+      extract: {
+        select: {
+          value: true,
+          description: true
+        }
+      },
+      day: {
+        select: {
+          date: true
+        }
+      }
+    }
+  })
+  return attendance
+}
+
 
 async function deleteAttendanceHandle(request: FastifyRequest<{Querystring: {id:number}}>, reply: FastifyReply) {
   try{

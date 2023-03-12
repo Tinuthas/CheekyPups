@@ -1,17 +1,15 @@
 import { useEffect, useMemo, useState } from "react"
 import {api, getToken} from "../lib/axios";
 import dayjs from "dayjs";
-import colors from 'tailwindcss/colors'
 import TextField from '@mui/material/TextField';
+import Avatar from '@mui/material/Avatar';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { ThemeProvider } from "@mui/material/styles";
 import { ButtonLight } from "../components/ButtonLight";
 import { Add } from '@mui/icons-material';
-import { DataGrid, GridToolbar, useGridApiContext, useGridSelector, gridPageCountSelector, gridPageSelector,} from '@mui/x-data-grid';
 import Box from '@mui/material/Box';
-import Pagination from '@mui/material/Pagination';
 import MaterialReactTable, { MRT_ColumnDef } from "material-react-table";
 import { IconButton } from "@mui/material";
 import { CreateNewModal } from "../components/CreateNewModal";
@@ -19,6 +17,7 @@ import { AxiosError } from "axios";
 import { toast } from "react-toastify";
 import MenuItemCustom from "../components/MenuItemCustom";
 import clsx from 'clsx'
+import { theme } from "../lib/theme";
 
 const HALF_DAY = 12.5
 const FULL_FAY = 17.5
@@ -33,58 +32,23 @@ type Attendances = Array<{
   paids: boolean[];
 }>
 
-export function CustomFooterStatusComponent(props: {total:number}) {
-  const apiRef = useGridApiContext();
-  const page = useGridSelector(apiRef, gridPageSelector);
-  const pageCount = useGridSelector(apiRef, gridPageCountSelector);
-  return (
-    <Box sx={{ p: 1, display: 'flex', justifyContent: 'space-between'}}>
-      <Box sx={{display: 'flex', alignItems: 'end', }}>Total Rows: {props.total}</Box>
-
-      <Pagination
-        count={pageCount}
-        page={page + 1}
-        onChange={(event, value) => apiRef.current.setPage(value - 1)}
-      />
-    </Box>
-  );
+function convertToDate(dateString: string) {
+  let d = dateString.split("/");
+  let dat = new Date(d[2] + '/' + d[1] + '/' + d[0]);
+  return dat;     
 }
 
-  const theme = createTheme({
-    palette: {
-      //mode: 'dark',
-      primary: {
-        light: colors.neutral[700],
-        //main: colors.neutral[700],
-        main:  '#FF499E',
-        dark: colors.neutral[700],
-        contrastText: colors.white,
-      },
-      secondary: {
-        light: colors.white,
-        main: '#FF499E',
-        dark: colors.neutral[700],
-        contrastText: colors.white,
-      },
-      contrastThreshold: 3,
-      tonalOffset: 0.2,
-    },
-    typography: {
-      fontFamily: [
-        'Inter',
-        //'Roboto',
-        'Avenir',
-        '"Helvetica Neue"',
-        'Arial',
-        'sans-serif'
-      ].join(','),
-    }
-  });
-
-interface AttendanceData {
-  name:string;
-  total: number;
-  paid: number;
+interface Attendance {
+  id: number;
+  paid: boolean;
+  fullDay: boolean;
+  extract: {
+    value: number,
+    description: string,
+  },
+  day: {
+    date: string,
+  }
 }
 
 
@@ -95,32 +59,124 @@ export function Attendance(){
   const [dateStart, setDateStart] = useState(dayjs().startOf('week').toDate());
   const [dateEnd, setDateEnd] = useState(dayjs().endOf('week').toDate());
   const [createModalOpen, setCreateModalOpen] = useState(false);
-  const [valueField, setValueField] = useState(HALF_DAY)
-  const [dateValueField, setDateValueField] = useState(dayjs().format('YYYY-MM-DD'));
   const [marginTable, setMarginTable] = useState(0)
-  const [openDelete, setOpenDelete] = useState(false)
 
-  console.log(marginTable)
+  const [valueField, setValueField] = useState(HALF_DAY)
+  const [valueDecriptionField, setValueDecriptionField] = useState("")
+  const [dateValueField, setDateValueField] = useState(dayjs().format('YYYY-MM-DD'));
+  const [fullDayField, setFullDayField] = useState(false);
+  const [paidField, setPaidField] = useState(false);
+  const [attendanceField, setAttedanceField] = useState<Attendance>({
+    id: 1,
+    paid: false,
+    fullDay: false,
+    extract: {
+      value: HALF_DAY,
+      description: "",
+    },
+    day: {
+      date: dayjs().format('YYYY-MM-DD'),
+    }
+  });
 
   useEffect(() => {
     clickSearchByDates()
   }, [])
 
-  function clickDateAttendance(cell:any, row: any) {
-    console.log('clicked')
-    console.log(row)
-    console.log(cell)
+  function handleEdit(item:any, row:any) {
+    var date = dayjs(convertToDate(item)).format('YYYY-MM-DD')
+    var listDates:string[] = row?.original?.dates
+    var listIds:number[] = row?.original?.attendanceIds
+  }
+
+  function getIdAttendance(item:any, row:any) {
+    var listDates:string[] = row?.original?.dates
+    var listIds:number[] = row?.original?.attendanceIds
+    return listIds[listDates.indexOf(item)]
+  }
+
+  function getAttendance(id: number) {
+    api.get<Attendance>('attendance/id', {
+      params: {
+        id,
+      }, headers: {
+          Authorization: getToken()
+      }}).then(response => {
+        var att = response.data
+        setAttedanceField(att)
+        console.log('field')
+        console.log(attendanceField)
+        setDateValueField(dayjs(att.day.date).format('YYYY-MM-DD'))
+        console.log(dateValueField)
+        setValueField(Number(att.extract.value))
+        setValueDecriptionField(att.extract.description)
+        setPaidField(att.paid)
+        setFullDayField(att.fullDay)
+      }).catch((err: AxiosError) => {
+        const data = err.response?.data as {message: string}
+        toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
+      })
   }
 
   function cellComponent(item: string) {
     var column:MRT_ColumnDef<any> = {
-      accessorKey:item, 
+      accessorKey: item, 
       header: item,
       Header: ({ column }) => <div className="w-[90px] p-0 text-center">{column.columnDef.header}</div>,
       Cell: ({ renderedCellValue, row }) => (
         <div className="w-[133.055px]">
           { renderedCellValue != null ?
-            <MenuItemCustom handleDelete={() => console.log(row)}>
+            <MenuItemCustom 
+              handleDelete={() => console.log(row)} 
+              handleEdit={() => handleEdit(item, row)}
+              id={getIdAttendance(item, row)}
+              getAttendance={(id:number) => getAttendance(id)}
+              editData={[
+                {
+                  accessorKey: 'date',
+                  label: 'Date',
+                  name: '',
+                  type: "date",
+                  value: dayjs(attendanceField.day.date).format('YYYY-MM-DD'),
+                  setValue: (value) => setDateValueField(value),
+                },
+                {
+                  accessorKey: 'fullDay',
+                  label: 'Half Day',
+                  name: 'Full Day',
+                  type: "checkbox",
+                  value: attendanceField.fullDay,
+                  setValue: (value) => setFullDayField(value),
+                  setLocalStatus: (status) => {      
+                    status === true ? setValueField(FULL_FAY) : setValueField(HALF_DAY)               
+                  }
+                },
+                {
+                  accessorKey: 'value',
+                  label: 'Value',
+                  name: '',
+                  type: "number",
+                  value: attendanceField.extract.value,
+                  setValue: (value) => setValueField(Number(value)),
+                },
+                {
+                  accessorKey: 'paid',
+                  label: 'Paid',
+                  name: 'Paid',
+                  type: "checkbox",
+                  value: attendanceField.paid,
+                  setValue: (value) => setPaidField(value),
+                },
+                {
+                  accessorKey: 'descriptionValue',
+                  label: 'Description',
+                  name: '',
+                  type: "text",
+                  value: attendanceField.extract.description,
+                  setValue: (value) => setValueDecriptionField(value),
+                }]}
+            >
+              
             { renderedCellValue?.toString().toUpperCase().includes('P') ?
               <span className="font-black text-green-600">{renderedCellValue.toString().toUpperCase().replace('P', '')}</span>
             : <span className="font-black text-stone-500">{renderedCellValue}</span>
@@ -154,9 +210,9 @@ export function Attendance(){
           listDates['total'] = 0
           listDates['paid'] = 0
           for (let i = 0; i < item.dates.length; i++) {
-
-            listDates[dayjs(item.dates[i]).format('DD/MM/YYYY')] = item.paids[i] ? (item.fullDates[i] ? 'DP' : '½DP') : item.fullDates[i] ? 'D' : '½D'
-            dates.add(dayjs(item.dates[i]).format('DD/MM/YYYY'))
+  
+            listDates[item.dates[i]] = item.paids[i] ? (item.fullDates[i] ? 'DP' : '½DP') : item.fullDates[i] ? 'D' : '½D'
+            dates.add(item.dates[i])
             listDates['total'] = listDates['total'] + 1
             listDates['paid'] = item.paids[i]? listDates['paid'] + 1 : listDates['paid']
           }
@@ -172,6 +228,18 @@ export function Attendance(){
           var base:MRT_ColumnDef<any>[] = [{ 
             accessorKey:'name', 
             header: 'Dog name',
+            Cell: ({ renderedCellValue }) => (
+              <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '1rem',
+              }}
+            >
+              <Avatar sx={{ width: 30, height: 30 }}/>
+              <span>{renderedCellValue}</span>
+            </Box>
+            )
           }, 
           {
             accessorKey:'total', 
@@ -383,17 +451,4 @@ export function Attendance(){
     </div>
   )
 }
-
-/*
-<DataGrid
-          columns={columns}
-          rows={attendances}
-          components={{
-            Toolbar: GridToolbar,
-            Footer: CustomFooterStatusComponent,
-          }}
-          componentsProps={{
-            footer: { total: attendances.length },
-          }}
-        />*/
 

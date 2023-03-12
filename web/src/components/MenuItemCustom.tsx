@@ -5,23 +5,28 @@ import Paper from '@mui/material/Paper';
 import Popper from '@mui/material/Popper';
 import MenuItem from '@mui/material/MenuItem';
 import MenuList from '@mui/material/MenuList';
-import Stack from '@mui/material/Stack';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import PaidIcon from '@mui/icons-material/Paid';
 import React from 'react';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemIcon from '@mui/material/ListItemIcon';
-import { DeleteModal } from './DeleteModel';
+import { DeleteModal } from './DeleteModal';
+import { ColumnHeader, EditNewModal } from './EditModal';
 
 interface MenuItemProps {
   children: JSX.Element | JSX.Element[];
-  handleDelete: () => void
+  handleDelete: () => void,
+  handleEdit: () => void,
+  id: number,
+  getAttendance: (id:number) => void,
+  editData: ColumnHeader[],
 }
 
-export default function MenuItemCustom({children, handleDelete}: MenuItemProps) {
+export default function MenuItemCustom({children, handleDelete, handleEdit, editData, id, getAttendance}: MenuItemProps) {
   const [open, setOpen] = React.useState(false);
   const [openDelete, setOpenDelete] = React.useState(false);
+  const [openEdit, setOpenEdit] = React.useState(false);
   const anchorRef = React.useRef<HTMLButtonElement>(null);
 
   const handleToggle = () => {
@@ -46,6 +51,14 @@ export default function MenuItemCustom({children, handleDelete}: MenuItemProps) 
   const handleDeleteClose = (event: Event | React.SyntheticEvent) => {
     setOpenDelete(false)
     handleDelete()
+  }
+  const handleEditOpen = (event: Event | React.SyntheticEvent) => {
+    setOpenEdit(true)
+    handleClose(event)
+  }
+  const handleEditClose = (event: Event | React.SyntheticEvent) => {
+    setOpenDelete(false)
+    handleEdit()
   }
 
   function handleListKeyDown(event: React.KeyboardEvent) {
@@ -104,7 +117,7 @@ export default function MenuItemCustom({children, handleDelete}: MenuItemProps) 
                   onKeyDown={handleListKeyDown}
                   
                 >
-                  <MenuItem onClick={handleClose}>
+                  <MenuItem onClick={handleEditOpen}>
                     <ListItemIcon>
                     <EditIcon fontSize="small" />
                     </ListItemIcon>
@@ -133,6 +146,16 @@ export default function MenuItemCustom({children, handleDelete}: MenuItemProps) 
           open={openDelete}
           onClose={() => setOpenDelete(false)}
           onSubmit={handleDeleteClose}
+        /> : null
+      }
+      {
+        openEdit ? 
+        <EditNewModal 
+          columns={editData}
+          open={openEdit}
+          onClose={() => setOpenEdit(false)}
+          onSubmit={handleEditClose}
+          callInit={() => getAttendance(id)}
         /> : null
       }
     </div>

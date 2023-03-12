@@ -1,40 +1,15 @@
+import { Avatar, Box } from '@mui/material';
 import { DataGrid, GridRowsProp, GridColDef } from '@mui/x-data-grid';
 import { AxiosError } from 'axios';
 import dayjs from 'dayjs';
+import { MRT_ColumnDef } from 'material-react-table';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { AvatarModal, downloadAvatar } from '../components/AvatarProfile';
 import { ButtonLight } from '../components/ButtonLight';
 import DataTableCustom from '../components/DataTableCustom';
 import { api, getToken } from '../lib/axios';
-
-const headers = [
-  {
-    accessorKey: 'name',
-    header: 'Name',
-  },
-  {
-    accessorKey: 'owner',
-    header: 'Owner',
-    enableEditing: false,
-  },
-  {
-    accessorKey: 'birthdayDate',
-    header: 'Birthday',
-  },
-  {
-    accessorKey: 'gender',
-    header: 'Gender',
-  },
-  {
-    accessorKey: 'colour',
-    header: 'Colour',
-  },
-  {
-    accessorKey: 'breed',
-    header: 'Breed'
-  }
-]
 
 const hideColumns = { owner: false }
 
@@ -102,6 +77,64 @@ const columnHeaders = [
 export function Dogs(){
 
   const [dogs, setDogs] = useState([{}])
+  const [openAvatar, setOpenAvatar] = useState(false)
+  const [openIndex, setOpenIndex] = useState(-1);
+
+  const headers:MRT_ColumnDef<any>[] = [
+    {
+      accessorKey: 'name',
+      header: 'Name',
+      Cell: ({ renderedCellValue, row }) => (
+        <>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '1rem',
+          }}
+        > 
+          <span className="cursor-pointer" onClick={() => {{
+                setOpenAvatar(true)
+                setOpenIndex(row.original.id)
+          }}} >
+            <Avatar sx={{ width: 30, height: 30 }} src={"https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/profile%2F1_einstein.jpg?alt=media&token=58c2136b-7ada-4024-815d-21588b96b501"}/>
+          </span>
+          <span>{renderedCellValue}</span>
+        </Box>
+        {row.original.id == openIndex && openAvatar ? 
+            <AvatarModal 
+              open={openAvatar}
+              onClose={() => setOpenAvatar(false)}
+              onSubmit={(value) => console.log(value)}
+              nameFile={row.original.id+"_"+row.original.name.toLowerCase() ?? ""}
+            />
+            : null
+          }
+        </>
+      )
+    },
+    {
+      accessorKey: 'owner',
+      header: 'Owner',
+      enableEditing: false,
+    },
+    {
+      accessorKey: 'birthdayDate',
+      header: 'Birthday',
+    },
+    {
+      accessorKey: 'gender',
+      header: 'Gender',
+    },
+    {
+      accessorKey: 'colour',
+      header: 'Colour',
+    },
+    {
+      accessorKey: 'breed',
+      header: 'Breed'
+    }
+  ]
 
   useEffect(() => {
     api.get('dogs', {

@@ -5,7 +5,7 @@ import colors from 'tailwindcss/colors';
 import { Delete, Edit, Add } from '@mui/icons-material';
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { ColumnHeader, CreateNewModal } from './CreateNewModal';
-import { DeleteModal } from './DeleteModel';
+import { DeleteModal } from './DeleteModal';
 
 const theme = createTheme({
   palette: {

@@ -18,6 +18,7 @@ model Dog {
   gender       String?
   colour       String?
   breed        String
+  avatarUrl    String?
   daysDog      Attendance[]
   vaccines     Vaccine[]
   Owner        Owner        @relation(fields: [ownerId], references: [id])

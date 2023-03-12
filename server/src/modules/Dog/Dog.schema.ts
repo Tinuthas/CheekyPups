@@ -49,6 +49,10 @@ const updateDogBody = z.object({
   ...dogBase,
 })
 
+const updateDogProfileBody = z.object({
+  avatarUrl: z.string().nullable()
+})
+
 const filterDogName = z.object({
   name: z.string(),
 })
@@ -58,6 +62,7 @@ export type DogInput = z.infer<typeof createDogBody>
 export type DogOwnerInput = z.infer<typeof createOwnerDogBody>
 export type UpdateDogInput = z.infer<typeof updateDogBody>
 export type FilterDogInput = z.infer<typeof filterDogName>
+export type DogProfileInput = z.infer<typeof updateDogProfileBody>
 
 export const {schemas: dogSchemas, $ref} = buildJsonSchemas({
   updateDogId,
@@ -66,4 +71,5 @@ export const {schemas: dogSchemas, $ref} = buildJsonSchemas({
   createDogVaccineBody,
   createDogBody,
   updateDogBody,
+  updateDogProfileBody,
 }, { $id: "DogSchemas" })
