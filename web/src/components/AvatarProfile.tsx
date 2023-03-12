@@ -4,6 +4,7 @@ import { theme } from "../lib/theme";
 import Resizer from "react-image-file-resizer";
 import { storage } from "../lib/firebase";
 import { toast } from 'react-toastify';
+import { api, getToken } from '../lib/axios';
 import { getDownloadURL, ref, uploadBytes } from "@firebase/storage";
 
 
@@ -12,25 +13,29 @@ interface AvatarModalProps {
   onSubmit: (value: any) => void;
   open: boolean;
   nameFile: string;
+  avatarUrl: string | null;
+  name: string;
+  id: number;
 }
 
 const resizeFile = (file:File)=>
   new Promise(resolve => {
-    Resizer.imageFileResizer(file, 300, 300, "JPEG", 100, 0, uri => {
+    Resizer.imageFileResizer(file, 300, 300, "JPEG", 75, 0, uri => {
       resolve(uri)
-    });
+    }, "file", 100, 100);
 });
 
 export const downloadAvatar = (fileName: string) => {
   var url = `gs://cheekypups-42685.appspot.com/profile/${fileName}.jpg`
   const gsReference = ref(storage, url);
-  getDownloadURL(gsReference).then(url => {
-    console.log(url)
-    return url
-    // Insert url into an <img> tag to "download"
-  }).catch(error => {
-    console.log(error)
-    return null
+  return new Promise(resolve => {
+    getDownloadURL(gsReference).then(url => {
+      console.log(url)
+      resolve(url)
+      // Insert url into an <img> tag to "download"
+    }).catch(error => {
+      throw new Error(`Error download avatar image`);
+    })
   })
 }
 
@@ -38,37 +43,58 @@ export const AvatarModal = ({
   open,
   onClose,
   onSubmit,
-  nameFile
+  nameFile,
+  avatarUrl,
+  name,
+  id
 }: AvatarModalProps) => {
 
   const [image, setImage] = useState<any | null>(null)
-  const [url, setUrl] = useState<any | null>(null)
+  const [url, setUrl] = useState<any | null>(avatarUrl)
 
   function handleChange(selectorFiles: FileList | null){
     if(selectorFiles != null) {
       setUrl(URL.createObjectURL(selectorFiles[0]))
-      setImage(selectorFiles[0])
-      /*resizeFile(selectorFiles[0]).then(resolve => {
+      resizeFile(selectorFiles[0]).then(resolve => {
         setImage(resolve)
-        setUrl(resolve)
       }).catch(error => {
         console.log(error)
-      })*/
+        toast.error(`Error resize image`, { position: "top-center", autoClose: 5000, })
+      })
     }
   }
 
   function handleSubmit() {
     const storageRef = ref(storage, `profile/${nameFile}.jpg`);
-    console.log(storageRef)
     const metadata = {
       contentType: 'image/jpeg',
     };
     // Upload the file and metadata
     const uploadTask = uploadBytes(storageRef, image, metadata).then(resolve => {
-      console.log(resolve)
-      setUrl(downloadAvatar(nameFile))
-      toast.success(`Updated image: ${nameFile}.jpg`, { position: "top-center", autoClose: 1000, })
-      
+      downloadAvatar(nameFile).then(resolveDownload => {
+        console.log('call api')
+        var avatar = { avatarUrl: resolveDownload }
+        api.put('dogs/profile', avatar, {
+          params: {
+            id: Number(id)
+          },
+          headers: {
+            Authorization: getToken()
+          }
+        }).then(resolve => {
+          console.log('return api')
+          onSubmit(avatar)
+          toast.success(`Updated image: ${nameFile}.jpg`, { position: "top-center", autoClose: 1000, })
+        }).catch(error => {
+          console.log(error)
+          toast.error(`Error in save avatar profile`, { position: "top-center", autoClose: 5000, })
+          onClose()
+        })
+      }).catch(error => {
+        console.log(error)
+        toast.error(`Error in upload image`, { position: "top-center", autoClose: 5000, })
+        onClose()
+      })
     }).catch(error => {
       console.log(error)
       toast.error(`Error in upload image`, { position: "top-center", autoClose: 5000, })
@@ -91,7 +117,7 @@ export const AvatarModal = ({
         },
       }}>
       <DialogTitle id="responsive-dialog-title">
-        {"Profile"}
+        {`Profile ${name}`}
       </DialogTitle>
       <DialogContent>
           <Box className="flex w-full flex-col items-center">

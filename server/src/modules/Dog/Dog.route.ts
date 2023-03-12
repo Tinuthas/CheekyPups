@@ -75,8 +75,8 @@ async function getAllDogs() {
     },
   })
 
-  const filterDogs = dogs.map(({ id, name, birthdayDate, gender, colour, breed, ownerId, Owner }) => 
-  ({ id, name, birthdayDate, gender, colour, breed, ownerId, owner: Owner.name }));
+  const filterDogs = dogs.map(({ id, name, birthdayDate, gender, colour, breed, avatarUrl, ownerId, Owner }) => 
+  ({ id, name, birthdayDate, gender, colour, breed, avatarUrl, ownerId, owner: Owner.name }));
 
   return filterDogs
 }

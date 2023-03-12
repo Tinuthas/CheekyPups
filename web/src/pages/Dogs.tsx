@@ -80,33 +80,53 @@ export function Dogs(){
   const [openAvatar, setOpenAvatar] = useState(false)
   const [openIndex, setOpenIndex] = useState(-1);
 
+  function getAllDogs() {
+    api.get('dogs', {
+      headers: {
+        Authorization: getToken()
+      }
+    }).then(response =>{
+      var data = response.data
+      var listData = JSON.parse(JSON.stringify(data));
+      for(const i in listData) {
+        listData[i].birthdayDate = dayjs(listData[i].birthdayDate).format('DD/MM/YYYY')
+        delete listData[i].ownerId;
+      }
+      setDogs(listData)
+    }).catch((err: AxiosError) => {
+      const data = err.response?.data as {message: string}
+      toast.error(`Unidentified error: ${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
+      return 
+    })
+  }
+
   const headers:MRT_ColumnDef<any>[] = [
     {
       accessorKey: 'name',
       header: 'Name',
       Cell: ({ renderedCellValue, row }) => (
         <>
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '1rem',
-          }}
-        > 
-          <span className="cursor-pointer" onClick={() => {{
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: '1rem',}}> 
+          <span className="cursor-pointer" onClick={() => {
                 setOpenAvatar(true)
                 setOpenIndex(row.original.id)
-          }}} >
-            <Avatar sx={{ width: 30, height: 30 }} src={"https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/profile%2F1_einstein.jpg?alt=media&token=58c2136b-7ada-4024-815d-21588b96b501"}/>
+          }}>
+            <Avatar sx={{ width: 30, height: 30 }} src={row.original.avatarUrl} />
           </span>
           <span>{renderedCellValue}</span>
         </Box>
-        {row.original.id == openIndex && openAvatar ? 
+          {row.original.id == openIndex && openAvatar ? 
             <AvatarModal 
               open={openAvatar}
               onClose={() => setOpenAvatar(false)}
-              onSubmit={(value) => console.log(value)}
+              onSubmit={(value) => {
+                getAllDogs()
+                setOpenAvatar(false)
+              }}
               nameFile={row.original.id+"_"+row.original.name.toLowerCase() ?? ""}
+              avatarUrl={row.original.avatarUrl}
+              name={row.original.name}
+              id={Number(row.original.id)}
             />
             : null
           }
@@ -137,24 +157,8 @@ export function Dogs(){
   ]
 
   useEffect(() => {
-    api.get('dogs', {
-      headers: {
-        Authorization: getToken()
-      }
-    }).then(response =>{
-      var data = response.data
-      var listData = JSON.parse(JSON.stringify(data));
-      for(const i in listData) {
-        listData[i].birthdayDate = dayjs(listData[i].birthdayDate).format('DD/MM/YYYY')
-        delete listData[i].ownerId;
-      }
-      setDogs(listData)
-    }).catch((err: AxiosError) => {
-      const data = err.response?.data as {message: string}
-      toast.error(`Unidentified error: ${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
-      return 
-    })
-  }, [])
+    getAllDogs()
+  }, [dogs])
 
   function updateDataRow(data: any) {
     const cloneData = JSON.parse(JSON.stringify(data))

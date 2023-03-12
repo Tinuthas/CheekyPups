@@ -18,6 +18,7 @@ import { toast } from "react-toastify";
 import MenuItemCustom from "../components/MenuItemCustom";
 import clsx from 'clsx'
 import { theme } from "../lib/theme";
+import { AvatarModal } from "../components/AvatarProfile";
 
 const HALF_DAY = 12.5
 const FULL_FAY = 17.5
@@ -60,8 +61,10 @@ export function Attendance(){
   const [dateEnd, setDateEnd] = useState(dayjs().endOf('week').toDate());
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [marginTable, setMarginTable] = useState(0)
+  const [openIndex, setOpenIndex] = useState(-1)
+  const [openAvatar, setOpenAvatar] = useState(false)
 
-  const [valueField, setValueField] = useState(HALF_DAY)
+  /*const [valueField, setValueField] = useState(HALF_DAY)
   const [valueDecriptionField, setValueDecriptionField] = useState("")
   const [dateValueField, setDateValueField] = useState(dayjs().format('YYYY-MM-DD'));
   const [fullDayField, setFullDayField] = useState(false);
@@ -77,7 +80,7 @@ export function Attendance(){
     day: {
       date: dayjs().format('YYYY-MM-DD'),
     }
-  });
+  });*/
 
   useEffect(() => {
     clickSearchByDates()
@@ -102,7 +105,7 @@ export function Attendance(){
       }, headers: {
           Authorization: getToken()
       }}).then(response => {
-        var att = response.data
+        /*var att = response.data
         setAttedanceField(att)
         console.log('field')
         console.log(attendanceField)
@@ -111,7 +114,7 @@ export function Attendance(){
         setValueField(Number(att.extract.value))
         setValueDecriptionField(att.extract.description)
         setPaidField(att.paid)
-        setFullDayField(att.fullDay)
+        setFullDayField(att.fullDay)*/
       }).catch((err: AxiosError) => {
         const data = err.response?.data as {message: string}
         toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
@@ -137,43 +140,43 @@ export function Attendance(){
                   label: 'Date',
                   name: '',
                   type: "date",
-                  value: dayjs(attendanceField.day.date).format('YYYY-MM-DD'),
-                  setValue: (value) => setDateValueField(value),
+                  //value: dayjs(attendanceField.day.date).format('YYYY-MM-DD'),
+                  //setValue: (value) => setDateValueField(value),
                 },
                 {
                   accessorKey: 'fullDay',
                   label: 'Half Day',
                   name: 'Full Day',
                   type: "checkbox",
-                  value: attendanceField.fullDay,
+                  /*value: attendanceField.fullDay,
                   setValue: (value) => setFullDayField(value),
                   setLocalStatus: (status) => {      
                     status === true ? setValueField(FULL_FAY) : setValueField(HALF_DAY)               
-                  }
+                  }*/
                 },
                 {
                   accessorKey: 'value',
                   label: 'Value',
                   name: '',
                   type: "number",
-                  value: attendanceField.extract.value,
-                  setValue: (value) => setValueField(Number(value)),
+                  /*value: attendanceField.extract.value,
+                  setValue: (value) => setValueField(Number(value)),*/
                 },
                 {
                   accessorKey: 'paid',
                   label: 'Paid',
                   name: 'Paid',
                   type: "checkbox",
-                  value: attendanceField.paid,
-                  setValue: (value) => setPaidField(value),
+                  /*value: attendanceField.paid,
+                  setValue: (value) => setPaidField(value),*/
                 },
                 {
                   accessorKey: 'descriptionValue',
                   label: 'Description',
                   name: '',
                   type: "text",
-                  value: attendanceField.extract.description,
-                  setValue: (value) => setValueDecriptionField(value),
+                  /*value: attendanceField.extract.description,
+                  setValue: (value) => setValueDecriptionField(value),*/
                 }]}
             >
               
@@ -228,17 +231,34 @@ export function Attendance(){
           var base:MRT_ColumnDef<any>[] = [{ 
             accessorKey:'name', 
             header: 'Dog name',
-            Cell: ({ renderedCellValue }) => (
-              <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '1rem',
-              }}
-            >
-              <Avatar sx={{ width: 30, height: 30 }}/>
-              <span>{renderedCellValue}</span>
-            </Box>
+            Cell: ({ renderedCellValue, row }) => (
+              <>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: '1rem', }}>
+                  <span className="cursor-pointer" onClick={() => {
+                    console.log(row)
+                    setOpenAvatar(true)
+                    setOpenIndex(row.original.dog_id)
+                  }}>
+                    <Avatar sx={{ width: 30, height: 30 }} src={row.original.avatarUrl}  />
+                  </span>
+                  <span>{renderedCellValue}</span>
+                </Box>
+                {row.original.dog_id == openIndex && openAvatar ? 
+                  <AvatarModal 
+                    open={openAvatar}
+                    onClose={() => setOpenAvatar(false)}
+                    onSubmit={(value) => {
+                      clickSearchByDates()
+                      setOpenAvatar(false)
+                    }}
+                    nameFile={row.original.dog_id+"_"+row.original.name.toLowerCase() ?? ""}
+                    avatarUrl={row.original.avatarUrl}
+                    name={row.original.name}
+                    id={Number(row.original.dog_id)}
+                  />
+                : null
+                }
+              </>
             )
           }, 
           {
@@ -351,7 +371,7 @@ export function Attendance(){
               <Box sx={{ fontSize: 16, fontWeight: 'medium', paddingTop: 0, paddingLeft: 1 }}>
                 {"Attendances"}
                 <IconButton onClick={() => {
-                    setValueField(HALF_DAY)
+                    //setValueField(HALF_DAY)
                     setCreateModalOpen(true)
                   }}>
                   <Add />
@@ -407,25 +427,25 @@ export function Attendance(){
                   label: 'Date',
                   name: '',
                   type: "date",
-                  value: dateValueField,
-                  setValue: (value) => setDateValueField(value),
+                  /*value: dateValueField,
+                  setValue: (value) => setDateValueField(value),*/
                 },
                 {
                   accessorKey: 'fullDay',
                   label: 'Half Day',
                   name: 'Full Day',
                   type: "checkbox",
-                  setLocalStatus: (status) => {      
+                  /*setLocalStatus: (status) => {      
                     status === true ? setValueField(FULL_FAY) : setValueField(HALF_DAY)               
-                  }
+                  }*/
                 },
                 {
                   accessorKey: 'value',
                   label: 'Value',
                   name: '',
                   type: "number",
-                  value: valueField,
-                  setValue: (value) => setValueField(Number(value)),
+                  /*value: valueField,
+                  setValue: (value) => setValueField(Number(value)),*/
                 },
                 {
                   accessorKey: 'paid',
