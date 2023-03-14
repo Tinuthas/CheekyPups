@@ -1,43 +1,81 @@
 import { AxiosError } from "axios"
+import { MRT_ColumnDef } from "material-react-table"
 import { useEffect, useState } from "react"
 import { toast } from "react-toastify"
-import { ButtonLight } from "../components/ButtonLight"
 import DataTableCustom from "../components/DataTableCustom"
+import { DialogListModal } from "../components/DialogListModal"
 import { api, getToken } from "../lib/axios"
 
 
-const headers = [
-  {
-    accessorKey: 'name',
-    header: 'Name',
-    size: 150,
-  },
-  {
-    accessorKey: 'emailAddress',
-    header: 'Email',
-  },
-  {
-    accessorKey: 'phoneOne',
-    header: 'Phone',
-    size: 100,
-  },
-  {
-    accessorKey: 'phoneTwo',
-    header: 'Phone 2',
-    size: 100,
-  }, 
-  {
-    accessorKey: 'address',
-    header: 'Address'
-  }
-]
 
 export function Payments(){
 
   const [payments, setPayments] = useState([{}])
+  const [extracts, setExtracts] = useState([{}])
+  const [openIndex, setOpenIndex] = useState(-1)
+  const [openListModal, setOpenListModal] = useState(false)
+
+  const headersExtracts:MRT_ColumnDef<any>[] = [
+    {
+      accessorKey: 'name',
+      header: 'Name',
+      size: 150,
+    }
+  ]
+
+  const headers:MRT_ColumnDef<any>[] = [
+    {
+      accessorKey: 'name',
+      header: 'Name',
+      size: 150,
+    },
+    {
+      accessorKey: 'extracts',
+      header: 'Count',
+      size: 80,
+      Cell: ({ renderedCellValue, row }) => (
+        <>
+          <div className="w-full cursor-pointer" onClick={() => {
+            setOpenListModal(true)
+            setOpenIndex(row.original.id)
+          }}>
+            <span>{renderedCellValue}</span>
+          </div>
+          {row.original.id == openIndex && openListModal ? 
+            <DialogListModal 
+              open={openListModal}
+              onClose={() => setOpenListModal(false)}
+              onSubmit={() => console.log('submit')}
+              name={row.original.name}
+              callInit={() => console.log('cal init')}
+              data={extracts}
+              setData={setExtracts}
+              headers={headersExtracts}
+            />
+          : null
+          }
+        </>
+       
+      )
+    },
+    {
+      accessorKey: 'total',
+      header: 'Total Valor',
+      size: 80,
+      Cell: ({ renderedCellValue, row }) => (
+        <>
+          { row.original.total > 0 || row.original.total < 0 ?
+            <span className="text-red-600 font-medium">{renderedCellValue}</span>
+          :
+            <span className="text-green-600 font-medium">{renderedCellValue}</span>
+          }
+        </>
+      )
+    },
+  ]
 
   useEffect(() => {
-    api.get('owners', {
+    api.get('payment', {
       headers: {
         Authorization: getToken()
       }
@@ -45,9 +83,6 @@ export function Payments(){
       console.log(response.data)
       var data = response.data
       var listData = JSON.parse(JSON.stringify(data));
-      /*for(const i in listData) {
-        delete listData[i].phoneTwo;
-      }*/
       setPayments(listData)
     }).catch((err: AxiosError) => {
       console.log(err)
@@ -57,10 +92,6 @@ export function Payments(){
       return 
     })
   }, [])
-
-  function newPayment() {
-
-  }
 
   function updateDataRow(data: object) {
     console.log(data)
@@ -82,13 +113,10 @@ export function Payments(){
 
   return (
     <div className="md:p-10 pt-4 h-full flex flex-col items-center">
-      <h1 className="font-semibold text-3xl md:text-4xl text-white">Payments List</h1>
-      <div className="md:flex bg-white w-full p-4 md:p-8 mt-4 rounded">
-        <ButtonLight text="Add New Payments" onClick={newPayment}/>
-      </div>
+      <h1 className="font-medium text-3xl md:text-4xl text-white">Payments</h1>
       
       <div className="md:flex bg-white w-full mt-4 rounded">
-        <DataTableCustom headers={headers} data={payments} setData={(data) => setPayments(data)} title="Payments" updateRow={(data) => updateDataRow(data)}/>
+        <DataTableCustom headers={headers} data={payments} setData={(data) => setPayments(data)} title="Payments" />
       </div>
     </div>
   )

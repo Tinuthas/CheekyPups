@@ -1,3 +1,4 @@
+import { Decimal } from "@prisma/client/runtime";
 import dayjs from "dayjs";
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { prisma } from "../../lib/prisma";
@@ -12,7 +13,7 @@ export async function paymentRoutes(app: FastifyInstance) {
     preHandler: [app.authenticate]
   }, ownerPayHandle)
   
-  app.get('/', {preHandler: [app.authenticate]}, getAllOwners)
+  app.get('/', {preHandler: [app.authenticate]}, getAllPayments)
 
   app.get('/total', {
     preHandler: [app.authenticate]
@@ -27,8 +28,57 @@ export async function paymentRoutes(app: FastifyInstance) {
   
 }
 
-async function getAllOwners() {
-  return await prisma.owner.findMany()
+async function getAllPayments(request: FastifyRequest, reply: FastifyReply) {
+  try{
+    /*const payments = await prisma.owner.findMany({
+      where: {
+        extracts: { some: {} }
+      },
+      select: {
+        id: true,
+        name: true,
+      }
+    })*/
+
+    const pays = await prisma.extract.groupBy({
+      by: ['ownerId'],
+      _count: {
+        id: true,
+      },
+      _sum: {
+        value: true,
+      },
+      orderBy: {
+        _sum: {
+          value: 'desc',
+        },
+      },
+    })
+
+    let ids = pays.map((obj) => obj.ownerId);
+    
+    const payments = await prisma.owner.findMany({
+      where: {
+        id: {
+          in: ids,
+        },
+      },
+    })
+
+    var listPayments: { id: number; name: string; extracts: number; total: Decimal | null; }[] = []
+    payments.forEach((element, index) => {
+      listPayments.push({
+        id: element.id,
+        name: element.name,
+        extracts: pays[index]._count.id,
+        total: pays[index]._sum.value
+      })
+    })
+
+    return listPayments
+  }catch(err) {
+    reply.code(400).send('Error in get the total by other')
+  }
 }
 
 async function getTotalHandle(request: FastifyRequest<{Querystring: TotalOwnerInput}>, reply: FastifyReply) {

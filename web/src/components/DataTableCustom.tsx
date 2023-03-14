@@ -123,11 +123,14 @@ const DataTableCustom = ({headers, data, setData, createData, title, updateRow, 
         }}
         renderRowActions={({ row, table }) => (
           <Box sx={{ display: 'flex', gap: '1rem', width: 100, maxWidth: 100, }}>
-            <Tooltip arrow placement="left" title="Edit">
-              <IconButton onClick={() => table.setEditingRow(row)}>
-                <Edit />
-              </IconButton>
-            </Tooltip>
+            {updateRow != undefined ?
+              <Tooltip arrow placement="left" title="Edit">
+                <IconButton onClick={() => table.setEditingRow(row)}>
+                  <Edit />
+                </IconButton>
+              </Tooltip>
+            :null}
+            {deleteRow != undefined ?
             <Tooltip arrow placement="right" title="Delete">
               <IconButton color="error" onClick={() => {
                 setOpen(true)
@@ -136,6 +139,7 @@ const DataTableCustom = ({headers, data, setData, createData, title, updateRow, 
                 <Delete />
               </IconButton>
             </Tooltip>
+            :null}
             {
               openIndex == row.index && open && (
                 <DeleteModal 

@@ -23,18 +23,24 @@ export function NavBar() {
         name: "Attendance", path: "Attendance",
       },
       {
-        name: "Dogs", path: "Dogs",
-      },
-      {
-        name: "Owners", path: "Owners",
-      },
-      {
         name: "Payments", path: "Payments",
       },
-      {
-        name: "Vaccines", path: "Vaccines",
-      }]
-    },
+      ]},
+      { name: "Manager", 
+        links: [
+          {
+            name: "Dogs", path: "Dogs",
+          },
+          {
+            name: "Owners", path: "Owners",
+          },
+          {
+            name: "Vaccines", path: "Vaccines",
+          }
+        ]
+      }
+      
+    
     /*{
       name: "Manager", links: [
         {

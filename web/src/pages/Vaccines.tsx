@@ -1,11 +1,32 @@
 import { AxiosError } from "axios";
 import dayjs from "dayjs";
+import { MRT_ColumnDef } from "material-react-table";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import DataTableCustom from "../components/DataTableCustom";
 import { api, getToken } from "../lib/axios";
 
-const headers = [
+function convertToDate(dateString: string) {
+  console.log(dateString)
+  let d = dateString.split("/");
+  let dat = new Date(d[2] + '/' + d[1] + '/' + d[0]);
+  return dat;     
+}
+
+const nowDate = new Date()
+
+function checkDateVaccine(date: string) {
+  if(date == undefined) return false
+  try{
+    var dateConv = convertToDate(date)
+    return dateConv < nowDate
+  }catch(e) {
+    console.log(e)
+    return false
+  }
+}
+
+const headers:MRT_ColumnDef<any>[] = [
   {
     accessorKey: 'dog',
     header: 'Dog',
@@ -14,6 +35,15 @@ const headers = [
   {
     accessorKey: 'dateVaccine',
     header: 'Date Expiration',
+    Cell: ({ renderedCellValue, row }) => (
+      <>
+        { checkDateVaccine(row.original.dateVaccine) ?
+          <span className="text-red-600 font-medium">{renderedCellValue}</span>
+        :
+          <span className="text-green-600 font-medium">{renderedCellValue}</span>
+        }
+      </>
+    )
   },
   {
     accessorKey: 'type',
@@ -75,8 +105,7 @@ export function Vaccines(){
       var data = response.data
       var listData = JSON.parse(JSON.stringify(data));
       for(const i in listData) {
-        listData[i].dateVaccine = dayjs(listData[i].birthdayDate).format('DD/MM/YYYY')
-        delete listData[i].ownerId;
+        listData[i].dateVaccine = dayjs(listData[i].dateVaccine).format('DD/MM/YYYY')
       }
       setVaccines(listData)
     }).catch((err: AxiosError) => {
@@ -113,8 +142,6 @@ export function Vaccines(){
   }
 
   function deleteDataRow(id: number) {
-    console.log('delete id')
-    console.log(id)
     const promise = new Promise((resolve, reject) => {
       api.delete('vaccine', {
         params: {
