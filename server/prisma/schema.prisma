@@ -14,6 +14,7 @@ datasource db {
 model Dog {
   id           Int          @id @default(autoincrement())
   name         String
+  surname      String?
   birthdayDate DateTime?
   gender       String?
   colour       String?

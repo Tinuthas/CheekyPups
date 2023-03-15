@@ -11,6 +11,8 @@ interface ListModalProps {
   data: any[];
   setData: (data:object[]) => void,
   headers: object[],
+  deleteRow?:(id:number) => Promise<any>,
+  updateRow?:(data:object) => Promise<any>,
 }
 
 export const DialogListModal = ({
@@ -21,7 +23,9 @@ export const DialogListModal = ({
   callInit,
   data, 
   setData,
-  headers
+  headers,
+  deleteRow,
+  updateRow
 }: ListModalProps) => {
 
   useEffect(() => {
@@ -46,7 +50,13 @@ export const DialogListModal = ({
       </DialogTitle>
       <DialogContent>
         <div className="md:flex bg-white w-full mt-4 rounded">
-          <DataTableCustom headers={headers} data={data} setData={(data) => setData(data)} title={name} />
+          <DataTableCustom 
+          headers={headers} 
+          data={data} 
+          setData={(data) => setData(data)} 
+          title={name}
+          deleteRow={deleteRow}
+          updateRow={updateRow} />
         </div>
       </DialogContent>
     <DialogActions>

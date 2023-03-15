@@ -156,11 +156,12 @@ const DataTableCustom = ({headers, data, setData, createData, title, updateRow, 
           <>
             <Box sx={{ fontSize: 16, fontWeight: 'medium', paddingTop: 0, paddingLeft: 1 }}>
               {title}
-              <IconButton onClick={() => setCreateModalOpen(true)}>
-                <Add />
-              </IconButton>
+              {createRow != null ?
+                <IconButton onClick={() => setCreateModalOpen(true)}>
+                  <Add />
+                </IconButton>
+               :null}
             </Box>
-            
           </>
           
         )}

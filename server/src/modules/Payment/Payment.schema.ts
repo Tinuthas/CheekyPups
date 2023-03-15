@@ -24,13 +24,23 @@ const totalOwnerResponse = z.object({
   total: z.string()
 })
 
-export type TotalOwnerInput = z.infer<typeof totalOwnerSchema>
+const updatePaymentBody = z.object({
+  ...payBody,
+})
 
+const updatePaymentId = z.object({
+  id: z.number()
+})
+
+export type TotalOwnerInput = z.infer<typeof totalOwnerSchema>
 export type PayOwnerInput = z.infer<typeof createPayBody>
+export type UpdatePaymentInput = z.infer<typeof updatePaymentBody>
 
 export const {schemas: paymentSchemas, $ref} = buildJsonSchemas({
   createPayBody,
   payResponseSchema,
   totalOwnerSchema,
-  totalOwnerResponse
+  totalOwnerResponse,
+  updatePaymentBody,
+  updatePaymentId
 }, { $id: "PaymentSchemas" })

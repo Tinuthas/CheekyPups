@@ -2,18 +2,34 @@ import { Decimal } from "@prisma/client/runtime";
 import dayjs from "dayjs";
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { prisma } from "../../lib/prisma";
-import { $ref, PayOwnerInput, TotalOwnerInput } from "./Payment.schema";
+import { $ref, PayOwnerInput, TotalOwnerInput, UpdatePaymentInput } from "./Payment.schema";
 
 export async function paymentRoutes(app: FastifyInstance) {
 
   app.post('/',{
     schema: {
-      body: $ref('totalOwnerSchema'),
+      body: $ref('createPayBody'),
     },
     preHandler: [app.authenticate]
   }, ownerPayHandle)
+
+  app.put('/',{
+    schema: {
+      body: $ref('updatePaymentBody'),
+      querystring: $ref('updatePaymentId'),
+    },
+    preHandler: [app.authenticate]
+  }, updatePaymentHandle)
   
   app.get('/', {preHandler: [app.authenticate]}, getAllPayments)
+
+  app.get('/extracts', {
+    schema: {
+      params: {
+        id: { type: 'number' },
+      },
+    }
+  }, getAllExtractByOwner)
 
   app.get('/total', {
     preHandler: [app.authenticate]
@@ -25,11 +41,20 @@ export async function paymentRoutes(app: FastifyInstance) {
       response: { 200: $ref('payResponseSchema') }
     },
     preHandler: [app.authenticate]}, ownerPayHandle)
+
+  app.delete('/', {
+    schema: {
+      params: {
+        id: { type: 'number' },
+      },
+    }
+  }, deletePaymentHandle)
   
 }
 
 async function getAllPayments(request: FastifyRequest, reply: FastifyReply) {
   try{
+    //return ""
     /*const payments = await prisma.owner.findMany({
       where: {
         extracts: { some: {} }
@@ -75,9 +100,34 @@ async function getAllPayments(request: FastifyRequest, reply: FastifyReply) {
       })
     })
 
+    console.log("")
     return listPayments
   }catch(err) {
     reply.code(400).send('Error in get the total by other')
+  }
+}
+
+async function getAllExtractByOwner(request: FastifyRequest<{Querystring: {id:number}}>, reply: FastifyReply) {
+  try{
+    const extracts = await prisma.extract.findMany({
+      where: {
+        ownerId: Number(request.query.id)
+      },
+      orderBy: {
+        date: 'desc'
+      }
+    })
+
+    const filterExtracts = extracts.map(({ id, description, value, date, attendanceId}) => ({ 
+      id,
+      description, 
+      value, 
+      date: dayjs(date).format('DD/MM/YYYY HH:mm'), 
+      attendanceId,
+    }));
+    return filterExtracts
+  }catch(err) {
+    reply.code(400).send('Error in get extracts from the owner')
   }
 }
 
@@ -97,7 +147,26 @@ async function ownerPayHandle(request: FastifyRequest<{Body: PayOwnerInput}>, re
     }
     return await addValueExtract(request.body)
   }catch(err) {
-    reply.code(400).send('Error in do the payment in the api')
+    console.log(err)
+    reply.code(400).send('Error in payment')
+  }
+}
+
+async function updatePaymentHandle(request: FastifyRequest<{Body: UpdatePaymentInput, Querystring: {id:number}}>, reply: FastifyReply) {
+  try{
+    return await updatePayment(request.body, request.query.id)
+  }catch(err) {
+    console.log(err)
+    reply.code(400).send('Error update payment')
+  }
+}
+
+async function deletePaymentHandle(request: FastifyRequest<{Querystring: {id:number}}>, reply: FastifyReply ) {
+  try{
+    return await deletePayment(request.query.id)
+  }catch(err) {
+    console.log(err)
+    reply.code(400).send('Error in delete payment')
   }
 }
 
@@ -134,4 +203,31 @@ async function addValueExtract(input: PayOwnerInput) {
     }
   })
   return extract
+}
+
+async function updatePayment(input: UpdatePaymentInput, id: number) {
+
+  const {description, value } = input
+  var date = dayjs().toISOString()
+
+  const extract = await prisma.extract.update({
+    where: {
+      id: Number(id),
+    },
+    data: {
+      description,
+      value,
+      date
+    }
+  })
+  return extract
+}
+
+async function deletePayment(id: number) {
+  const deletePayment = await prisma.extract.delete({
+    where: {
+      id: Number(id)
+    },
+  })
+  return deletePayment
 }

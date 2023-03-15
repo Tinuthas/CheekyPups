@@ -4,17 +4,14 @@ import { AxiosError } from 'axios';
 import dayjs from 'dayjs';
 import { MRT_ColumnDef } from 'material-react-table';
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { AvatarModal, downloadAvatar } from '../components/AvatarProfile';
-import { ButtonLight } from '../components/ButtonLight';
 import DataTableCustom from '../components/DataTableCustom';
 import { api, getToken } from '../lib/axios';
 
 const hideColumns = { owner: false }
 
-const selectPromise = (inputValue: string) => new Promise<any[]>((resolve, reject) => { 
-
+const selectPromise = (inputValue: string) => new Promise<any[]>((resolve, reject) => {
   api.get('owners/select', { params: { name: inputValue}, headers: { Authorization: getToken()}}).then(response =>{
     var data = response.data
     var listData:any[] = []
@@ -23,8 +20,6 @@ const selectPromise = (inputValue: string) => new Promise<any[]>((resolve, rejec
     });
     resolve(listData)
   }).catch((err: AxiosError) => {
-    console.log(err)
-    console.log(err.response?.data)
     const data = err.response?.data as {message: string}
     toast.error(`Unidentified error: ${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
     throw new Error(`Unidentified error: ${data.message || err.response?.data || err.message}`);
@@ -44,6 +39,13 @@ const columnHeaders = [
     accessorKey: 'name',
     label: 'Dog Name',
     name: 'Ex. Einstein',
+    type: "text",
+    required: true,
+  },
+  {
+    accessorKey: 'surname',
+    label: 'Dog Surname',
+    name: 'Ex. Any',
     type: "text",
     required: true,
   },
@@ -132,6 +134,10 @@ export function Dogs(){
           }
         </>
       )
+    },
+    {
+      accessorKey: 'surname',
+      header: 'Surname',
     },
     {
       accessorKey: 'owner',

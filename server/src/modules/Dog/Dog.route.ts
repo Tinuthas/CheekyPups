@@ -75,8 +75,8 @@ async function getAllDogs() {
     },
   })
 
-  const filterDogs = dogs.map(({ id, name, birthdayDate, gender, colour, breed, avatarUrl, ownerId, Owner }) => 
-  ({ id, name, birthdayDate, gender, colour, breed, avatarUrl, ownerId, owner: Owner.name }));
+  const filterDogs = dogs.map(({ id, name, surname, birthdayDate, gender, colour, breed, avatarUrl, ownerId, Owner }) => 
+  ({ id, name, surname: (surname != null ? surname : ""), birthdayDate, gender, colour, breed, avatarUrl, ownerId, owner: Owner.name }));
 
   return filterDogs
 }
@@ -95,13 +95,15 @@ async function getSearchByName(name:string) {
   const result = await prisma.dog.findMany({
     take: 5,
     where: {
-      name: {
-        contains: name
-      }
+      OR: [
+        { name: { contains: name} },
+        { surname: { contains: name } }
+      ]
     },
     select: {
       id: true,
       name: true,
+      surname: true
     },
     orderBy: {
       id: "desc",
@@ -209,7 +211,7 @@ async function createDogWithVaccine(input: DogVaccineInput) {
 
 
 async function createDog(input: DogInput) {
-  const { owner_id, name, birthdayDate, gender, colour, breed} = input
+  const { owner_id, name, surname, birthdayDate, gender, colour, breed} = input
 
   var parsedBirthday = null
   if(birthdayDate != null) {
@@ -221,6 +223,7 @@ async function createDog(input: DogInput) {
   let dog = await prisma.dog.create({
     data:{
       name,
+      surname,
       birthdayDate: parsedBirthday,
       gender,
       colour,
@@ -246,7 +249,7 @@ async function updateDogHandle(request: FastifyRequest<{Body: UpdateDogInput, Qu
 }
 
 async function updateDog(input: UpdateDogInput, id: number) {
-  const {name, birthdayDate, gender, colour, breed} = input
+  const {name, surname, birthdayDate, gender, colour, breed} = input
 
   var parsedBirthday = null
   if(birthdayDate != null) {
@@ -259,7 +262,7 @@ async function updateDog(input: UpdateDogInput, id: number) {
     where: {
       id: id
     },
-    data: {name, birthdayDate: parsedBirthday, gender, colour, breed}
+    data: {name, surname, birthdayDate: parsedBirthday, gender, colour, breed}
   })
 
   return dog
