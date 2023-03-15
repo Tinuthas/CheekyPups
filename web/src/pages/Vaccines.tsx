@@ -7,10 +7,8 @@ import DataTableCustom from "../components/DataTableCustom";
 import { api, getToken } from "../lib/axios";
 
 function convertToDate(dateString: string) {
-  console.log(dateString)
   let d = dateString.split("/");
-  let dat = new Date(d[2] + '/' + d[1] + '/' + d[0]);
-  return dat;     
+  return new Date(d[2] + '/' + d[1] + '/' + d[0]);
 }
 
 const nowDate = new Date()
@@ -53,12 +51,11 @@ const headers:MRT_ColumnDef<any>[] = [
 
 
 const selectPromise = (inputValue: string) => new Promise<any[]>((resolve, reject) => { 
-
   api.get('dogs/select', { params: { name: inputValue}, headers: { Authorization: getToken()}}).then(response =>{
     var data = response.data
     var listData:any[] = []
     data.forEach((element:any) => {
-      listData.push({value: element.id, label: element.name})
+      listData.push({value: element.id, label: `${element.name} ${element.surname != null ?'- '+ element.surname : ''}`})
     });
     resolve(listData)
   }).catch((err: AxiosError) => {
@@ -90,7 +87,6 @@ const columnHeaders = [
     type: "text",
   }
 ]
-
 
 export function Vaccines(){
 

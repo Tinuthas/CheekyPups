@@ -1,11 +1,10 @@
 import { Avatar, Box } from '@mui/material';
-import { DataGrid, GridRowsProp, GridColDef } from '@mui/x-data-grid';
 import { AxiosError } from 'axios';
 import dayjs from 'dayjs';
 import { MRT_ColumnDef } from 'material-react-table';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import { AvatarModal, downloadAvatar } from '../components/AvatarProfile';
+import { AvatarModal } from '../components/AvatarProfile';
 import DataTableCustom from '../components/DataTableCustom';
 import { api, getToken } from '../lib/axios';
 

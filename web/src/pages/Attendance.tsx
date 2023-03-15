@@ -412,7 +412,7 @@ export function Attendance(){
                       var data = response.data
                       var listData:any[] = []
                       data.forEach((element:any) => {
-                        listData.push({value: element.id, label: element.name})
+                        listData.push({value: element.id, label: `${element.name} ${element.surname != null ?'- '+ element.surname : ''}`})
                       });
                       resolve(listData)
                     }).catch((err: AxiosError) => {
