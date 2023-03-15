@@ -211,7 +211,10 @@ async function createDogWithVaccine(input: DogVaccineInput) {
 
 
 async function createDog(input: DogInput) {
-  const { owner_id, name, surname, birthdayDate, gender, colour, breed} = input
+  var { owner_id, name, surname, birthdayDate, gender, colour, breed} = input
+
+  if(surname != null && surname.trim() == "")
+    surname = null
 
   var parsedBirthday = null
   if(birthdayDate != null) {
@@ -249,7 +252,10 @@ async function updateDogHandle(request: FastifyRequest<{Body: UpdateDogInput, Qu
 }
 
 async function updateDog(input: UpdateDogInput, id: number) {
-  const {name, surname, birthdayDate, gender, colour, breed} = input
+  var {name, surname, birthdayDate, gender, colour, breed} = input
+
+  if(surname != null && surname.trim() == "")
+    surname = null
 
   var parsedBirthday = null
   if(birthdayDate != null) {

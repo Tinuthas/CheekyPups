@@ -10,12 +10,12 @@ import { getDownloadURL, ref, uploadBytes } from "@firebase/storage";
 
 interface AvatarModalProps {
   onClose: () => void;
-  onSubmit: (value: any) => void;
+  onSubmit?: (value: any) => void;
   open: boolean;
-  nameFile: string;
+  nameFile?: string;
   avatarUrl: string | null;
   name: string;
-  id: number;
+  id?: number;
 }
 
 const resizeFile = (file:File)=>
@@ -69,10 +69,12 @@ export const AvatarModal = ({
     const metadata = {
       contentType: 'image/jpeg',
     };
-    // Upload the file and metadata
+    if(nameFile == undefined || onSubmit == undefined || id == undefined) {
+      onClose()
+      return
+    }
     const uploadTask = uploadBytes(storageRef, image, metadata).then(resolve => {
       downloadAvatar(nameFile).then(resolveDownload => {
-        console.log('call api')
         var avatar = { avatarUrl: resolveDownload }
         api.put('dogs/profile', avatar, {
           params: {
@@ -82,21 +84,17 @@ export const AvatarModal = ({
             Authorization: getToken()
           }
         }).then(resolve => {
-          console.log('return api')
           onSubmit(avatar)
           toast.success(`Updated image: ${nameFile}.jpg`, { position: "top-center", autoClose: 1000, })
         }).catch(error => {
-          console.log(error)
           toast.error(`Error in save avatar profile`, { position: "top-center", autoClose: 5000, })
           onClose()
         })
       }).catch(error => {
-        console.log(error)
         toast.error(`Error in upload image`, { position: "top-center", autoClose: 5000, })
         onClose()
       })
     }).catch(error => {
-      console.log(error)
       toast.error(`Error in upload image`, { position: "top-center", autoClose: 5000, })
       onClose()
     })
@@ -117,22 +115,33 @@ export const AvatarModal = ({
         },
       }}>
       <DialogTitle id="responsive-dialog-title">
-        {`Profile ${name}`}
+        {`${name}`}
       </DialogTitle>
       <DialogContent>
           <Box className="flex w-full flex-col items-center">
             <Avatar sx={{ width: 250, height: 250 }} src={`${url}`}/>
-            <input className="relative m-0 mt-5 block w-full min-w-0 flex-auto rounded border border-solid border-neutral-300 bg-clip-padding py-[0.32rem] px-3 text-base font-normal text-neutral-700 transition duration-300 ease-in-out file:-mx-3 file:-my-[0.32rem] file:overflow-hidden file:rounded-none file:border-0 file:border-solid file:border-inherit file:bg-neutral-100 file:px-3 file:py-[0.32rem] file:text-neutral-700 file:transition file:duration-150 file:ease-in-out file:[margin-inline-end:0.75rem] file:[border-inline-end-width:1px] hover:file:bg-neutral-200 focus:border-primary focus:text-neutral-700 focus:shadow-[0_0_0_1px] focus:shadow-primary focus:outline-none" 
-            type="file" accept="image/*" onChange={ (e) => handleChange(e.target.files) }/>
+            {onSubmit != undefined ?
+              <input className="relative m-0 mt-5 block w-full min-w-0 flex-auto rounded border border-solid border-neutral-300 bg-clip-padding py-[0.32rem] px-3 text-base font-normal text-neutral-700 transition duration-300 ease-in-out file:-mx-3 file:-my-[0.32rem] file:overflow-hidden file:rounded-none file:border-0 file:border-solid file:border-inherit file:bg-neutral-100 file:px-3 file:py-[0.32rem] file:text-neutral-700 file:transition file:duration-150 file:ease-in-out file:[margin-inline-end:0.75rem] file:[border-inline-end-width:1px] hover:file:bg-neutral-200 focus:border-primary focus:text-neutral-700 focus:shadow-[0_0_0_1px] focus:shadow-primary focus:outline-none" 
+              type="file" accept="image/*" onChange={ (e) => handleChange(e.target.files) }/>
+            :null}
           </Box>
       </DialogContent>
     <DialogActions>
-      <Button autoFocus onClick={onClose}>
-        Cancel
-      </Button>
-      <Button onClick={handleSubmit} autoFocus>
-        Change Profile
-      </Button>
+      {onSubmit != undefined ?
+        <>
+          <Button autoFocus onClick={onClose}>
+            Cancel
+          </Button>
+          <Button onClick={handleSubmit} autoFocus>
+            Change Profile
+          </Button>
+        </>
+      :<>
+        <Button autoFocus onClick={onClose}>
+          Back
+        </Button>
+      </>}
+      
     </DialogActions>
   </Dialog>
   </ThemeProvider>

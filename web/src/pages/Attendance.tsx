@@ -19,6 +19,8 @@ import MenuItemCustom from "../components/MenuItemCustom";
 import clsx from 'clsx'
 import { theme } from "../lib/theme";
 import { AvatarModal } from "../components/AvatarProfile";
+import { FilterDays } from "../components/FilterDays";
+import { DataTableAttendance } from "../components/DataTableAttendance";
 
 const HALF_DAY = 12.5
 const FULL_FAY = 17.5
@@ -39,18 +41,7 @@ function convertToDate(dateString: string) {
   return dat;     
 }
 
-interface Attendance {
-  id: number;
-  paid: boolean;
-  fullDay: boolean;
-  extract: {
-    value: number,
-    description: string,
-  },
-  day: {
-    date: string,
-  }
-}
+
 
 
 export function Attendance(){
@@ -61,7 +52,8 @@ export function Attendance(){
   const [dateEnd, setDateEnd] = useState(dayjs().endOf('week').toDate());
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [marginTable, setMarginTable] = useState(0)
-  const [openIndex, setOpenIndex] = useState(-1)
+  const [openNameAvatar, setOpenNameAvatar] = useState('')
+  const [openUrlAvatar, setOpenUrlAvatar] = useState('')
   const [openAvatar, setOpenAvatar] = useState(false)
 
   /*const [valueField, setValueField] = useState(HALF_DAY)
@@ -99,7 +91,7 @@ export function Attendance(){
   }
 
   function getAttendance(id: number) {
-    api.get<Attendance>('attendance/id', {
+    api.get('attendance/id', {
       params: {
         id,
       }, headers: {
@@ -119,6 +111,12 @@ export function Attendance(){
         const data = err.response?.data as {message: string}
         toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
       })
+  }
+
+  function handleOpenAvatar(row:any) {
+    setOpenAvatar(true)
+    setOpenNameAvatar(row?.original?.name)
+    setOpenUrlAvatar(row?.original?.avatarUrl)
   }
 
   function cellComponent(item: string) {
@@ -179,23 +177,23 @@ export function Attendance(){
                   setValue: (value) => setValueDecriptionField(value),*/
                 }]}
             >
-              
             { renderedCellValue?.toString().toUpperCase().includes('P') ?
               <span className="font-black text-green-600">{renderedCellValue.toString().toUpperCase().replace('P', '')}</span>
             : <span className="font-black text-stone-500">{renderedCellValue}</span>
             }
             </MenuItemCustom>
           : null}
-          
         </div>
-       
       )
     }
     return column
-
   }
 
-  function clickSearchByDates(){
+  function clickSearchByDates(dateStartField?:Date, dateEndField?:Date){
+    if(dateStartField != null) 
+      setDateStart(dateStartField)
+    if(dateEndField != null) 
+      setDateEnd(dateEndField)
     api.get<Attendances>('attendance', {
       params: {
         dateStart: dayjs(dateStart).toISOString(), 
@@ -203,7 +201,6 @@ export function Attendance(){
       }, headers: {
         Authorization: getToken()
       }}).then(response => {
-        
         var att = response.data
         var rows: any[] = []
         const dates = new Set<string>();
@@ -234,30 +231,11 @@ export function Attendance(){
             Cell: ({ renderedCellValue, row }) => (
               <>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: '1rem', }}>
-                  <span className="cursor-pointer" onClick={() => {
-                    console.log(row)
-                    setOpenAvatar(true)
-                    setOpenIndex(row.original.dog_id)
-                  }}>
+                  <span className="cursor-pointer" onClick={() => handleOpenAvatar(row)}>
                     <Avatar sx={{ width: 30, height: 30 }} src={row.original.avatarUrl}  />
                   </span>
                   <span>{renderedCellValue}</span>
                 </Box>
-                {row.original.dog_id == openIndex && openAvatar ? 
-                  <AvatarModal 
-                    open={openAvatar}
-                    onClose={() => setOpenAvatar(false)}
-                    onSubmit={(value) => {
-                      clickSearchByDates()
-                      setOpenAvatar(false)
-                    }}
-                    nameFile={row.original.dog_id+"_"+row.original.name.toLowerCase() ?? ""}
-                    avatarUrl={row.original.avatarUrl}
-                    name={row.original.name}
-                    id={Number(row.original.dog_id)}
-                  />
-                : null
-                }
               </>
             )
           }, 
@@ -288,7 +266,6 @@ export function Attendance(){
 
 
   const handleCreateNewRow = (values: any) => {
-    console.log(values)
     var newValues = {
       dog_id: Number(values.dogId), 
       date: values.date, 
@@ -304,8 +281,6 @@ export function Attendance(){
     }).then(response => {
       toast.success(`Attedanted: ${values.dog}`, { position: "top-center", autoClose: 1000, })
       clickSearchByDates()
-      //attendances.push(newValues);
-      //setAttendances([...attendances]);
     }).catch((err: AxiosError) => {
       const data = err.response?.data as {message: string}
       toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
@@ -316,157 +291,24 @@ export function Attendance(){
   return (
     <div className="md:p-10 pt-4 h-full flex flex-col items-center">
       <h1 className="font-medium text-3xl md:text-4xl text-white">Attendances</h1>
-      <div className="md:flex bg-white p-4 md:p-8 mt-4 rounded">
-        <div className="flex">
-        <ThemeProvider theme={theme}>
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <div className="mr-2 md:mr-6">
-              <DatePicker
-                label="Date Start"
-                value={dateStart}
-                onChange={(newValue) => {
-                  setDateStart(newValue || new Date());
-                }}
-                inputFormat="DD/MM/YYYY"
-                renderInput={(params) => <TextField {...params} 
-                />
-              }
-              />
-            </div>
-            <div className="">
-              <DatePicker
-                label="Date End"
-                value={dateEnd}
-                onChange={(newValue) => {
-                  setDateEnd(newValue || new Date());
-                }}
-                inputFormat="DD/MM/YYYY"
-                renderInput={(params) => <TextField {...params} />}
-              />
-            </div>
-          </LocalizationProvider>
-        </ThemeProvider>
-        </div>
-        <ButtonLight text="Search" onClick={clickSearchByDates}/>
-      </div>
+      <FilterDays onSubmit={(dateStart, dateEnd) => clickSearchByDates(dateStart, dateEnd)}/>
         
-      
-      <ThemeProvider theme={theme}>
-        <div className={clsx('w-full mt-9 transition-all', {
-          'md:px-28 lg:px-56 xl:px-[450px]': marginTable == 0,
-          'md:px-16 lg:px-48 xl:px-[300px]': marginTable == 1,
-          'md:px-20 lg:px-36 xl:px-60': marginTable == 2,
-          'md:px-16 lg:px-44 xl:px-36': marginTable == 3,
-          'md:px-12 lg:px-40 xl:px-16': marginTable == 4,
-          'md:px-8 lg:px-24 xl:px-0 desktop:px-8': marginTable == 5,
-          'px-0' : marginTable >= 5,
-        })}>
-          <div className="bg-white rounded">
+      <DataTableAttendance 
+        attendances={attendances}
+        columns={columns}
+        marginTable={marginTable}
+        handleCreateNewRow={handleCreateNewRow}
+      />
 
-          
-          <MaterialReactTable
-            columns={columns as MRT_ColumnDef<(typeof attendances)[0]>[]}
-            data={attendances}
-            renderTopToolbarCustomActions={() => (
-              <Box sx={{ fontSize: 16, fontWeight: 'medium', paddingTop: 0, paddingLeft: 1 }}>
-                {"Attendances"}
-                <IconButton onClick={() => {
-                    //setValueField(HALF_DAY)
-                    setCreateModalOpen(true)
-                  }}>
-                  <Add />
-                </IconButton>
-              </Box>
-            )}
-            muiTablePaperProps={{
-              elevation: 0, //change the mui box shadow
-              //customize paper styles
-              sx: {
-                borderRadius: '4',
-                border: '1px dashed #ffffff',
-              },
-            }}
-            layoutMode="grid"
-            muiTableHeadCellProps={{
-              sx: {
-                flex: '0 0 auto',
-              },
-            }}
-            muiTableBodyCellProps={{
-              sx: {
-                flex: '0 0 auto',
-              },
-            }}
-          />
-          {createModalOpen ? 
-          <CreateNewModal
-            columns={[
-                {
-                  accessorKey: 'dogId',
-                  label: 'Dog',
-                  name: 'Choose dog',
-                  type: "select",
-                  required: true,
-                  getDataSelect: (inputValue: string) => new Promise<any[]>((resolve, reject) => { 
-                    api.get('dogs/select', { params: { name: inputValue}, headers: { Authorization: getToken()}}).then(response =>{
-                      var data = response.data
-                      var listData:any[] = []
-                      data.forEach((element:any) => {
-                        listData.push({value: element.id, label: `${element.name} ${element.surname != null ?'- '+ element.surname : ''}`})
-                      });
-                      resolve(listData)
-                    }).catch((err: AxiosError) => {
-                      const data = err.response?.data as {message: string}
-                      toast.error(`Unidentified error: ${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
-                      throw new Error(`Unidentified error: ${data.message || err.response?.data || err.message}`);
-                    })
-                  })
-                },
-                {
-                  accessorKey: 'date',
-                  label: 'Date',
-                  name: '',
-                  type: "date",
-                  /*value: dateValueField,
-                  setValue: (value) => setDateValueField(value),*/
-                },
-                {
-                  accessorKey: 'fullDay',
-                  label: 'Half Day',
-                  name: 'Full Day',
-                  type: "checkbox",
-                  /*setLocalStatus: (status) => {      
-                    status === true ? setValueField(FULL_FAY) : setValueField(HALF_DAY)               
-                  }*/
-                },
-                {
-                  accessorKey: 'value',
-                  label: 'Value',
-                  name: '',
-                  type: "number",
-                  /*value: valueField,
-                  setValue: (value) => setValueField(Number(value)),*/
-                },
-                {
-                  accessorKey: 'paid',
-                  label: 'Paid',
-                  name: 'Paid',
-                  type: "checkbox",
-                },
-                {
-                  accessorKey: 'descriptionValue',
-                  label: 'Description',
-                  name: '',
-                  type: "text",
-                }]}
-            open={createModalOpen}
-            onClose={() => setCreateModalOpen(false)}
-            onSubmit={handleCreateNewRow}
-          />: null
-          }
-        </div>
-        </div>
-      </ThemeProvider>
+      {openAvatar ? 
+        <AvatarModal 
+          open={openAvatar}
+          onClose={() => setOpenAvatar(false)}
+          avatarUrl={openUrlAvatar}
+          name={openNameAvatar}
+        />
+      : null }
+      
      
     </div>
   )
