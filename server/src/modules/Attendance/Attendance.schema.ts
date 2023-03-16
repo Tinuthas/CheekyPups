@@ -22,7 +22,6 @@ const dogsAttendance = z.object({
 })
 
 const updateAttendanceBody = z.object({
-  date: z.string(),
   fullDay: z.boolean(),
   paid: z.boolean(),
   value: z.number(),

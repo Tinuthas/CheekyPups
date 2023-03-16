@@ -5,6 +5,7 @@ import './lib/datagrind'
 import { useEffect, useState } from 'react'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
+import { app } from './lib/firebase'
 
 function App() {
 

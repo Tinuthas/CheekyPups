@@ -1,29 +1,16 @@
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useState } from "react"
 import {api, getToken} from "../lib/axios";
 import dayjs from "dayjs";
-import TextField from '@mui/material/TextField';
 import Avatar from '@mui/material/Avatar';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { ThemeProvider } from "@mui/material/styles";
-import { ButtonLight } from "../components/ButtonLight";
-import { Add } from '@mui/icons-material';
 import Box from '@mui/material/Box';
 import MaterialReactTable, { MRT_ColumnDef } from "material-react-table";
-import { IconButton } from "@mui/material";
-import { CreateNewModal } from "../components/CreateNewModal";
 import { AxiosError } from "axios";
 import { toast } from "react-toastify";
-import MenuItemCustom from "../components/MenuItemCustom";
-import clsx from 'clsx'
-import { theme } from "../lib/theme";
 import { AvatarModal } from "../components/AvatarProfile";
 import { FilterDays } from "../components/FilterDays";
 import { DataTableAttendance } from "../components/DataTableAttendance";
+import { cellComponent } from "../components/CellAttendanceDate";
 
-const HALF_DAY = 12.5
-const FULL_FAY = 17.5
 
 type Attendances = Array<{
   id:string;
@@ -35,158 +22,25 @@ type Attendances = Array<{
   paids: boolean[];
 }>
 
-function convertToDate(dateString: string) {
-  let d = dateString.split("/");
-  let dat = new Date(d[2] + '/' + d[1] + '/' + d[0]);
-  return dat;     
-}
-
-
-
-
 export function Attendance(){
 
   const [attendances, setAttendances] = useState<any>([])
   const [columns, setColumns] = useState<any>([])
   const [dateStart, setDateStart] = useState(dayjs().startOf('week').toDate());
   const [dateEnd, setDateEnd] = useState(dayjs().endOf('week').toDate());
-  const [createModalOpen, setCreateModalOpen] = useState(false);
   const [marginTable, setMarginTable] = useState(0)
   const [openNameAvatar, setOpenNameAvatar] = useState('')
   const [openUrlAvatar, setOpenUrlAvatar] = useState('')
   const [openAvatar, setOpenAvatar] = useState(false)
 
-  /*const [valueField, setValueField] = useState(HALF_DAY)
-  const [valueDecriptionField, setValueDecriptionField] = useState("")
-  const [dateValueField, setDateValueField] = useState(dayjs().format('YYYY-MM-DD'));
-  const [fullDayField, setFullDayField] = useState(false);
-  const [paidField, setPaidField] = useState(false);
-  const [attendanceField, setAttedanceField] = useState<Attendance>({
-    id: 1,
-    paid: false,
-    fullDay: false,
-    extract: {
-      value: HALF_DAY,
-      description: "",
-    },
-    day: {
-      date: dayjs().format('YYYY-MM-DD'),
-    }
-  });*/
-
   useEffect(() => {
     clickSearchByDates()
   }, [])
-
-  function handleEdit(item:any, row:any) {
-    var date = dayjs(convertToDate(item)).format('YYYY-MM-DD')
-    var listDates:string[] = row?.original?.dates
-    var listIds:number[] = row?.original?.attendanceIds
-  }
-
-  function getIdAttendance(item:any, row:any) {
-    var listDates:string[] = row?.original?.dates
-    var listIds:number[] = row?.original?.attendanceIds
-    return listIds[listDates.indexOf(item)]
-  }
-
-  function getAttendance(id: number) {
-    api.get('attendance/id', {
-      params: {
-        id,
-      }, headers: {
-          Authorization: getToken()
-      }}).then(response => {
-        /*var att = response.data
-        setAttedanceField(att)
-        console.log('field')
-        console.log(attendanceField)
-        setDateValueField(dayjs(att.day.date).format('YYYY-MM-DD'))
-        console.log(dateValueField)
-        setValueField(Number(att.extract.value))
-        setValueDecriptionField(att.extract.description)
-        setPaidField(att.paid)
-        setFullDayField(att.fullDay)*/
-      }).catch((err: AxiosError) => {
-        const data = err.response?.data as {message: string}
-        toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
-      })
-  }
 
   function handleOpenAvatar(row:any) {
     setOpenAvatar(true)
     setOpenNameAvatar(row?.original?.name)
     setOpenUrlAvatar(row?.original?.avatarUrl)
-  }
-
-  function cellComponent(item: string) {
-    var column:MRT_ColumnDef<any> = {
-      accessorKey: item, 
-      header: item,
-      Header: ({ column }) => <div className="w-[90px] p-0 text-center">{column.columnDef.header}</div>,
-      Cell: ({ renderedCellValue, row }) => (
-        <div className="w-[133.055px]">
-          { renderedCellValue != null ?
-            <MenuItemCustom 
-              handleDelete={() => console.log(row)} 
-              handleEdit={() => handleEdit(item, row)}
-              id={getIdAttendance(item, row)}
-              getAttendance={(id:number) => getAttendance(id)}
-              editData={[
-                {
-                  accessorKey: 'date',
-                  label: 'Date',
-                  name: '',
-                  type: "date",
-                  //value: dayjs(attendanceField.day.date).format('YYYY-MM-DD'),
-                  //setValue: (value) => setDateValueField(value),
-                },
-                {
-                  accessorKey: 'fullDay',
-                  label: 'Half Day',
-                  name: 'Full Day',
-                  type: "checkbox",
-                  /*value: attendanceField.fullDay,
-                  setValue: (value) => setFullDayField(value),
-                  setLocalStatus: (status) => {      
-                    status === true ? setValueField(FULL_FAY) : setValueField(HALF_DAY)               
-                  }*/
-                },
-                {
-                  accessorKey: 'value',
-                  label: 'Value',
-                  name: '',
-                  type: "number",
-                  /*value: attendanceField.extract.value,
-                  setValue: (value) => setValueField(Number(value)),*/
-                },
-                {
-                  accessorKey: 'paid',
-                  label: 'Paid',
-                  name: 'Paid',
-                  type: "checkbox",
-                  /*value: attendanceField.paid,
-                  setValue: (value) => setPaidField(value),*/
-                },
-                {
-                  accessorKey: 'descriptionValue',
-                  label: 'Description',
-                  name: '',
-                  type: "text",
-                  /*value: attendanceField.extract.description,
-                  setValue: (value) => setValueDecriptionField(value),*/
-                }]}
-            >
-            { renderedCellValue?.toString().toUpperCase().includes('P') ?
-              <span className="font-black text-green-600">{renderedCellValue.toString().toUpperCase().replace('P', '')}</span>
-            : <span className="font-black text-stone-500">{renderedCellValue}</span>
-            }
-            </MenuItemCustom>
-          : null}
-        </div>
-      )
-    }
-    return column
   }
 
   function clickSearchByDates(dateStartField?:Date, dateEndField?:Date){
@@ -253,7 +107,7 @@ export function Attendance(){
             Cell: ({ renderedCellValue }) => <div className="w-[28px] text-center">{renderedCellValue}</div>
           }]
           for (const item of dates) {
-            base.push(cellComponent(item))
+            base.push(cellComponent(item, () => clickSearchByDates()))
           }
           console.log(base)
           setColumns(base)

@@ -10,6 +10,10 @@ import { CreateNewModal } from "../components/CreateNewModal";
 import { AxiosError } from "axios";
 import { toast } from "react-toastify";
 import {api, getToken} from "../lib/axios";
+import dayjs from "dayjs";
+
+const HALFDAY = import.meta.env.VITE_HALFDAY
+const FULLDAY = import.meta.env.VITE_FULLDAY
 
 interface AttendanceTableProps {
   attendances: any[],
@@ -22,16 +26,20 @@ export function DataTableAttendance({attendances, columns, marginTable, handleCr
 
   const [createModalOpen, setCreateModalOpen] = useState(false);
 
+  const [valueField, setValueField] = useState(HALFDAY)
+  const [dateValueField, setDateValueField] = useState(dayjs().format('YYYY-MM-DD'));
+  const [descriptionField, setDescriptionField] = useState(`DAYCARE - ${dayjs().format('DD/MM/YYYY')}`)
+
   return (
     <ThemeProvider theme={theme}>
         <div className={clsx('w-full mt-9 transition-all', {
-          /*'md:px-28 lg:px-56 xl:px-[450px]': marginTable == 0,
+          'md:px-28 lg:px-56 xl:px-[450px]': marginTable == 0,
           'md:px-16 lg:px-48 xl:px-[300px]': marginTable == 1,
           'md:px-20 lg:px-36 xl:px-60': marginTable == 2,
           'md:px-16 lg:px-44 xl:px-36': marginTable == 3,
           'md:px-12 lg:px-40 xl:px-16': marginTable == 4,
           'md:px-8 lg:px-24 xl:px-0 desktop:px-8': marginTable == 5,
-          'px-0' : marginTable >= 5,*/
+          'px-0' : marginTable >= 5,
         })}>
           <div className="bg-white rounded">
 
@@ -99,25 +107,25 @@ export function DataTableAttendance({attendances, columns, marginTable, handleCr
                   label: 'Date',
                   name: '',
                   type: "date",
-                  /*value: dateValueField,
-                  setValue: (value) => setDateValueField(value),*/
+                  value: dateValueField,
+                  setValue: (value) => setDateValueField(value),
                 },
                 {
                   accessorKey: 'fullDay',
                   label: 'Half Day',
                   name: 'Full Day',
                   type: "checkbox",
-                  /*setLocalStatus: (status) => {      
-                    status === true ? setValueField(FULL_FAY) : setValueField(HALF_DAY)               
-                  }*/
+                  setLocalStatus: (status) => {      
+                    status === true ? setValueField(FULLDAY) : setValueField(HALFDAY)               
+                  }
                 },
                 {
                   accessorKey: 'value',
                   label: 'Value',
                   name: '',
                   type: "number",
-                  /*value: valueField,
-                  setValue: (value) => setValueField(Number(value)),*/
+                  value: valueField,
+                  setValue: (value) => setValueField(Number(value)),
                 },
                 {
                   accessorKey: 'paid',
@@ -130,6 +138,8 @@ export function DataTableAttendance({attendances, columns, marginTable, handleCr
                   label: 'Description',
                   name: '',
                   type: "text",
+                  value: descriptionField,
+                  setValue: (value) => setDescriptionField(value),
                 }]}
             open={createModalOpen}
             onClose={() => setCreateModalOpen(false)}

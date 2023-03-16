@@ -30,9 +30,9 @@ export const InputLabel = ({labelName, type, placeholder, accessorKey, value, se
         setStatus(checked)
       }
       event.target.value = checked.toString()
-    }
-    
-    if(value != null && setValue != undefined){
+      if(setValue != undefined)
+        setValue(checked)
+    }else if(value != null && setValue != undefined){
       setValue(event.target.value)
     }
     if(type == "select"){
@@ -53,8 +53,8 @@ export const InputLabel = ({labelName, type, placeholder, accessorKey, value, se
       {
         type.includes('select') ?
           <SelectInput getData={getData} onChange={setEventChange}/>
-        : type.includes('checkbox') ?
-          <FormControlLabel control={<Checkbox onChange={setEventChange} sx={{ color: '#FF499E', '& .MuiSvgIcon-root': { fontSize: 28 } }} />}  label={status ? placeholder : labelName} />
+        : type.includes('checkbox') ? 
+          <FormControlLabel control={<Checkbox onChange={setEventChange} sx={{ color: '#FF499E', '& .MuiSvgIcon-root': { fontSize: 28 } }} checked={value}  />}  label={status ? placeholder : labelName}  />
         :
           <input
             placeholder={placeholder}

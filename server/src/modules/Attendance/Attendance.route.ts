@@ -207,14 +207,12 @@ async function getAttendances(input: AttendanceFilterInput){
   let dogsAttendance = new Map<string, { id: number, attendanceIds:[id: number], dog_id:number, name: string, surname: string | null, avatarUrl: string | null, dates:[date:string], fullDates:[fullDate:boolean], paids:[paid:boolean] }>();
   for (let index = 0; index < attendances.length; index++) {
     const element = attendances[index];
-    console.log(element.dog.id)
     if (dogsAttendance.has(element.dog.id.toString())) {
       dogsAttendance.get(element.dog.id.toString())?.attendanceIds.push(element.id)
       dogsAttendance.get(element.dog.id.toString())?.dates.push(dayjs(element.day.date).format('DD/MM/YYYY'))
       dogsAttendance.get(element.dog.id.toString())?.fullDates.push(element.fullDay)
       dogsAttendance.get(element.dog.id.toString())?.paids.push(element.paid)
     }else{
-      console.log(dayjs(element.day.date).format('DD/MM/YYYY'))
       dogsAttendance.set(element.dog.id.toString(), {
         id: element.dog.id,
         attendanceIds: [element.id],
@@ -310,11 +308,7 @@ async function updateAttendanceHandle(request: FastifyRequest<{Body: AttendanceU
 
 
 async function updateAttendance(input: AttendanceUpdateInput, id: number) {
-  const {date, fullDay, paid, value, descriptionValue} = input
-
-  var dateParts:any[] = date.split('/')
-  var dateObject = new Date(+dateParts[2], dateParts[1] - 1, +dateParts[0])
-  var parsedDate = dayjs(dateObject).startOf('day').toISOString()
+  const {fullDay, paid, value, descriptionValue} = input
 
   let att = await prisma.attendance.findUnique({
     where: {
@@ -336,16 +330,6 @@ async function updateAttendance(input: AttendanceUpdateInput, id: number) {
         id: Number(id)
       },
       data: {
-        day: {
-          connectOrCreate: {
-            where: {
-              date: parsedDate,
-            },
-            create: {
-              date: parsedDate,
-            }
-          }
-        },
         fullDay, 
         paid, 
         extract : {
@@ -357,22 +341,13 @@ async function updateAttendance(input: AttendanceUpdateInput, id: number) {
         }
       }
     })  
+    return attendanceUpt
   } else {
     let attendanceUpt = await prisma.attendance.update({
       where: {
         id: Number(id)
       },
       data: {
-        day: {
-          connectOrCreate: {
-            where: {
-              date: parsedDate,
-            },
-            create: {
-              date: parsedDate,
-            }
-          }
-        },
         fullDay, 
         paid, 
         extract : {
@@ -389,7 +364,7 @@ async function updateAttendance(input: AttendanceUpdateInput, id: number) {
         }
       }
     })
-  
+    return attendanceUpt
   }
 
   
@@ -428,7 +403,7 @@ async function updatePayAttendance(input: AttendanceUpdatePayInput, id: number) 
       }
     }
   })
-  if(att?.paid != true) {
+  //if(att?.paid != true) {
     let updAtt = await prisma.attendance.update({
       where: {
         id: Number(id)
@@ -449,7 +424,7 @@ async function updatePayAttendance(input: AttendanceUpdatePayInput, id: number) 
         }
       }
     })
-  }else {
+  /*}else {
     let updAtt = await prisma.attendance.update({
       where: {
         id: Number(id)
@@ -457,12 +432,12 @@ async function updatePayAttendance(input: AttendanceUpdatePayInput, id: number) 
       data: {
         paid: !att?.paid,
       }
-    })
+    })*/
 
-    let extract = await prisma.extract.delete({
+    /*let extract = await prisma.extract.delete({
       where: {
         id: att.extract?.id
       }
-    })
-  }
+    })*/
+  //}
 }

@@ -16,14 +16,16 @@ import { ColumnHeader, EditNewModal } from './EditModal';
 
 interface MenuItemProps {
   children: JSX.Element | JSX.Element[];
-  handleDelete: () => void,
-  handleEdit: () => void,
+  handleDelete: (id:number) => void,
+  handleEdit: (id:number) => void,
+  handlePaid: (id:number) => void,
+  paid: boolean,
   id: number,
   getAttendance: (id:number) => void,
   editData: ColumnHeader[],
 }
 
-export default function MenuItemCustom({children, handleDelete, handleEdit, editData, id, getAttendance}: MenuItemProps) {
+export default function MenuItemCustom({children, handleDelete, handleEdit, handlePaid, editData, id, paid, getAttendance}: MenuItemProps) {
   const [open, setOpen] = React.useState(false);
   const [openDelete, setOpenDelete] = React.useState(false);
   const [openEdit, setOpenEdit] = React.useState(false);
@@ -48,9 +50,15 @@ export default function MenuItemCustom({children, handleDelete, handleEdit, edit
     setOpenDelete(true)
     handleClose(event)
   }
+
+  const handlePaidOpen = (event: Event | React.SyntheticEvent) => {
+    handlePaid(id)
+    handleClose(event)
+  }
+
   const handleDeleteClose = (event: Event | React.SyntheticEvent) => {
     setOpenDelete(false)
-    handleDelete()
+    handleDelete(id)
   }
   const handleEditOpen = (event: Event | React.SyntheticEvent) => {
     setOpenEdit(true)
@@ -58,7 +66,7 @@ export default function MenuItemCustom({children, handleDelete, handleEdit, edit
   }
   const handleEditClose = (event: Event | React.SyntheticEvent) => {
     setOpenDelete(false)
-    handleEdit()
+    handleEdit(id)
   }
 
   function handleListKeyDown(event: React.KeyboardEvent) {
@@ -129,9 +137,9 @@ export default function MenuItemCustom({children, handleDelete, handleEdit, edit
                     </ListItemIcon>
                     <ListItemText>Delete</ListItemText>
                   </MenuItem>
-                  <MenuItem onClick={handleClose}>
+                  <MenuItem onClick={handlePaidOpen}>
                     <ListItemIcon>
-                      <PaidIcon fontSize="small" />
+                      <PaidIcon fontSize="small" color={`${paid ? 'success' : 'inherit'}`} />
                     </ListItemIcon>
                     <ListItemText>Pay</ListItemText>
                   </MenuItem>
