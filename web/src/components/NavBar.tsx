@@ -60,10 +60,12 @@ export function NavBar() {
     navigate("/login");
   }
 
+  //<div className="text-pinkBackground font-bold flex items-center text-3xl drop-shadow-md cursor-pointer py-2">         
+
   return(
     <div className="shadow w-full top-0 left-0 ">
       <div className="md:flex items-center justify-between bg-white md:h-[68px] py-4 md:px-10 px-7">
-        <div className="text-pinkBackground font-bold flex items-center text-3xl drop-shadow-md cursor-pointer py-2">         
+        <div className="text-pinkBackground font-bold flex items-center text-3xl cursor-pointer py-2">         
           <img src={logoImage} alt="Cheeky Pubs Logo" className='h-9'/>
           Cheeky Pups
         </div>

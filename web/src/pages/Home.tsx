@@ -20,6 +20,10 @@ export function Home(){
           <p className="text-xl text-neutral-600 mt-5 mb-5 text-justify">
             Here at Declan’s Cheeky Pups Dog Grooming I do my best to make it a fun and calm experience for everyone involved. Making your dog enjoy themselves during the grooming process is something I find is very important as one bad experience can make the grooming process a scary and unpleasant one for your dog.
           </p>
+
+          <p className="text-xl text-neutral-600 mt-15 mb-5 text-right">
+            Thanks, Cheeky Pups.
+          </p>
         </div>
       </div>
       
