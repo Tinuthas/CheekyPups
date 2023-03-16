@@ -75,8 +75,8 @@ async function getAllDogs() {
     },
   })
 
-  const filterDogs = dogs.map(({ id, name, surname, birthdayDate, gender, colour, breed, avatarUrl, ownerId, Owner }) => 
-  ({ id, name, surname: (surname != null ? surname : ""), birthdayDate, gender, colour, breed, avatarUrl, ownerId, owner: Owner.name }));
+  const filterDogs = dogs.map(({ id, name, nickname, birthdayDate, gender, colour, breed, avatarUrl, ownerId, Owner }) => 
+  ({ id, name, nickname: (nickname != null ? nickname : ""), birthdayDate, gender, colour, breed, avatarUrl, ownerId, owner: Owner.name }));
 
   return filterDogs
 }
@@ -97,13 +97,13 @@ async function getSearchByName(name:string) {
     where: {
       OR: [
         { name: { contains: name} },
-        { surname: { contains: name } }
+        { nickname: { contains: name } }
       ]
     },
     select: {
       id: true,
       name: true,
-      surname: true
+      nickname: true
     },
     orderBy: {
       id: "desc",
@@ -211,10 +211,10 @@ async function createDogWithVaccine(input: DogVaccineInput) {
 
 
 async function createDog(input: DogInput) {
-  var { owner_id, name, surname, birthdayDate, gender, colour, breed} = input
+  var { owner_id, name, nickname, birthdayDate, gender, colour, breed} = input
 
-  if(surname != null && surname.trim() == "")
-    surname = null
+  if(nickname != null && nickname.trim() == "")
+    nickname = null
 
   var parsedBirthday = null
   if(birthdayDate != null) {
@@ -226,7 +226,7 @@ async function createDog(input: DogInput) {
   let dog = await prisma.dog.create({
     data:{
       name,
-      surname,
+      nickname,
       birthdayDate: parsedBirthday,
       gender,
       colour,
@@ -252,10 +252,10 @@ async function updateDogHandle(request: FastifyRequest<{Body: UpdateDogInput, Qu
 }
 
 async function updateDog(input: UpdateDogInput, id: number) {
-  var {name, surname, birthdayDate, gender, colour, breed} = input
+  var {name, nickname, birthdayDate, gender, colour, breed} = input
 
-  if(surname != null && surname.trim() == "")
-    surname = null
+  if(nickname != null && nickname.trim() == "")
+    nickname = null
 
   var parsedBirthday = null
   if(birthdayDate != null) {
@@ -268,7 +268,7 @@ async function updateDog(input: UpdateDogInput, id: number) {
     where: {
       id: id
     },
-    data: {name, surname, birthdayDate: parsedBirthday, gender, colour, breed}
+    data: {name, nickname, birthdayDate: parsedBirthday, gender, colour, breed}
   })
 
   return dog

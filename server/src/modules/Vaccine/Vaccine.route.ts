@@ -41,6 +41,7 @@ async function getAllVaccines(request: FastifyRequest, reply: FastifyReply) {
       },
       select: {
         name: true,
+        nickname: true,
         vaccines: {
           select: {
             id: true,
@@ -55,11 +56,11 @@ async function getAllVaccines(request: FastifyRequest, reply: FastifyReply) {
       }
     })
 
-    const filterVacciness = vacciness.map(({ name, vaccines}) => ({ 
+    const filterVacciness = vacciness.map(({ name, nickname,  vaccines}) => ({ 
       id: vaccines[0].id, 
       dateVaccine: vaccines[0].dateVaccine , 
       type: vaccines[0].type, 
-      dog: name 
+      dog: `${name} ${nickname != null ?'- '+ nickname : ''}`.trim(), 
     }));
     return filterVacciness
     /*

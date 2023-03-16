@@ -7,15 +7,18 @@ import TextField from '@mui/material/TextField';
 import { ButtonLight } from "../components/ButtonLight";
 import { useState } from "react";
 import dayjs from "dayjs";
+import {Loading} from "./Loading";
 
 interface FilterDaysProps {
-  onSubmit: (dateStart: Date, dateEnd: Date) => void;
+  onSubmit: () => void;
+  dateStart: Date;
+  dateEnd: Date;
+  setDateStart: (date:Date) => void;
+  setDateEnd: (date:Date) => void;
+  loading: boolean;
 }
 
-export function FilterDays({onSubmit}: FilterDaysProps) {
-
-  const [dateStart, setDateStart] = useState(dayjs().startOf('week').toDate());
-  const [dateEnd, setDateEnd] = useState(dayjs().endOf('week').toDate());
+export function FilterDays({onSubmit, loading, dateEnd, dateStart, setDateEnd, setDateStart}: FilterDaysProps) {
 
   return (
     <div className="md:flex bg-white p-4 md:p-8 mt-4 rounded">
@@ -49,7 +52,9 @@ export function FilterDays({onSubmit}: FilterDaysProps) {
           </LocalizationProvider>
         </ThemeProvider>
         </div>
-        <ButtonLight text="Search" onClick={() => onSubmit(dateStart, dateEnd)}/>
+        { loading ? <Loading pink={true}/> :
+          <ButtonLight text="Search" onClick={() => onSubmit()}/>
+        }
       </div>
   )
 }

@@ -5,6 +5,7 @@ import { toast } from "react-toastify"
 import DataTableCustom from "../components/DataTableCustom"
 import { DialogListModal } from "../components/DialogListModal"
 import { api, getToken } from "../lib/axios"
+import {Loading} from "../components/Loading";
 
 const selectPromise = (inputValue: string) => new Promise<any[]>((resolve, reject) => {
   api.get('owners/select', { params: { name: inputValue}, headers: { Authorization: getToken()}}).then(response =>{
@@ -29,21 +30,26 @@ export function Payments(){
   const [extracts, setExtracts] = useState([{}])
   const [openIndex, setOpenIndex] = useState(-1)
   const [openListModal, setOpenListModal] = useState(false)
+  const [loading, setLoading] = useState(false)
 
   function handlePayments() {
+    setLoading(true)
     api.get('payment', {
       headers: {
         Authorization: getToken()
       }
     }).then(response =>{
       setPayments(JSON.parse(JSON.stringify(response.data)))
+      setLoading(false)
     }).catch((err: AxiosError) => {
       const data = err.response?.data as {message: string}
       toast.error(`Unidentified error: ${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
+      setLoading(false)
     })
   }
 
   function updateDataRow(data: any) {
+    setLoading(true)
     const cloneData = JSON.parse(JSON.stringify(data))
     delete cloneData.id;
     delete cloneData.date;
@@ -56,18 +62,21 @@ export function Payments(){
           Authorization: getToken()
         }
       }).then(response => {
-        toast.success(`Updated vaccine: ${response.data?.id}`, { position: "top-center", autoClose: 1000, })
-        resolve(`Updated vaccine: ${response.data?.id}`);
+        toast.success(`Updated payment: ${response.data?.id}`, { position: "top-center", autoClose: 1000, })
+        resolve(`Updated payment: ${response.data?.id}`);
+        setLoading(false)
       }).catch((err: AxiosError) => {
         const data = err.response?.data as {message: string}
         toast.error(`Unidentified error: ${data.message || err.response?.data ||err.message}`, { position: "top-center", autoClose: 5000, })
         throw new Error(`Unidentified error: ${data.message || err.response?.data || err.message}`);
+        setLoading(false)
       })
     })
     return promise
   }
 
   function deleteDataRow(id: number) {
+    setLoading(true)
     const promise = new Promise((resolve, reject) => {
       api.delete('payment', {
         params: {
@@ -77,18 +86,21 @@ export function Payments(){
           Authorization: getToken()
         }
       }).then(response => {
-        toast.success(`Deleted vaccine: ${response.data?.id}`, { position: "top-center", autoClose: 1000, })
-        resolve(`Deleted vaccine: ${response.data?.id}`);
+        toast.success(`Deleted payment: ${response.data?.id}`, { position: "top-center", autoClose: 1000, })
+        resolve(`Deleted payment: ${response.data?.id}`);
+        setLoading(false)
       }).catch((err: AxiosError) => {
         const data = err.response?.data as {message: string}
         toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
         throw new Error(`Unidentified error: ${data.message || err.response?.data || err.message}`);
+        setLoading(false)
       })
     });
     return promise
   }
 
   function createNewRow(data: any) {
+    setLoading(true)
     var newData = {owner_id: Number(data['owner']), value: Number(data.value), description: data.description};
   
     const promise = new Promise((resolve, reject) => {
@@ -100,9 +112,11 @@ export function Payments(){
         toast.success(`Created payment: ${response.data?.id}`, { position: "top-center", autoClose: 1000, })
         //resolve(`Created payment: ${response.data?.name}`);
         handlePayments()
+        setLoading(false)
       }).catch((err: AxiosError) => {
         const data = err.response?.data as {message: string}
         toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
+        setLoading(false)
         throw new Error(`Unidentified error: ${data.message || err.response?.data || err.message}`);
       })
     });
@@ -144,6 +158,7 @@ export function Payments(){
   ]
 
   function callListExtracts(id: number) {
+    setLoading(true)
     api.get('payment/extracts', {
       params: {
         id,
@@ -153,9 +168,11 @@ export function Payments(){
       }
     }).then(response =>{
       setExtracts(JSON.parse(JSON.stringify(response.data)))
+      setLoading(false)
     }).catch((err: AxiosError) => {
       const data = err.response?.data as {message: string}
       toast.error(`Unidentified error: ${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
+      setLoading(false)
     })
   }
 
@@ -244,17 +261,19 @@ export function Payments(){
   return (
     <div className="md:p-10 pt-4 h-full flex flex-col items-center">
       <h1 className="font-medium text-3xl md:text-4xl text-white">Payments</h1>
-      
-      <div className="md:flex bg-white w-full mt-4 rounded">
-        <DataTableCustom 
-          headers={headers} 
-          data={payments} 
-          setData={(data) => setPayments(data)} 
-          title="Payments"
-          createData={columnHeadersPayment}
-          createRow={(data) => createNewRow(data)}
-        />
-      </div>
+      { loading ? <div className="w-full flex justify-center"><Loading /> </div> :
+        <div className="md:flex bg-white w-full mt-4 rounded">
+            <DataTableCustom 
+              headers={headers} 
+              data={payments} 
+              setData={(data) => setPayments(data)} 
+              title="Payments"
+              createData={columnHeadersPayment}
+              createRow={(data) => createNewRow(data)}
+            />
+          
+        </div>
+      }
     </div>
   )
 }

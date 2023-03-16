@@ -6,6 +6,7 @@ import { storage } from "../lib/firebase";
 import { toast } from 'react-toastify';
 import { api, getToken } from '../lib/axios';
 import { getDownloadURL, ref, uploadBytes } from "@firebase/storage";
+import { Loading } from "./Loading";
 
 
 interface AvatarModalProps {
@@ -46,11 +47,17 @@ export const AvatarModal = ({
   nameFile,
   avatarUrl,
   name,
-  id
+  id,
 }: AvatarModalProps) => {
 
   const [image, setImage] = useState<any | null>(null)
   const [url, setUrl] = useState<any | null>(avatarUrl)
+  const [loading, setLoading] = useState(false)
+
+  function handleClose() {
+    setLoading(false)
+    onClose()
+  }
 
   function handleChange(selectorFiles: FileList | null){
     if(selectorFiles != null) {
@@ -65,12 +72,13 @@ export const AvatarModal = ({
   }
 
   function handleSubmit() {
+    setLoading(true)
     const storageRef = ref(storage, `profile/${nameFile}.jpg`);
     const metadata = {
       contentType: 'image/jpeg',
     };
     if(nameFile == undefined || onSubmit == undefined || id == undefined) {
-      onClose()
+      handleClose()
       return
     }
     const uploadTask = uploadBytes(storageRef, image, metadata).then(resolve => {
@@ -84,19 +92,20 @@ export const AvatarModal = ({
             Authorization: getToken()
           }
         }).then(resolve => {
+          setLoading(false)
           onSubmit(avatar)
           toast.success(`Updated image: ${nameFile}.jpg`, { position: "top-center", autoClose: 1000, })
         }).catch(error => {
           toast.error(`Error in save avatar profile`, { position: "top-center", autoClose: 5000, })
-          onClose()
+          handleClose()
         })
       }).catch(error => {
         toast.error(`Error in upload image`, { position: "top-center", autoClose: 5000, })
-        onClose()
+        handleClose()
       })
     }).catch(error => {
       toast.error(`Error in upload image`, { position: "top-center", autoClose: 5000, })
-      onClose()
+      handleClose()
     })
   }
 
@@ -127,7 +136,8 @@ export const AvatarModal = ({
           </Box>
       </DialogContent>
     <DialogActions>
-      {onSubmit != undefined ?
+      { loading ? <div className="w-full flex justify-center"><Loading pink={true} /> </div> :
+      onSubmit != undefined ?
         <>
           <Button autoFocus onClick={onClose}>
             Cancel

@@ -11,6 +11,7 @@ import { AxiosError } from "axios";
 import { toast } from "react-toastify";
 import {api, getToken} from "../lib/axios";
 import dayjs from "dayjs";
+import {Loading} from "./Loading";
 
 const HALFDAY = import.meta.env.VITE_HALFDAY
 const FULLDAY = import.meta.env.VITE_FULLDAY
@@ -19,10 +20,11 @@ interface AttendanceTableProps {
   attendances: any[],
   columns: any[],
   marginTable: number,
+  loading: boolean,
   handleCreateNewRow: (values:any) => void,
 }
 
-export function DataTableAttendance({attendances, columns, marginTable, handleCreateNewRow}:AttendanceTableProps) {
+export function DataTableAttendance({attendances, columns, marginTable, handleCreateNewRow, loading}:AttendanceTableProps) {
 
   const [createModalOpen, setCreateModalOpen] = useState(false);
 
@@ -32,19 +34,19 @@ export function DataTableAttendance({attendances, columns, marginTable, handleCr
 
   return (
     <ThemeProvider theme={theme}>
-        <div className={clsx('w-full mt-9 transition-all', {
-          'md:px-28 lg:px-56 xl:px-[450px]': marginTable == 0,
-          'md:px-16 lg:px-48 xl:px-[300px]': marginTable == 1,
-          'md:px-20 lg:px-36 xl:px-60': marginTable == 2,
-          'md:px-16 lg:px-44 xl:px-36': marginTable == 3,
+        <div className={clsx('w-full mt-9 transition-all ', {
+          'md:px-28 lg:px-56 xl:flex xl:justify-center': marginTable == 0,
+          'md:px-16 lg:px-48 xl:flex xl:justify-center': marginTable == 1,
+          'md:px-20 lg:px-36 xl:flex xl:justify-center': marginTable == 2,
+          'md:px-16 lg:px-44 xl:flex xl:justify-center': marginTable == 3,
           'md:px-12 lg:px-40 xl:px-16': marginTable == 4,
           'md:px-8 lg:px-24 xl:px-0 desktop:px-8': marginTable == 5,
           'px-0' : marginTable >= 5,
         })}>
+          { loading ? <div className="w-full flex justify-center"><Loading /> </div> :
           <div className="bg-white rounded">
-
-          
-          <MaterialReactTable
+         
+            <MaterialReactTable
             columns={columns as MRT_ColumnDef<(typeof attendances)[0]>[]}
             data={attendances}
             renderTopToolbarCustomActions={() => (
@@ -77,7 +79,10 @@ export function DataTableAttendance({attendances, columns, marginTable, handleCr
                 flex: '0 0 auto',
               },
             }}
-          />
+            />
+        
+          
+          
           {createModalOpen ? 
           <CreateNewModal
             columns={[
@@ -92,7 +97,7 @@ export function DataTableAttendance({attendances, columns, marginTable, handleCr
                       var data = response.data
                       var listData:any[] = []
                       data.forEach((element:any) => {
-                        listData.push({value: element.id, label: `${element.name} ${element.surname != null ?'- '+ element.surname : ''}`})
+                        listData.push({value: element.id, label: `${element.name} ${element.nickname != null ?'- '+ element.nickname : ''}`})
                       });
                       resolve(listData)
                     }).catch((err: AxiosError) => {
@@ -147,7 +152,9 @@ export function DataTableAttendance({attendances, columns, marginTable, handleCr
           />: null
           }
         </div>
+        } 
         </div>
+      
       </ThemeProvider>
   )
 }

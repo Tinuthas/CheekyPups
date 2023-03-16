@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { api, getToken } from "../lib/axios";
 import { AxiosError } from "axios";
 import { toast } from "react-toastify";
-
+import {Loading} from "../components/Loading";
 
 const headers = [
   {
@@ -72,36 +72,33 @@ const columnHeaders = [
 
 export function Owners(){
 
-  //const navigate = useNavigate();
   const [owners, setOwners] = useState([{}])
+  const [loading, setLoading] = useState(false)
 
-  /*function newOwnerDog() {
-    navigate('new')
-  }*/
-
-  useEffect(() => {
+  function getAllOwners() {
+    setLoading(true)
     api.get('owners', {
       headers: {
         Authorization: getToken()
       }
     }).then(response =>{
-      console.log(response.data)
       var data = response.data
       var listData = JSON.parse(JSON.stringify(data));
-      /*for(const i in listData) {
-        delete listData[i].phoneTwo;
-      }*/
       setOwners(listData)
+      setLoading(false)
     }).catch((err: AxiosError) => {
-      console.log(err)
-      console.log(err.response?.data)
       const data = err.response?.data as {message: string}
       toast.error(`Unidentified error: ${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
-      return 
+      setLoading(false) 
     })
+  }
+
+  useEffect(() => {
+    getAllOwners()
   }, [])
 
   function updateDataRow(data: object) {
+    setLoading(true)
     const promise = new Promise((resolve, reject) => {
       api.put('owners', data, {
         params: {
@@ -113,9 +110,11 @@ export function Owners(){
       }).then(response => {
         toast.success(`Updated: ${response.data?.name}`, { position: "top-center", autoClose: 1000, })
         resolve(`Updated: ${response.data?.name}`);
+        setLoading(false)
       }).catch((err: AxiosError) => {
         const data = err.response?.data as {message: string}
         toast.error(`Unidentified error: ${data.message || err.response?.data ||err.message}`, { position: "top-center", autoClose: 5000, })
+        setLoading(false)
         throw new Error(`Unidentified error: ${data.message || err.response?.data || err.message}`);
       })
     })
@@ -123,6 +122,7 @@ export function Owners(){
   }
 
   function createNewRow(data: object) {
+    setLoading(true)
     const promise = new Promise((resolve, reject) => {
       api.post('owners', data, {
         headers: {
@@ -131,9 +131,11 @@ export function Owners(){
       }).then(response => {
         toast.success(`Created: ${response.data?.name}`, { position: "top-center", autoClose: 1000, })
         resolve(`Created: ${response.data?.name}`);
+        setLoading(false)
       }).catch((err: AxiosError) => {
         const data = err.response?.data as {message: string}
         toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
+        setLoading(false)
         throw new Error(`Unidentified error: ${data.message || err.response?.data || err.message}`);
       })
     });
@@ -141,8 +143,7 @@ export function Owners(){
   }
 
   function deleteDataRow(id: number) {
-    console.log('id')
-    console.log(id)
+    setLoading(true)
     const promise = new Promise((resolve, reject) => {
       api.delete('owners', {
         params: {
@@ -154,38 +155,34 @@ export function Owners(){
       }).then(response => {
         toast.success(`Deleted: ${response.data?.name}`, { position: "top-center", autoClose: 1000, })
         resolve(`Deleted: ${response.data?.name}`);
+        setLoading(false)
       }).catch((err: AxiosError) => {
-        console.log(err)
         const data = err.response?.data as {message: string}
         toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
+        setLoading(false)
         throw new Error(`Unidentified error: ${data.message || err.response?.data || err.message}`);
       })
     });
     return promise
   }
 
-  /*
-  <div className="md:flex bg-white w-full p-4 md:p-8 mt-4 rounded">
-    <ButtonLight text="New Owner" onClick={newOwnerDog}/>
-  </div>
-  */
-
   return (
     <div className="md:p-10 pt-4 h-full flex flex-col items-center">
       <h1 className="font-medium text-3xl md:text-4xl text-white">Owners</h1>
-
-      <div className="md:flex bg-white w-full mt-4 rounded">
-        <DataTableCustom 
-          headers={headers} 
-          data={owners} 
-          setData={(data) => setOwners(data)} 
-          title="Owners" 
-          updateRow={(data) => updateDataRow(data)} 
-          createData={columnHeaders}
-          createRow={(data) => createNewRow(data)}
-          deleteRow={(id) => deleteDataRow(id)}
-        />
-      </div>
+      { loading ? <div className="w-full flex justify-center"><Loading /> </div> :
+        <div className="md:flex bg-white w-full mt-4 rounded">
+          <DataTableCustom 
+            headers={headers} 
+            data={owners} 
+            setData={(data) => setOwners(data)} 
+            title="Owners" 
+            updateRow={(data) => updateDataRow(data)} 
+            createData={columnHeaders}
+            createRow={(data) => createNewRow(data)}
+            deleteRow={(id) => deleteDataRow(id)}
+          />
+        </div>
+      }   
     </div>
   )
 }

@@ -32,6 +32,7 @@ export function Attendance(){
   const [openNameAvatar, setOpenNameAvatar] = useState('')
   const [openUrlAvatar, setOpenUrlAvatar] = useState('')
   const [openAvatar, setOpenAvatar] = useState(false)
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     clickSearchByDates()
@@ -44,10 +45,7 @@ export function Attendance(){
   }
 
   function clickSearchByDates(dateStartField?:Date, dateEndField?:Date){
-    if(dateStartField != null) 
-      setDateStart(dateStartField)
-    if(dateEndField != null) 
-      setDateEnd(dateEndField)
+    setLoading(true)
     api.get<Attendances>('attendance', {
       params: {
         dateStart: dayjs(dateStart).toISOString(), 
@@ -64,7 +62,6 @@ export function Attendance(){
           listDates['total'] = 0
           listDates['paid'] = 0
           for (let i = 0; i < item.dates.length; i++) {
-  
             listDates[item.dates[i]] = item.paids[i] ? (item.fullDates[i] ? 'DP' : '½DP') : item.fullDates[i] ? 'D' : '½D'
             dates.add(item.dates[i])
             listDates['total'] = listDates['total'] + 1
@@ -72,16 +69,15 @@ export function Attendance(){
           }
           marginDates = listDates['total'] > marginDates ? listDates['total'] : marginDates
           var obj = Object.assign({}, item, listDates);
-          console.log(obj)
           rows.push(obj)
         })
-        console.log(marginDates)
         setMarginTable(marginDates)
         setAttendances(rows)
         if(rows.length != 0 ) {
           var base:MRT_ColumnDef<any>[] = [{ 
             accessorKey:'name', 
             header: 'Dog name',
+            size: 200,
             Cell: ({ renderedCellValue, row }) => (
               <>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: '1rem', }}>
@@ -106,20 +102,22 @@ export function Attendance(){
             size: 120,
             Cell: ({ renderedCellValue }) => <div className="w-[28px] text-center">{renderedCellValue}</div>
           }]
-          for (const item of dates) {
+          for (const item of Array.from(dates).sort()) {
             base.push(cellComponent(item, () => clickSearchByDates()))
           }
           console.log(base)
           setColumns(base)
         }
-        
+        setLoading(false)
       }).catch(err => {
         console.log(err)
+        setLoading(false)
       })
   }
 
 
   const handleCreateNewRow = (values: any) => {
+    setLoading(true)
     var newValues = {
       dog_id: Number(values.dogId), 
       date: values.date, 
@@ -139,19 +137,27 @@ export function Attendance(){
       const data = err.response?.data as {message: string}
       toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
       throw new Error(`Unidentified error: ${data.message || err.response?.data || err.message}`);
+      setLoading(false)
     })
   };
 
   return (
     <div className="md:p-10 pt-4 h-full flex flex-col items-center">
       <h1 className="font-medium text-3xl md:text-4xl text-white">Attendances</h1>
-      <FilterDays onSubmit={(dateStart, dateEnd) => clickSearchByDates(dateStart, dateEnd)}/>
+      <FilterDays 
+        dateStart={dateStart}
+        dateEnd={dateEnd}
+        setDateStart={(date) => setDateStart(date)}
+        setDateEnd={(date) => setDateEnd(date)}
+        onSubmit={() => clickSearchByDates()} 
+        loading={loading}/>
         
       <DataTableAttendance 
         attendances={attendances}
         columns={columns}
         marginTable={marginTable}
         handleCreateNewRow={handleCreateNewRow}
+        loading={loading}
       />
 
       {openAvatar ? 

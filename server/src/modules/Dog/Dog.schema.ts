@@ -39,14 +39,14 @@ const createDogVaccineBody = z.object({
 const createDogBody = z.object({
   owner_id: z.number(),
   name: z.string(),
-  surname: z.string().nullable(),
+  nickname: z.string().nullable(),
   birthdayDate: z.string().nullable(),
   ...dogBase,
 })
 
 const updateDogBody = z.object({
   name: z.string(),
-  surname: z.string().nullable(),
+  nickname: z.string().nullable(),
   birthdayDate: z.string().nullable(),
   ...dogBase,
 })

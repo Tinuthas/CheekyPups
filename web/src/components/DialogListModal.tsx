@@ -1,5 +1,5 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import DataTableCustom from "./DataTableCustom";
 
 interface ListModalProps {

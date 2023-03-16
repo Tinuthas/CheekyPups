@@ -42,8 +42,8 @@ const columnHeaders = [
     required: true,
   },
   {
-    accessorKey: 'surname',
-    label: 'Dog Surname',
+    accessorKey: 'nickname',
+    label: 'Dog Nickname',
     name: 'Ex. Any',
     type: "text",
     required: true,
@@ -135,8 +135,8 @@ export function Dogs(){
       )
     },
     {
-      accessorKey: 'surname',
-      header: 'Surname',
+      accessorKey: 'nickname',
+      header: 'Nickname',
     },
     {
       accessorKey: 'owner',
@@ -163,7 +163,7 @@ export function Dogs(){
 
   useEffect(() => {
     getAllDogs()
-  }, [dogs])
+  }, [])
 
   function updateDataRow(data: any) {
     const cloneData = JSON.parse(JSON.stringify(data))

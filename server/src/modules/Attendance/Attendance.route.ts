@@ -180,31 +180,31 @@ async function getAttendances(input: AttendanceFilterInput){
         select: {
           id: true,
           name: true,
-          surname: true,
+          nickname: true,
           avatarUrl: true,
         }
       },
       day: {
         select: {
-          date: true
-        }
+          date: true,
+        },
       }
     },
     orderBy: [
+      {
+        day: {
+          date: 'asc'
+        }
+      },
       {
         dog: {
           name: 'asc'
         },
       },
-      {
-        day: {
-          date: 'asc'
-        }
-      }
     ]
   })
 
-  let dogsAttendance = new Map<string, { id: number, attendanceIds:[id: number], dog_id:number, name: string, surname: string | null, avatarUrl: string | null, dates:[date:string], fullDates:[fullDate:boolean], paids:[paid:boolean] }>();
+  let dogsAttendance = new Map<string, { id: number, attendanceIds:[id: number], dog_id:number, name: string, nickname: string | null, avatarUrl: string | null, dates:[date:string], fullDates:[fullDate:boolean], paids:[paid:boolean] }>();
   for (let index = 0; index < attendances.length; index++) {
     const element = attendances[index];
     if (dogsAttendance.has(element.dog.id.toString())) {
@@ -217,8 +217,8 @@ async function getAttendances(input: AttendanceFilterInput){
         id: element.dog.id,
         attendanceIds: [element.id],
         dog_id: element.dog.id,
-        name: `${element.dog.name} ${element.dog.surname != null ?'- '+ element.dog.surname : ''}`.trim(),
-        surname: element.dog.surname,
+        name: `${element.dog.name} ${element.dog.nickname != null ?'- '+ element.dog.nickname : ''}`.trim(),
+        nickname: element.dog.nickname,
         avatarUrl: element.dog.avatarUrl,
         dates: [dayjs(element.day.date).format('DD/MM/YYYY')],
         fullDates: [element.fullDay],
@@ -227,9 +227,8 @@ async function getAttendances(input: AttendanceFilterInput){
     }
   }
 
-  const convertList: { id: number, attendanceIds: [id: number]; dog_id: number; name: string; surname: string | null; avatarUrl: string | null; dates: [date: string]; fullDates: [fullDate: boolean]; }[] = [];
+  const convertList: { id: number, attendanceIds: [id: number]; dog_id: number; name: string; nickname: string | null; avatarUrl: string | null; dates: [date: string]; fullDates: [fullDate: boolean]; }[] = [];
   dogsAttendance.forEach((value, key) => convertList.push(value));
-
 
   return convertList
 }
@@ -290,10 +289,24 @@ async function deleteAttendance(id: number) {
       where: {
         id: Number(id)
       },
+      select: {
+        extract:{
+          select: {
+            id: true,
+          }
+        },
+      }
     })
+    if(deleteAttendance.extract != null) {
+      const deleteExtract = await prisma.extract.delete({
+        where: {
+          id: Number(deleteAttendance.extract.id)
+        }
+      })
+    }
     return deleteAttendance
   }else {
-    return new Error('Attendance cannot be deleted')
+    return new Error('Attendance cannot be deleted because it was already paid')
   }
 }
 

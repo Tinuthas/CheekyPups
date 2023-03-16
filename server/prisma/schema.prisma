@@ -14,7 +14,7 @@ datasource db {
 model Dog {
   id           Int          @id @default(autoincrement())
   name         String
-  surname      String?
+  nickname     String?
   birthdayDate DateTime?
   gender       String?
   colour       String?
@@ -83,7 +83,7 @@ model Extract {
 
   attendanceId Int?        @unique
   ownerId      Int
-  attendance   Attendance? @relation(fields: [attendanceId], references: [id])
+  attendance   Attendance? @relation(fields: [attendanceId], references: [id], onDelete: Cascade)
   Owner        Owner       @relation(fields: [ownerId], references: [id])
 
   @@map("extracts")
