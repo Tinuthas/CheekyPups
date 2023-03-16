@@ -105,7 +105,7 @@ export function Login(){
                         onChange={event => setEmail(event.target.value)}
                         autoFocus
                         type="email"
-                        className="block w-full px-4 py-2 mt-2 text-neutral-600 bg-white border rounded-md focus:border-pinkBackground focus:ring-pinkBackground focus:outline-none focus:ring focus:ring-opacity-40"
+                        className="block w-full px-4 py-2 mt-2 text-neutral-600 bg-white border rounded-md focus:border-pinkBackground focus:outline-none"
                     />
                 </div>
                 <div className="mb-2">
@@ -118,7 +118,7 @@ export function Login(){
                     <input
                         onChange={event => setPassword(event.target.value)}
                         type="password"
-                        className="block w-full px-4 py-2 mt-2 text-neutral-600 bg-white border rounded-md focus:border-pinkBackground focus:ring-pinkBackground focus:outline-none focus:ring focus:ring-opacity-40"
+                        className="block w-full px-4 py-2 mt-2 text-neutral-600 bg-white border rounded-md focus:border-pinkBackground focus:outline-none "
                     />
                 </div>
 

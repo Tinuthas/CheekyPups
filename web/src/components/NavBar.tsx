@@ -16,7 +16,7 @@ export function NavBar() {
 
   let Links = [
     { name: "Home", path: '/', },
-    { name: "About", path: 'About', },
+    //{ name: "About", path: 'About', },
     { name: "Daycare", 
       links: [
       {
