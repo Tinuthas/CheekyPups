@@ -20,7 +20,7 @@ export function NavBar() {
     { name: "Daycare", 
       links: [
       {
-        name: "Attendance", path: "Attendance",
+        name: "Attendances", path: "Attendances",
       },
       {
         name: "Payments", path: "Payments",

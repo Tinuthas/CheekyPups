@@ -22,7 +22,7 @@ type Attendances = Array<{
   paids: boolean[];
 }>
 
-export function Attendance(){
+export function Attendances(){
 
   const [attendances, setAttendances] = useState<any>([])
   const [columns, setColumns] = useState<any>([])
