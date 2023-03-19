@@ -26,7 +26,7 @@ export function Presentation() {
           <div className="m-5 bg-white p-7 md:rounded">
             <h3 className="text-center font-medium text-lg">GET IN TOUCH</h3>
             <p className="mt-5">
-              To organise your next doggy pampering session, give us a call on <span className="font-bold">083 487 1320</span> or send us a email <span className="font-bold">info@cheekypups.ie</span>.
+              To organise your next doggy pampering session, give us a call on <span className="font-bold">083 487 1320</span> or send us a email <span className="font-bold">info@cheekypups.com</span>.
             </p>
             <p className="mt-2">
               You can find us on Facebook <a href="https://www.facebook.com/CheekyDogsDogGrooming/?fref=ts" className="font-bold">here</a>.
