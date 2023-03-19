@@ -1,6 +1,6 @@
 import fastify, { FastifyReply, FastifyRequest } from "fastify";
 import {fastifyJwt} from "@fastify/jwt"
-import fastifyOpenapiDocs from 'fastify-openapi-docs'
+//import fastifyOpenapiDocs from 'fastify-openapi-docs'
 import cors from '@fastify/cors'
 import { appRoutes } from "./routes";
 import { userSchemas } from "./modules/User/User.schema";
@@ -18,7 +18,7 @@ declare module  "fastify" {
   }
 }
 
-app.register(fastifyOpenapiDocs, {
+/*app.register(fastifyOpenapiDocs, {
   openapi: {
     // All these fields are optional, but they should be provided to satisfy OpenAPI specification.
     openapi: '3.0.3',
@@ -51,7 +51,7 @@ app.register(fastifyOpenapiDocs, {
       }
     }
   }
-})
+})*/
 
 app.addSchema({
   type: 'object',
