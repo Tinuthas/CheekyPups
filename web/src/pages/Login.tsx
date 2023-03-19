@@ -69,7 +69,7 @@ export function Login(){
       if (accessToken != "") {
         localStorage.setItem("authenticated", accessToken);
         updateToken()
-        navigate("/");
+        navigate("/app");
       }
     }).catch((err: AxiosError) => {
       if(err.response?.status == 401) {

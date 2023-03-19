@@ -8,16 +8,16 @@ import { Attendances } from './pages/Attendances'
 import { Dogs } from './pages/Dogs'
 import { Home } from './pages/Home'
 import { Login } from './pages/Login'
-//import { NewOwnerDog } from './pages/NewOwnerDog'
 import { Owners } from './pages/Owners'
 import { Payments } from './pages/Payments'
 import { Vaccines } from './pages/Vaccines'
+import { Presentation } from './pages/Presentation'
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<App/>}>
+        <Route path="/app" element={<App/>}>
           <Route index element={<Home/>}/>
           <Route path="about" element={<About/>}/>
           <Route path="attendances" element={<Attendances/>}/>
@@ -27,6 +27,7 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
           <Route path="vaccines" element={<Vaccines/>}/>
         </Route>
         <Route path='login' element={<Login/>}/>
+        <Route path='/' element={<Presentation/>}/>
       </Routes>
     </BrowserRouter>
   </React.StrictMode>,

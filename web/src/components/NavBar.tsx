@@ -15,7 +15,7 @@ export function NavBar() {
   );
 
   let Links = [
-    { name: "Home", path: '/', },
+    { name: "Home", path: '/app', },
     //{ name: "About", path: 'About', },
     { name: "Daycare", 
       links: [
