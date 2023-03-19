@@ -1,6 +1,8 @@
 import axios from 'axios'
 
-export const api = axios.create({baseURL:'http://localhost:3333/api'})
+const URLBASE = import.meta.env.VITE_URLBASE
+
+export const api = axios.create({baseURL: URLBASE})
 
 export function updateToken() {
 
