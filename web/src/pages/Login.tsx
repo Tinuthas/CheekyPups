@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import logoImage from '../assets/logo.svg'
 import z, { ZodError } from 'zod'
 import {api, updateToken} from '../lib/axios';
+import { Loading } from '../components/Loading';
 
 interface Token {
   accessToken: string;
@@ -28,6 +29,7 @@ export function Login(){
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [loading, setLoading] = useState(false)
   const [authenticated, setauthenticated] = useState(
     localStorage.getItem(localStorage.getItem("authenticated") || "")
   );
@@ -60,18 +62,21 @@ export function Login(){
   }
 
   function login(input: LoginInput){
+    setLoading(true)
     const {parsedEmail, parsedPassword} = input
     api.post<Token>('users/login', {email: parsedEmail, password: parsedPassword}, {
       headers: { 'Content-Type': 'application/json' }
     }).then( response =>{
       var accessToken = response.data.accessToken
-
+      setLoading(false)
       if (accessToken != "") {
         localStorage.setItem("authenticated", accessToken);
         updateToken()
         navigate("/app");
       }
+      
     }).catch((err: AxiosError) => {
+      setLoading(false)
       if(err.response?.status == 401) {
         setErrorMessage("Invalid email or password")
         return
@@ -127,9 +132,11 @@ export function Login(){
                 </div>
                 
                 <div className="mt-6">
+                  { loading ? <div className="w-full flex justify-center"><Loading pink={true} /> </div> :
                     <button className="w-full px-4 py-2 tracking-wide text-white transition-colors duration-200 transform bg-pinkBackground rounded-md hover:bg-pink-600 focus:outline-none focus:bg-bg-pink-600">
                         Login
                     </button>
+                  }
                 </div>
             </form>
 

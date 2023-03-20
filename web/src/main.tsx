@@ -1,6 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { HashRouter, Route, Routes } from 'react-router-dom'
+
 import App from './App'
 import './index.css'
 import { About } from './pages/About'
@@ -15,9 +16,9 @@ import { Presentation } from './pages/Presentation'
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
-    <BrowserRouter>
+    <HashRouter>
       <Routes>
-        <Route path="/app" element={<App/>}>
+        <Route path="app" element={<App/>}>
           <Route index element={<Home/>}/>
           <Route path="about" element={<About/>}/>
           <Route path="attendances" element={<Attendances/>}/>
@@ -29,8 +30,8 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
         <Route path='login' element={<Login/>}/>
         <Route path='/' element={<Presentation/>}/>
       </Routes>
-    </BrowserRouter>
-  </React.StrictMode>,
+    </HashRouter>
+  </React.StrictMode>
 )
 
 // <Route path="owners/new" element={<NewOwnerDog/>}/>

@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { AvatarModal } from '../components/AvatarProfile';
 import DataTableCustom from '../components/DataTableCustom';
+import { Loading } from '../components/Loading';
 import { api, getToken } from '../lib/axios';
 
 const hideColumns = { owner: false }
@@ -80,8 +81,10 @@ export function Dogs(){
   const [dogs, setDogs] = useState([{}])
   const [openAvatar, setOpenAvatar] = useState(false)
   const [openIndex, setOpenIndex] = useState(-1);
+  const [loading, setLoading] = useState(false)
 
   function getAllDogs() {
+    setLoading(true)
     api.get('dogs', {
       headers: {
         Authorization: getToken()
@@ -94,10 +97,11 @@ export function Dogs(){
         delete listData[i].ownerId;
       }
       setDogs(listData)
+      setLoading(false)
     }).catch((err: AxiosError) => {
       const data = err.response?.data as {message: string}
       toast.error(`Unidentified error: ${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
-      return 
+      setLoading(false) 
     })
   }
 
@@ -166,6 +170,7 @@ export function Dogs(){
   }, [])
 
   function updateDataRow(data: any) {
+    setLoading(true)
     const cloneData = JSON.parse(JSON.stringify(data))
     delete cloneData.owner;
     const promise = new Promise((resolve, reject) => {
@@ -178,10 +183,12 @@ export function Dogs(){
         }
       }).then(response => {
         toast.success(`Updated: ${response.data?.name}`, { position: "top-center", autoClose: 1000, })
+        setLoading(false)
         resolve(`Updated: ${response.data?.name}`);
       }).catch((err: AxiosError) => {
         const data = err.response?.data as {message: string}
         toast.error(`Unidentified error: ${data.message || err.response?.data ||err.message}`, { position: "top-center", autoClose: 5000, })
+        setLoading(false)
         throw new Error(`Unidentified error: ${data.message || err.response?.data || err.message}`);
       })
     })
@@ -190,6 +197,7 @@ export function Dogs(){
 
 
   function createNewRow(data: any) {
+    setLoading(true)
     var newData = {};
     delete Object.assign(newData, data, {['owner_id']: Number(data['owner']) })['owner'];
     //return new Promise((resolve) => resolve('success'))
@@ -200,10 +208,12 @@ export function Dogs(){
         }
       }).then(response => {
         toast.success(`Created: ${response.data?.name}`, { position: "top-center", autoClose: 1000, })
+        setLoading(false)
         resolve(`Created: ${response.data?.name}`);
       }).catch((err: AxiosError) => {
         const data = err.response?.data as {message: string}
         toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
+        setLoading(false)
         throw new Error(`Unidentified error: ${data.message || err.response?.data || err.message}`);
       })
     });
@@ -211,8 +221,7 @@ export function Dogs(){
   }
 
   function deleteDataRow(id: number) {
-    console.log('delete id')
-    console.log(id)
+    setLoading(true)
     const promise = new Promise((resolve, reject) => {
       api.delete('dogs', {
         params: {
@@ -223,11 +232,12 @@ export function Dogs(){
         }
       }).then(response => {
         toast.success(`Deleted: ${response.data?.name}`, { position: "top-center", autoClose: 1000, })
+        setLoading(false)
         resolve(`Deleted: ${response.data?.name}`);
       }).catch((err: AxiosError) => {
-        console.log(err)
         const data = err.response?.data as {message: string}
         toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
+        setLoading(false)
         throw new Error(`Unidentified error: ${data.message || err.response?.data || err.message}`);
       })
     });
@@ -243,7 +253,7 @@ export function Dogs(){
   return (
     <div className="md:p-10 pt-4 h-full flex flex-col items-center">
       <h1 className="font-medium text-3xl md:text-4xl text-white">Dogs</h1>
-      
+      { loading ? <div className="w-full flex justify-center"><Loading /> </div> :
       <div className="md:flex bg-white w-full mt-4 rounded">
         <DataTableCustom 
           title='Dogs' 
@@ -256,6 +266,7 @@ export function Dogs(){
           deleteRow={(id) => deleteDataRow(id)}
           setData={(data) => setDogs(data)} />
       </div>
+      }
     </div>
   )
 }

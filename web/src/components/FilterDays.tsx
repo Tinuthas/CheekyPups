@@ -52,7 +52,7 @@ export function FilterDays({onSubmit, loading, dateEnd, dateStart, setDateEnd, s
           </LocalizationProvider>
         </ThemeProvider>
         </div>
-        { loading ? <Loading pink={true}/> :
+        { loading ? <div className="ml-8"><Loading pink={true}/></div> :
           <ButtonLight text="Search" onClick={() => onSubmit()}/>
         }
       </div>
