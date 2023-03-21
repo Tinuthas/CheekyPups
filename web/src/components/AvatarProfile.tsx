@@ -1,13 +1,14 @@
 import { Avatar, Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, ThemeProvider } from "@mui/material"
 import { useState } from "react";
 import { theme } from "../lib/theme";
-import Resizer from "react-image-file-resizer";
+//import Resizer from "react-image-file-resizer";
 import { storage } from "../lib/firebase";
 import { toast } from 'react-toastify';
 import { api, getToken } from '../lib/axios';
 import { getDownloadURL, ref, uploadBytes } from "@firebase/storage";
 import { Loading } from "./Loading";
-import { imageResize } from "../utils/Resizer"
+import Resizer from "../utils/Resizer.js";
+//import { imageResize } from "../utils/Resizer"
 
 
 interface AvatarModalProps {
@@ -22,7 +23,7 @@ interface AvatarModalProps {
 
 const resizeFile = (file:File)=>
   new Promise(resolve => {
-    Resizer.imageFileResizer(file, 300, 300, "JPEG", 75, 0, uri => {
+    Resizer.imageFileResizer(file, 300, 300, "JPEG", 75, 0, (uri: any) => {
       resolve(uri)
     }, "file", 100, 100);
 });
@@ -64,7 +65,7 @@ export const AvatarModal = ({
     if(selectorFiles != null) {
       setUrl(URL.createObjectURL(selectorFiles[0]))
 
-      imageResize(selectorFiles[0]).then(resolve => {
+      resizeFile(selectorFiles[0]).then(resolve => {
         setImage(resolve)
       }).catch(error => {
         console.log(error)
