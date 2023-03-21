@@ -48,19 +48,25 @@ export const CreateNewModal = ({
   const [selectInput, setSelectInput] = useState<any>({})
 
   const handleClose = () => {
-    console.log()
     setValues(emptyValues)
     onClose()
   }
 
   const handleSubmit = () => {
+    console.log('clicked')
     //put your validation logic here
     //console.log(Object.entries(values))
     var validationEmail = false
     var validationRequired = false
     var validationDate = false
     Object.entries(values).forEach((element:any, index) => {
+      console.log(element[1])
+      console.log(columns[index])
       if(columns[index] != null){
+        if(columns[index].type.includes('checkboc')){
+          if(values[element[1]] == undefined) 
+            values[element[1]] = false
+        }
         if(columns[index].required == true) {
           if(validateRequired(element[1]) == false)
             validationRequired = true
@@ -76,6 +82,7 @@ export const CreateNewModal = ({
           if(element[1].length == 0) {
             values[element[0]] = null
           }else{
+            //values[element[0]] = element[1]
             values[element[0]] = dayjs(element[1]).format('DD/MM/YYYY')
           }
         }

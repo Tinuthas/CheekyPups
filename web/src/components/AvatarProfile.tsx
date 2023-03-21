@@ -7,6 +7,7 @@ import { toast } from 'react-toastify';
 import { api, getToken } from '../lib/axios';
 import { getDownloadURL, ref, uploadBytes } from "@firebase/storage";
 import { Loading } from "./Loading";
+import { imageResize } from "../utils/Resizer"
 
 
 interface AvatarModalProps {
@@ -62,12 +63,19 @@ export const AvatarModal = ({
   function handleChange(selectorFiles: FileList | null){
     if(selectorFiles != null) {
       setUrl(URL.createObjectURL(selectorFiles[0]))
-      resizeFile(selectorFiles[0]).then(resolve => {
+
+      imageResize(selectorFiles[0]).then(resolve => {
         setImage(resolve)
       }).catch(error => {
         console.log(error)
         toast.error(`Error resize image`, { position: "top-center", autoClose: 5000, })
       })
+      /*resizeFile(selectorFiles[0]).then(resolve => {
+        setImage(resolve)
+      }).catch(error => {
+        console.log(error)
+        toast.error(`Error resize image`, { position: "top-center", autoClose: 5000, })
+      })*/
     }
   }
 

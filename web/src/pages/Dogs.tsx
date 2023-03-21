@@ -47,7 +47,6 @@ const columnHeaders = [
     label: 'Dog Nickname',
     name: 'Ex. Any',
     type: "text",
-    required: true,
   },
   {
     accessorKey: 'birthdayDate',
@@ -197,9 +196,11 @@ export function Dogs(){
 
 
   function createNewRow(data: any) {
+    console.log(data)
     setLoading(true)
     var newData = {};
     delete Object.assign(newData, data, {['owner_id']: Number(data['owner']) })['owner'];
+    console.log(newData)
     //return new Promise((resolve) => resolve('success'))
     const promise = new Promise((resolve, reject) => {
       api.post('dogs', newData, {
@@ -211,6 +212,7 @@ export function Dogs(){
         setLoading(false)
         resolve(`Created: ${response.data?.name}`);
       }).catch((err: AxiosError) => {
+        console.log(err)
         const data = err.response?.data as {message: string}
         toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
         setLoading(false)

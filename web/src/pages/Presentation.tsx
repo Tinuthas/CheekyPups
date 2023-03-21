@@ -16,7 +16,7 @@ export function Presentation() {
         <div className="md:mx-28 lg:mx-40 desktop:mx-80">
           <div className="m-5 bg-white p-7 md:rounded">
           <h3 className="text-center font-medium text-lg">WHAT DO WE DO?</h3>
-            <p className="mt-5">Declan’s Cheeky Pups Dog Grooming is a calm and controlled environment. We know that time is of value for the busy working mom & dad so I try and work around times that suit you. If you cannot make it during our regular times I am happy to try and work around your schedule.  We offer selected Weekend & Evening slots outside our regular times. Just give us a call and we can work around you. </p>
+            <p className="mt-5">Declan’s Cheeky Pups Dog Grooming is a calm and controlled environment. We know that time is of value for the busy working mom & dad so I try and work around times that suit you. Just give us a call and we can work around you. </p>
           </div>
           <div className="m-5 bg-white p-7 md:rounded">
             <h3 className="text-center font-medium text-lg">WHAT DO WE OFFER?</h3>

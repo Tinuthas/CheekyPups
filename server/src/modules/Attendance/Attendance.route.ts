@@ -71,6 +71,8 @@ export async function attendanceRoutes(app: FastifyInstance) {
 
     //const parsedDate = dayjs(date).startOf('day')
 
+    
+
     let dog = await prisma.dog.findUnique({
       where: {
         id: Number(dog_id)
@@ -80,10 +82,26 @@ export async function attendanceRoutes(app: FastifyInstance) {
       }
     })
 
+
     var dateParts:any[] = date.split('/')
     var dateObject = new Date(+dateParts[2], dateParts[1] - 1, +dateParts[0])
     var parsedDate = dayjs(dateObject).startOf('day').toISOString()
     console.log(parsedDate)
+
+    let checkedAttendance = await prisma.attendance.findFirst({
+      where: {
+       dog: {
+        id: Number(dog_id)
+       },
+       day: {
+        date: parsedDate,
+       }
+      }
+    })
+
+    if(checkedAttendance != undefined && checkedAttendance.id != null) {
+      return checkedAttendance
+    }
 
     let attendance = await prisma.attendance.create(
       {
@@ -297,13 +315,13 @@ async function deleteAttendance(id: number) {
         },
       }
     })
-    if(deleteAttendance.extract != null) {
+    /*if(deleteAttendance.extract != null) {
       const deleteExtract = await prisma.extract.delete({
         where: {
           id: Number(deleteAttendance.extract.id)
         }
       })
-    }
+    }*/
     return deleteAttendance
   }else {
     return new Error('Attendance cannot be deleted because it was already paid')

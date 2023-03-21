@@ -62,6 +62,7 @@ function handleEdit(item:any, row:any, id:number) {
       paid: (paidField.toString().toLowerCase() === 'true'),
       value: Number(valueField), 
       descriptionValue: valueDecriptionField}
+    console.log(data)
     api.put('attendance', data, {
       params: {
         id,
@@ -73,6 +74,7 @@ function handleEdit(item:any, row:any, id:number) {
       toast.success(`Updated Attendance`, { position: "top-center", autoClose: 1000, })
       onSubmit()
     }).catch((err: AxiosError) => {
+      console.log(err)
       const data = err.response?.data as {message: string}
       toast.error(`Unidentified error: ${data.message || err.response?.data ||err.message}`, { position: "top-center", autoClose: 5000, })
     })
@@ -83,6 +85,7 @@ function handleEdit(item:any, row:any, id:number) {
 
 function handlePaid(item:string, id:number) {
   try{
+    console.log(item, id)
     api.put('attendance/pay', {descriptionValue: `DAYCARE - ${item}`},{
       params: {
         id,
@@ -94,6 +97,7 @@ function handlePaid(item:string, id:number) {
       toast.success(`Updated Attendance`, { position: "top-center", autoClose: 1000, })
       onSubmit()
     }).catch((err: AxiosError) => {
+      console.log(err)
       const data = err.response?.data as {message: string}
       toast.error(`Unidentified error: ${data.message || err.response?.data ||err.message}`, { position: "top-center", autoClose: 5000, })
     })
@@ -104,6 +108,7 @@ function handlePaid(item:string, id:number) {
 
 function handleDelete(id:number) {
   try{
+    console.log(id)
     api.delete('attendance', {
       params: {
         id,
@@ -115,6 +120,7 @@ function handleDelete(id:number) {
       toast.success(`Deleted Attendance`, { position: "top-center", autoClose: 1000, })
       onSubmit()
     }).catch((err: AxiosError) => {
+      console.log(err)
       const data = err.response?.data as {message: string}
       toast.error(`Unidentified error: ${data.message || err.response?.data ||err.message}`, { position: "top-center", autoClose: 5000, })
     })

@@ -68,8 +68,8 @@ export function Payments(){
       }).catch((err: AxiosError) => {
         const data = err.response?.data as {message: string}
         toast.error(`Unidentified error: ${data.message || err.response?.data ||err.message}`, { position: "top-center", autoClose: 5000, })
-        throw new Error(`Unidentified error: ${data.message || err.response?.data || err.message}`);
         setLoading(false)
+        throw new Error(`Unidentified error: ${data.message || err.response?.data || err.message}`);   
       })
     })
     return promise
@@ -92,8 +92,8 @@ export function Payments(){
       }).catch((err: AxiosError) => {
         const data = err.response?.data as {message: string}
         toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
-        throw new Error(`Unidentified error: ${data.message || err.response?.data || err.message}`);
         setLoading(false)
+        throw new Error(`Unidentified error: ${data.message || err.response?.data || err.message}`);  
       })
     });
     return promise
@@ -110,9 +110,9 @@ export function Payments(){
         }
       }).then(response => {
         toast.success(`Created payment: ${response.data?.id}`, { position: "top-center", autoClose: 1000, })
-        //resolve(`Created payment: ${response.data?.name}`);
+        resolve(`Created payment: ${response.data?.id}`);
         handlePayments()
-        setLoading(false)
+         
       }).catch((err: AxiosError) => {
         const data = err.response?.data as {message: string}
         toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
@@ -180,12 +180,12 @@ export function Payments(){
     {
       accessorKey: 'name',
       header: 'Name',
-      size: 150,
+      size: 200,
     },
     {
       accessorKey: 'extracts',
       header: 'Count',
-      size: 80,
+      size: 120,
       Cell: ({ renderedCellValue, row }) => (
         <>
           <div className="w-full cursor-pointer" onClick={() => {
@@ -214,7 +214,7 @@ export function Payments(){
     {
       accessorKey: 'total',
       header: 'Total Valor',
-      size: 80,
+      size: 125,
       Cell: ({ renderedCellValue, row }) => (
         <div className="w-full cursor-pointer" onClick={() => {
           setOpenListModal(true)

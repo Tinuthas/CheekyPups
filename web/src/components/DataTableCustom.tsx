@@ -60,6 +60,7 @@ const DataTableCustom = ({headers, data, setData, createData, title, updateRow, 
   }>({});
 
   const handleCreateNewRow = (values: any, valuesData: any) => {
+    console.log('clicked')
     if(createRow != undefined){
       createRow(valuesData).then(() => {
         data.push(values);

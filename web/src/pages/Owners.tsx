@@ -11,21 +11,22 @@ const headers = [
   {
     accessorKey: 'name',
     header: 'Name',
-    size: 150,
+    size: 180,
   },
   {
     accessorKey: 'emailAddress',
     header: 'Email',
+    size: 200,
   },
   {
     accessorKey: 'phoneOne',
     header: 'Phone',
-    size: 100,
+    size: 135,
   },
   {
     accessorKey: 'phoneTwo',
     header: 'Phone 2',
-    size: 100,
+    size: 135,
   }, 
   {
     accessorKey: 'address',

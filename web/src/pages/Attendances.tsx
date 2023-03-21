@@ -118,6 +118,7 @@ export function Attendances(){
 
   const handleCreateNewRow = (values: any) => {
     setLoading(true)
+    console.log(values)
     var newValues = {
       dog_id: Number(values.dogId), 
       date: values.date, 
@@ -126,6 +127,7 @@ export function Attendances(){
       value: values.value, 
       descriptionValue: values.descriptionValue
     }
+    console.log(newValues)
     api.post('attendance', newValues, {
       headers: {
         Authorization: getToken()
@@ -134,6 +136,7 @@ export function Attendances(){
       toast.success(`Attedanted: ${values.dog}`, { position: "top-center", autoClose: 1000, })
       clickSearchByDates()
     }).catch((err: AxiosError) => {
+      console.log(err)
       const data = err.response?.data as {message: string}
       toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
       throw new Error(`Unidentified error: ${data.message || err.response?.data || err.message}`);
