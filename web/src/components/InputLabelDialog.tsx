@@ -24,6 +24,8 @@ export const InputLabel = ({labelName, type, placeholder, accessorKey, value, se
   const [status, setStatus] = useState(false)
 
   function setEventChange(event: React.ChangeEvent<HTMLInputElement>) {
+    console.log(accessorKey)
+   
     event.target.name = accessorKey
     if(type == "checkbox"){ 
       var checked = event.target.checked
@@ -37,19 +39,28 @@ export const InputLabel = ({labelName, type, placeholder, accessorKey, value, se
     }else if(value != null && setValue != undefined){
       setValue(event.target.value)
     }
-    if(type == "select"){
+
+    console.log(event.target.value)
+    /*if(type == "select"){
       if(onSelect != undefined)
         onSelect(accessorKey.toLowerCase().replace('id', ''), event.target.placeholder)
-    }
+    }*/
       
     onChange(event)
   }
 
   function handleOnChangeValue(valueField: any) {
-    var date = new Date(valueField)
-    if(setValue != undefined)
-      setValue(date)
-    onChangeValue(accessorKey, date)
+    if(type == "select"){
+      if(onSelect != undefined)
+        onSelect(accessorKey.toLowerCase().replace('id', ''), valueField.label)
+      onChangeValue(accessorKey, valueField.value.toString())
+    }else if(type == "date") {
+      var date = new Date(valueField)
+      if(setValue != undefined)
+        setValue(date)
+      onChangeValue(accessorKey, date)
+    }
+   
   }
 
   return (
@@ -61,7 +72,7 @@ export const InputLabel = ({labelName, type, placeholder, accessorKey, value, se
       }
       {
         type.includes('select') ?
-          <SelectInput getData={getData} onChange={setEventChange}/>
+          <SelectInput getData={getData} onChangeSelect={handleOnChangeValue}/>
         : type.includes('checkbox') ? 
           <FormControlLabel control={<Checkbox onChange={setEventChange} sx={{ color: '#FF499E', '& .MuiSvgIcon-root': { fontSize: 28 } }} checked={value}  />}  label={status ? placeholder : labelName}  />
         : type.includes('date') ?

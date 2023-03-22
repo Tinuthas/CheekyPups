@@ -59,13 +59,17 @@ export const CreateNewModal = ({
     var validationEmail = false
     var validationRequired = false
     var validationDate = false
+    console.log(Object.entries(values))
+    console.log(columns)
+
+
     Object.entries(values).forEach((element:any, index) => {
       console.log(element[1])
       console.log(columns[index])
       if(columns[index] != null){
         if(columns[index].type.includes('checkbox')){
           if(values[element[1]] == undefined) 
-            values[element[1]] = false
+            element[1] = false
         }
         if(columns[index].required == true) {
           if(validateRequired(element[1]) == false)
@@ -107,6 +111,11 @@ export const CreateNewModal = ({
     }
   };
 
+  function onChangeValuesCheck(key:any, value:any) {
+    console.log({[key]: value})
+    setValues({ ...values, [key]: value})
+  }
+
   return (
     <Dialog open={open} sx={{
       "& .MuiDialog-container": {
@@ -130,13 +139,13 @@ export const CreateNewModal = ({
             {columns.map((column) => (
               <InputLabel 
                 key={column.accessorKey}
-                onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })} 
+                onChange={(e) => onChangeValuesCheck(e.target.name, e.target.value) } 
                 placeholder={column.name} 
                 type={column.type} 
                 labelName={column.label} 
                 accessorKey={column.accessorKey}
                 onSelect={(key, value) => setSelectInput({ ...selectInput, [key]: value })}
-                onChangeValue={(key, value) => setValues({ ...values, [key]: value})}
+                onChangeValue={(key, value) => onChangeValuesCheck(key, value)}
                 getData={column.getDataSelect}
                 value={column.value}
                 setValue={column.setValue}
@@ -157,7 +166,9 @@ export const CreateNewModal = ({
   );
 };
 
-const validateRequired = (value: string) => !!value.length;
+const validateRequired = (value: string) =>  {
+  return !!value.length
+}
 const validateEmail = (email: string) =>
   !!email.length &&
   email

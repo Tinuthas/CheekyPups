@@ -184,8 +184,8 @@ export function Vaccines(){
           Authorization: getToken()
         }
       }).then(response => {
-        toast.success(`Created vaccine: ${response.data?.name}`, { position: "top-center", autoClose: 1000, })
-        resolve(`Created vaccine: ${response.data?.name}`);
+        toast.success(`Created vaccine: ${response.data?.id}`, { position: "top-center", autoClose: 1000, })
+        resolve(`Created vaccine: ${response.data?.id}`);
         setLoading(false)
       }).catch((err: AxiosError) => {
         const data = err.response?.data as {message: string}

@@ -3,21 +3,22 @@ import AsyncSelect from 'react-select/async';
 
 interface SelectInputProps {
   getData?:(inputValue: string) => Promise<any>,
-  onChange(event: React.ChangeEvent<HTMLInputElement>):void;
+  onChangeSelect(value:any):void;
 }
 
-export function SelectInput({getData, onChange}:SelectInputProps) {
+export function SelectInput({getData, onChangeSelect}:SelectInputProps) {
   const [selectedOption, setSelectedOption] = useState<any>()
 
   const handleChange = (selectedOption: any) => {
     setSelectedOption(selectedOption);
+    onChangeSelect(selectedOption)
   };
 
   const handleBlue = (event: React.ChangeEvent<HTMLInputElement>) => {
     if(selectedOption == undefined || selectedOption.value == "") return
     event.target.value = selectedOption.value
     event.target.placeholder = selectedOption.label
-    onChange(event)
+    //onChange(event)
   }
 
   const promiseOptions = (inputValue: string) =>

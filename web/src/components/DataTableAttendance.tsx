@@ -29,7 +29,7 @@ export function DataTableAttendance({attendances, columns, marginTable, handleCr
   const [createModalOpen, setCreateModalOpen] = useState(false);
 
   const [valueField, setValueField] = useState(HALFDAY)
-  const [dateValueField, setDateValueField] = useState(dayjs().format('YYYY-MM-DD'));
+  const [dateValueField, setDateValueField] = useState(new Date());
   const [descriptionField, setDescriptionField] = useState(`DAYCARE - ${dayjs().format('DD/MM/YYYY')}`)
   const [paid, setPaid] = useState(false)
   const [fullDay, setFullDay] = useState(false)
