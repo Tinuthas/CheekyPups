@@ -90,7 +90,9 @@ export const CreateNewModal = ({
       }
     });
     if(validationRequired) {
-      toast.error("You need to fill some fields", {position: 'top-center', autoClose: 2000,});
+      toast.error(`You need to fill some fields`, {position: 'top-center', autoClose: 2000,});
+      toast.error(`${JSON.stringify(values)}`, {position: 'top-center', autoClose: 10000,});
+
     }else if(validationEmail) {
       toast.error("Incorrect Email Field", {position: 'top-center', autoClose: 2000,});
     }else if(validationDate) {

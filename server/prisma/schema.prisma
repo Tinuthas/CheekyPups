@@ -69,7 +69,7 @@ model Attendance {
   extract_id Int?
 
   day     Day      @relation(fields: [day_id], references: [id])
-  dog     Dog      @relation(fields: [dog_id], references: [id])
+  dog     Dog      @relation(fields: [dog_id], references: [id], onDelete: Cascade)
   extract Extract?
 
   @@map("attendances")
