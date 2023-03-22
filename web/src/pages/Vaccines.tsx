@@ -66,33 +66,38 @@ const selectPromise = (inputValue: string) => new Promise<any[]>((resolve, rejec
   })
 })
 
-const columnHeaders = [
-  {
-    accessorKey: 'dog',
-    label: 'Dog',
-    name: 'Choose dog',
-    type: "select",
-    required: true,
-    getDataSelect: selectPromise
-  },
-  {
-    accessorKey: 'dateVaccine',
-    label: 'Vaccine Expiration Date',
-    name: '',
-    type: "date",
-  },
-  {
-    accessorKey: 'type',
-    label: 'Type',
-    name: 'Ex. 7N1KC',
-    type: "text",
-  }
-]
+
 
 export function Vaccines(){
 
   const [vaccines, setVaccines] = useState([{}])
   const [loading, setLoading] = useState(false)
+  const [dateVaccineField, setDateVaccineField] = useState(new Date())
+
+  const columnHeaders = [
+    {
+      accessorKey: 'dog',
+      label: 'Dog',
+      name: 'Choose dog',
+      type: "select",
+      required: true,
+      getDataSelect: selectPromise
+    },
+    {
+      accessorKey: 'dateVaccine',
+      label: 'Vaccine Expiration Date',
+      name: '',
+      type: "date",
+      value: dateVaccineField,
+      setValue: (value:any) => setDateVaccineField(value)
+    },
+    {
+      accessorKey: 'type',
+      label: 'Type',
+      name: 'Ex. 7N1KC',
+      type: "text",
+    }
+  ]
 
   function getAllVaccine() {
     setLoading(true)

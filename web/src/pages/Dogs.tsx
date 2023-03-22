@@ -26,6 +26,16 @@ const selectPromise = (inputValue: string) => new Promise<any[]>((resolve, rejec
   })
 })
 
+
+export function Dogs(){
+
+  const [dogs, setDogs] = useState([{}])
+  const [openAvatar, setOpenAvatar] = useState(false)
+  const [openIndex, setOpenIndex] = useState(-1);
+  const [loading, setLoading] = useState(false)
+  const [dateBirthdayField, setDateBirthdayField] = useState(new Date())
+
+
 const columnHeaders = [
   {
     accessorKey: 'owner',
@@ -53,6 +63,8 @@ const columnHeaders = [
     label: 'Birthday Date',
     name: '',
     type: "date",
+    value: dateBirthdayField,
+    setValue: (value:any) => setDateBirthdayField(value)
   },
   {
     accessorKey: 'gender',
@@ -74,13 +86,6 @@ const columnHeaders = [
     required: true,
   }
 ]
-
-export function Dogs(){
-
-  const [dogs, setDogs] = useState([{}])
-  const [openAvatar, setOpenAvatar] = useState(false)
-  const [openIndex, setOpenIndex] = useState(-1);
-  const [loading, setLoading] = useState(false)
 
   function getAllDogs() {
     setLoading(true)

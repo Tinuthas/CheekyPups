@@ -3,6 +3,7 @@ import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import { useState } from "react";
 import { boolean } from "zod";
+import { DateField } from "./DateField";
 
 interface InputLabelProps{
   labelName: string;
@@ -12,12 +13,13 @@ interface InputLabelProps{
   value?: any;
   setValue?(value:any):void;
   onChange(event: React.ChangeEvent<HTMLInputElement>):void;
+  onChangeValue(key:any, value: any):void;
   onSelect?(key: any, value:any):void;
   getData?:(inputValue: string) => Promise<any>;
   setLocalStatus?(status:boolean):void;
 }
 
-export const InputLabel = ({labelName, type, placeholder, accessorKey, value, setValue, onChange, onSelect, getData, setLocalStatus}: InputLabelProps) => {
+export const InputLabel = ({labelName, type, placeholder, accessorKey, value, setValue, onChange, onChangeValue, onSelect, getData, setLocalStatus}: InputLabelProps) => {
 
   const [status, setStatus] = useState(false)
 
@@ -43,6 +45,13 @@ export const InputLabel = ({labelName, type, placeholder, accessorKey, value, se
     onChange(event)
   }
 
+  function handleOnChangeValue(valueField: any) {
+    var date = new Date(valueField)
+    if(setValue != undefined)
+      setValue(date)
+    onChangeValue(accessorKey, date)
+  }
+
   return (
     <div className="mb-2">
       {type.includes('checkbox') ? null :
@@ -55,6 +64,8 @@ export const InputLabel = ({labelName, type, placeholder, accessorKey, value, se
           <SelectInput getData={getData} onChange={setEventChange}/>
         : type.includes('checkbox') ? 
           <FormControlLabel control={<Checkbox onChange={setEventChange} sx={{ color: '#FF499E', '& .MuiSvgIcon-root': { fontSize: 28 } }} checked={value}  />}  label={status ? placeholder : labelName}  />
+        : type.includes('date') ?
+          <DateField label={labelName} value={value} onChange={handleOnChangeValue} />
         :
           <input
             placeholder={placeholder}

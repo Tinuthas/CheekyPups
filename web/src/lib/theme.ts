@@ -29,5 +29,5 @@ export const theme = createTheme({
       'Arial',
       'sans-serif'
     ].join(','),
-  }
+  },
 });
