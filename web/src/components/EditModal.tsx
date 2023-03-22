@@ -125,6 +125,7 @@ export const EditNewModal = ({
                 labelName={column.label} 
                 accessorKey={column.accessorKey}
                 onSelect={(key, value) => setSelectInput({ ...selectInput, [key]: value })}
+                onChangeValue={(key, value) => setValues({ ...values, [key]: value })}
                 getData={column.getDataSelect}
                 value={column.value}
                 setValue={column.setValue}
