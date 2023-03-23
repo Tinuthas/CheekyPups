@@ -88,13 +88,24 @@ async function getAllPayments(request: FastifyRequest, reply: FastifyReply) {
           in: ids,
         },
       },
+      include: {
+        dogs: {
+          select: {
+            name: true,
+          }
+        }
+      }
     })
 
-    var listPayments: { id: number; name: string; extracts: number; total: Decimal | null; }[] = []
+    var listPayments: { id: number; name: string; dogsName: string, extracts: number; total: Decimal | null; }[] = []
     payments.forEach((element, index) => {
+
+      //var dogsName = element.dogs.map(dog => dog.name).join(' - ')
+
       listPayments.push({
         id: element.id,
         name: element.name,
+        dogsName: element.dogs.map(dog => dog.name).join(' - '),
         extracts: pays[index]._count.id,
         total: pays[index]._sum.value
       })

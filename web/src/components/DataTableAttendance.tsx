@@ -31,8 +31,6 @@ export function DataTableAttendance({attendances, columns, marginTable, handleCr
   const [valueField, setValueField] = useState(HALFDAY)
   const [dateValueField, setDateValueField] = useState(new Date());
   const [descriptionField, setDescriptionField] = useState(`DAYCARE - ${dayjs().format('DD/MM/YYYY')}`)
-  const [paid, setPaid] = useState(false)
-  const [fullDay, setFullDay] = useState(false)
 
   return (
     <ThemeProvider theme={theme}>

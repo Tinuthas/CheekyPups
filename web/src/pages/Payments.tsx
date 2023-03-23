@@ -8,6 +8,7 @@ import { api, getToken } from "../lib/axios"
 import {Loading} from "../components/Loading";
 
 const selectPromise = (inputValue: string) => new Promise<any[]>((resolve, reject) => {
+  console.log('call select list')
   api.get('owners/select', { params: { name: inputValue}, headers: { Authorization: getToken()}}).then(response =>{
     var data = response.data
     var listData:any[] = []
@@ -31,14 +32,17 @@ export function Payments(){
   const [openIndex, setOpenIndex] = useState(-1)
   const [openListModal, setOpenListModal] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [loadingModal, setLoadingModal] = useState(false)
 
   function handlePayments() {
     setLoading(true)
+    console.log('call payments')
     api.get('payment', {
       headers: {
         Authorization: getToken()
       }
     }).then(response =>{
+      console.log('return payments')
       setPayments(JSON.parse(JSON.stringify(response.data)))
       setLoading(false)
     }).catch((err: AxiosError) => {
@@ -53,6 +57,7 @@ export function Payments(){
     const cloneData = JSON.parse(JSON.stringify(data))
     delete cloneData.id;
     delete cloneData.date;
+    console.log('update payment')
     const promise = new Promise((resolve, reject) => {
       api.put('payment', cloneData, {
         params: {
@@ -77,6 +82,7 @@ export function Payments(){
 
   function deleteDataRow(id: number) {
     setLoading(true)
+    console.log('delete')
     const promise = new Promise((resolve, reject) => {
       api.delete('payment', {
         params: {
@@ -102,7 +108,7 @@ export function Payments(){
   function createNewRow(data: any) {
     setLoading(true)
     var newData = {owner_id: Number(data['owner']), value: Number(data.value), description: data.description};
-  
+    console.log('craeted')
     const promise = new Promise((resolve, reject) => {
       api.post('payment', newData, {
         headers: {
@@ -110,9 +116,9 @@ export function Payments(){
         }
       }).then(response => {
         toast.success(`Created payment: ${response.data?.id}`, { position: "top-center", autoClose: 1000, })
-        resolve(`Created payment: ${response.data?.id}`);
+        setLoading(false)
         handlePayments()
-         
+        resolve(`Created payment: ${response.data?.id}`);
       }).catch((err: AxiosError) => {
         const data = err.response?.data as {message: string}
         toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
@@ -158,7 +164,8 @@ export function Payments(){
   ]
 
   function callListExtracts(id: number) {
-    setLoading(true)
+    setLoadingModal(true)
+    console.log('call list extracts')
     api.get('payment/extracts', {
       params: {
         id,
@@ -167,12 +174,13 @@ export function Payments(){
         Authorization: getToken()
       }
     }).then(response =>{
+      console.log('return call list extracts')
       setExtracts(JSON.parse(JSON.stringify(response.data)))
-      setLoading(false)
+      setLoadingModal(false)
     }).catch((err: AxiosError) => {
       const data = err.response?.data as {message: string}
       toast.error(`Unidentified error: ${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
-      setLoading(false)
+      setLoadingModal(false)
     })
   }
 
@@ -180,7 +188,12 @@ export function Payments(){
     {
       accessorKey: 'name',
       header: 'Name',
-      size: 200,
+      size: 180,
+    },
+    {
+      accessorKey: 'dogsName',
+      header: 'Dogs',
+      size: 180,
     },
     {
       accessorKey: 'extracts',
@@ -204,6 +217,7 @@ export function Payments(){
               data={extracts}
               setData={setExtracts}
               headers={headersExtracts}
+              loading={loadingModal}
               deleteRow={(id) => deleteDataRow(id)}
               updateRow={(data) => updateDataRow(data)}
             />

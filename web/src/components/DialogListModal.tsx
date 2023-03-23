@@ -1,6 +1,7 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
 import { useEffect, useState } from "react";
 import DataTableCustom from "./DataTableCustom";
+import {Loading} from "../components/Loading";
 
 interface ListModalProps {
   onClose: () => void;
@@ -11,6 +12,7 @@ interface ListModalProps {
   data: any[];
   setData: (data:object[]) => void,
   headers: object[],
+  loading: boolean,
   deleteRow?:(id:number) => Promise<any>,
   updateRow?:(data:object) => Promise<any>,
 }
@@ -24,6 +26,7 @@ export const DialogListModal = ({
   data, 
   setData,
   headers,
+  loading,
   deleteRow,
   updateRow
 }: ListModalProps) => {
@@ -49,6 +52,7 @@ export const DialogListModal = ({
         {`Log ${name}`}
       </DialogTitle>
       <DialogContent>
+      { loading ? <div className="w-full flex justify-center"><Loading /> </div> :
         <div className="md:flex bg-white w-full mt-4 rounded">
           <DataTableCustom 
           headers={headers} 
@@ -58,6 +62,7 @@ export const DialogListModal = ({
           deleteRow={deleteRow}
           updateRow={updateRow} />
         </div>
+      }
       </DialogContent>
     <DialogActions>
       <Button autoFocus onClick={onClose}>

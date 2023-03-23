@@ -167,7 +167,7 @@ const DataTableCustom = ({headers, data, setData, createData, title, updateRow, 
           
         )}
       />
-      {createData != undefined ? 
+      {createData != undefined && createModalOpen ? 
         <CreateNewModal
           columns={createData}
           open={createModalOpen}

@@ -35,7 +35,6 @@ export function Dogs(){
   const [loading, setLoading] = useState(false)
   const [dateBirthdayField, setDateBirthdayField] = useState(new Date())
 
-
 const columnHeaders = [
   {
     accessorKey: 'owner',
