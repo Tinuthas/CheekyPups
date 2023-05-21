@@ -1,5 +1,5 @@
 import 'react-slideshow-image/dist/styles.css'
-import React from 'react';
+import React, { useState } from 'react';
 import { Slide } from 'react-slideshow-image';
 
 interface SliderPhotosProps {
@@ -15,9 +15,12 @@ const divStyle = {
 
 export function SliderPhotos({images} : SliderPhotosProps) {
 
+  const [screenSize, setScreenSize] = useState(getCurrentDimension());
+
+  console.log(screenSize)
   return (
     <>
-      <Slide slidesToScroll={2} slidesToShow={2} indicators={true}>
+      <Slide slidesToScroll={screenSize.width >= 1000 ? 2 : 1} slidesToShow={screenSize.width >= 1000 ? 2 : 1} indicators={true}>
         {images.map((slideImage, index)=> (
             <div key={index}>
               <div style={{ ...divStyle, 'backgroundImage': `url(${slideImage.url})` }}>
@@ -28,4 +31,11 @@ export function SliderPhotos({images} : SliderPhotosProps) {
       </Slide>
     </>
   )
+}
+
+function getCurrentDimension(){
+  return {
+      width: window.innerWidth,
+      height: window.innerHeight
+  }
 }

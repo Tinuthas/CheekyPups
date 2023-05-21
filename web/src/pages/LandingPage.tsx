@@ -18,21 +18,21 @@ export function LandingPage() {
         <div className="flex justify-center">
           <img src={Cropped} className=" max-h-[300px] md:rounded-xl"/>
         </div>
-        <h1 className="font-cursed leading-6 text-center break-words antialiased hover:subpixel-antialiased font-bold text-neutral-50 text-6xl bg-pinkBackground p-2  mt-10"><span className="text-xl align-middle	">Declan's </span>Cheeky Pups <br/><span className=" text-3xl">Dog Grooming & Daycare</span></h1>
+        <h1 className="font-cursed leading-6 text-center break-words antialiased hover:subpixel-antialiased font-bold text-neutral-50 text-5xl md:text-6xl bg-pinkBackground p-2  mt-10"><span className="text-xl align-middle	">Declan's </span>Cheeky Pups <br/><span className=" text-3xl">Dog Grooming & Daycare</span></h1>
        
       </header>
       <main className="w-full bg-pinkBackground text-neutral-500 ">
         <div className="">
           <div className="m-5 bg-white p-7 md:rounded">
           <h3 className="text-center font-medium text-2xl text-neutral-600 font-cursed">WHAT DO WE DO?</h3>
-            <p className="mt-5 text-center">Declan’s Cheeky Pups is a calm and controlled environment, we're trained to take care of dogs and with profissional staff.</p>
+            <p className="mt-5 text-center">Declan’s Cheeky Pups is a calm and controlled environment, we have professional staff who are highly trained to take care of your dog.</p>
             <p className="mt-2 text-center">We work from Monday to Friday and you can schedule your dog to daycare or grooming by calling or texting us, our phone lines are open from <strong>9AM</strong> ultil <strong>5PM</strong>. For bookings call us on <strong>083 487 3020</strong>.</p>
           </div>
           <div className="mx-5 p-7 md: rounded bg-white">
             <h3 className="text-center font-medium text-2xl text-neutral-600 font-cursed">DAYCARE</h3>
             <p className="mt-5 text-center">Cheeky Pups Daycare offers your dog a fun, safe and relaxing space to socialise, exercise and learn. We are offering you peace of mind while you are out busy running errands or at work that your dog is being looked after by highly trained staff in a cozy intimate environment. While at Cheeky Pups your dog will make lots of new friends and enjoy mental stimulation throughout the day.</p>
             <p className="mt-2 text-center">Cheeky Pups dog daycare opens <strong>7:30AM</strong> ultil <strong>6:30PM</strong> Monday to Friday.</p>
-            <table className="table-auto border-collapse border border-zinc-400  hover:border-zinc-600 w-full justify-center align-middle mt-5 mb-5 text-center bolder">
+            <table className="table-auto border-collapse border border-zinc-400  hover:border-zinc-600 w-full justify-center align-middle mt-5 mb-5 text-center bolder text-sm md:text-base">
               <thead>
                 <tr>
                   <th className="border border-zinc-300 bg-zinc-200 h-11">Description</th>
