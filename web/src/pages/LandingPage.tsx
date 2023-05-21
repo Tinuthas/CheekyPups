@@ -3,14 +3,14 @@ import Cropped from "../assets/thumbnail_daycare.png"
 import { Map } from '../components/Map'
 import { SliderPhotos } from "../components/SliderPhotos"
 import '../styles/global.css'
-import gm1 from '../assets/grooming/grooming1.jpeg'
-import gm2 from '../assets/grooming/grooming2.jpeg'
-import gm3 from '../assets/grooming/grooming3.jpeg'
-import gm4 from '../assets/grooming/grooming4.jpeg'
-import gm5 from '../assets/grooming/grooming5.jpeg'
-import gm6 from '../assets/grooming/grooming6.jpeg'
-import gm7 from '../assets/grooming/grooming7.jpeg'
-import gm8 from '../assets/grooming/grooming8.jpeg'
+import gm1 from '../assets/grooming1.jpeg'
+import gm2 from '../assets/grooming2.jpeg'
+import gm3 from '../assets/grooming3.jpeg'
+import gm4 from '../assets/grooming4.jpeg'
+import gm5 from '../assets/grooming5.jpeg'
+import gm6 from '../assets/grooming6.jpeg'
+import gm7 from '../assets/grooming7.jpeg'
+import gm8 from '../assets/grooming8.jpeg'
 
 const location = {
   address: 'Green Gate Business Centre, 1 Gould St, The Lough, Cork',
