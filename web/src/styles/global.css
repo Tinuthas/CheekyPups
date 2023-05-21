@@ -2,3 +2,9 @@
 @tailwind utilities;
 @tailwind components;
 
+.map-container {
+  max-width: 100%;
+  height: 400px;
+}
+
+

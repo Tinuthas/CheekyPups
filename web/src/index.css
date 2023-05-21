@@ -19,6 +19,9 @@
   height: -webkit-fill-available;
 }
 
+html {
+  background-color: #FF499E;
+}
 
 body {
   margin: 0;
@@ -26,6 +29,8 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  background-color: #FF499E;
+  //overflow: hidden;
 }
 
 h1 {

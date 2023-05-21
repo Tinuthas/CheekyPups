@@ -1,18 +1,29 @@
 
-import Cropped from "../assets/croppedcheekypups.jpg"
+import Cropped from "../assets/thumbnail_daycare.png"
+import { Map } from '../components/Map'
+import '../styles/global.css'
 
-export function Presentation() {
+const location = {
+  address: 'Green Gate Business Centre, 1 Gould St, The Lough, Cork',
+  lat: 51.8906946,
+  lng: -8.4830449,
+}
 
+const API_MAPS = import.meta.env.VITE_API_MAPS || ""
+
+export function LandingPage() {
+//lg:w-[1024px]
   return (
-    <div className="flex w-full h-screen flex-col">
-      <header className="bg-pinkBackground h-fit w-full flex flex-col justify-center">
-        <div className="flex justify-center md:mt-10">
-          <img src={Cropped} className="md:h-[200px] md:rounded"/>
+    <div className="flex w-full h-screen flex-col ">
+      <header className="bg-pinkBackground h-fit w-full flex flex-col justify-center ">
+      
+        <div className="flex justify-center lg:mt-10">
+          <img src={Cropped} className="lg:h-[390px]"/>
         </div>
-        <h1 className="text-center font-medium text-white m-10 md:m-20 md:mt-10 md:mb-10 text-xl md:text-4xl ">Declan's Cheeky Pups Dog Grooming & Doggie Daycare</h1>
+        <h1 className="text-center font-extrabold text-white m-10 md:m-20 md:mt-10 md:mb-10 text-xl md:text-4xl ">Declan's Cheeky Pups Dog Grooming & Doggie Daycare</h1>
        
       </header>
-      <main className="w-full bg-pinkBackground text-neutral-800">
+      <main className="w-full bg-pinkBackground text-neutral-800 ">
         <div className="md:mx-28 lg:mx-40 desktop:mx-80">
           <div className="m-5 bg-white p-7 md:rounded">
           <h3 className="text-center font-medium text-lg">WHAT DO WE DO?</h3>
@@ -31,6 +42,9 @@ export function Presentation() {
             <p className="mt-2">
               You can find us on Facebook <a href="https://www.facebook.com/CheekyDogsDogGrooming/?fref=ts" className="font-bold">here</a>.
             </p>
+          </div>
+          <div className="w-full h-[400px]">
+            <Map googleMapsApiKey={API_MAPS} lat={51.890693} lng={-8.482955} zoom={15}/>
           </div>
         </div>
       </main>
