@@ -3,14 +3,15 @@ import Cropped from "../assets/thumbnail_daycare.png"
 import { Map } from '../components/Map'
 import { SliderPhotos } from "../components/SliderPhotos"
 import '../styles/global.css'
-import gm1 from '../assets/grooming1.jpeg'
-import gm2 from '../assets/grooming2.jpeg'
-import gm3 from '../assets/grooming3.jpeg'
-import gm4 from '../assets/grooming4.jpeg'
-import gm5 from '../assets/grooming5.jpeg'
-import gm6 from '../assets/grooming6.jpeg'
-import gm7 from '../assets/grooming7.jpeg'
-import gm8 from '../assets/grooming8.jpeg'
+import gm1 from '../assets/grooming1.jpg'
+import gm2 from '../assets/grooming2.jpg'
+import gm3 from '../assets/grooming3.jpg'
+import gm4 from '../assets/grooming4.jpg'
+import gm5 from '../assets/grooming5.jpg'
+import gm6 from '../assets/grooming6.jpg'
+import gm7 from '../assets/grooming7.jpg'
+import gm8 from '../assets/grooming8.jpg'
+import gm9 from '../assets/grooming9.jpg'
 
 const location = {
   address: 'Green Gate Business Centre, 1 Gould St, The Lough, Cork',
@@ -105,7 +106,7 @@ export function LandingPage() {
 
 
             <SliderPhotos images={[
-              {url: gm1}, {url: gm2}, {url: gm3}, {url: gm4}, {url: gm5}, {url: gm6}, {url: gm7}, {url: gm8}, ]} />
+              {url: gm1}, {url: gm2}, {url: gm3}, {url: gm4}, {url: gm5}, {url: gm6}, {url: gm7}, {url: gm8}, {url: gm9}, ]} />
           </div>
 
           <div className="m-5 bg-white p-7 md:rounded">
