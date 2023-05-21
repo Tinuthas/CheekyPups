@@ -3,21 +3,6 @@ import Cropped from "../assets/thumbnail_daycare.png"
 import { Map } from '../components/Map'
 import { SliderPhotos } from "../components/SliderPhotos"
 import '../styles/global.css'
-import gm1 from '../assets/grooming1.jpg'
-import gm2 from '../assets/grooming2.jpg'
-import gm3 from '../assets/grooming3.jpg'
-import gm4 from '../assets/grooming4.jpg'
-import gm5 from '../assets/grooming5.jpg'
-import gm6 from '../assets/grooming6.jpg'
-import gm7 from '../assets/grooming7.jpg'
-import gm8 from '../assets/grooming8.jpg'
-import gm9 from '../assets/grooming9.jpg'
-
-const location = {
-  address: 'Green Gate Business Centre, 1 Gould St, The Lough, Cork',
-  lat: 51.8906946,
-  lng: -8.4830449,
-}
 
 const API_MAPS = import.meta.env.VITE_API_MAPS || ""
 
@@ -106,7 +91,15 @@ export function LandingPage() {
 
 
             <SliderPhotos images={[
-              {url: gm1}, {url: gm2}, {url: gm3}, {url: gm4}, {url: gm5}, {url: gm6}, {url: gm7}, {url: gm8}, {url: gm9}, ]} />
+              {url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2FGrooming1.jpg?alt=media&token=23c46778-5023-42a3-a5ed-38d7e1f506bd'}, 
+              {url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2FGrooming2.jpg?alt=media&token=f46b095f-341f-4f62-b06c-964c2da19e7b'}, 
+              {url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2FGrooming3.jpg?alt=media&token=98daeeae-8f66-4131-bee6-c3de0891bf45'}, 
+              {url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2FGrooming4.jpg?alt=media&token=477a5ba4-ed7b-4d73-801d-c433b06a6846'}, 
+              {url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2FGrooming5.jpg?alt=media&token=c4aa962f-d476-4464-8c05-6e6c2c8140db'}, 
+              {url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2FGrooming6.jpg?alt=media&token=e546f632-6031-4b5b-ba06-a785c1f3599b'}, 
+              {url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2FGrooming7.jpg?alt=media&token=4b3fd8e8-bdf2-4398-a2fc-08cb09b6f5b7'}, 
+              {url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2FGrooming8.jpg?alt=media&token=30cf8ebc-e4ff-4cdb-a3ea-4c0106a46781'}, 
+              {url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2FGrooming9.jpg?alt=media&token=7aee5960-7adc-4045-89eb-b0c219bfb1bd'}]} />
           </div>
 
           <div className="m-5 bg-white p-7 md:rounded">
