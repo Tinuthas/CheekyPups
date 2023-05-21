@@ -16,7 +16,13 @@ module.exports = {
         'desktop': '1440px',
         // => @media (min-width: 1440px) { ... }
       },
+      fontFamily: {
+        cursed: ['Itim', 'sans-serif']
+      }
     },
+    fontFamily: {
+      cursed: ['Itim', 'sans-serif']
+    }
   },
   plugins: [],
 }

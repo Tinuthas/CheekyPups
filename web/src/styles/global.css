@@ -1,10 +1,14 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Itim&display=swap');
+
 @tailwind base;
 @tailwind utilities;
 @tailwind components;
 
+
 .map-container {
   max-width: 100%;
   height: 400px;
+  border-radius: 4px;
 }
-
 

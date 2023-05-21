@@ -26,7 +26,7 @@ export function Map({ googleMapsApiKey, lat, lng, zoom }: MapProps) {
 
   return (
     <>
-     <div className="my-8 mx-20 md:my-10">
+     <div className="mt-5">
        <GoogleMap
          key={googleMapsApiKey}
          zoom={zoom}
