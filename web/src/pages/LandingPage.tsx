@@ -63,19 +63,21 @@ export function LandingPage() {
               </tbody>
             </table>
             <SliderPhotos images={[
-              {url: 'https://scontent.fdub2-4.fna.fbcdn.net/v/t39.30808-6/310985322_534388258690283_1619704563610950096_n.jpg?_nc_cat=111&ccb=1-7&_nc_sid=8bfeb9&_nc_ohc=AaGwNIDbthgAX8Tm0B3&_nc_ht=scontent.fdub2-4.fna&oh=00_AfD9tkmF49mAWLnY10hqr4-L-X3tFfKoL_CJXREQGdu8DQ&oe=646ED797'},
-              {url: 'https://scontent.fdub2-3.fna.fbcdn.net/v/t39.30808-6/307977218_521372669991842_3202328689759599600_n.jpg?_nc_cat=106&ccb=1-7&_nc_sid=8bfeb9&_nc_ohc=8opJEZqWZlUAX8KGNg5&_nc_ht=scontent.fdub2-3.fna&oh=00_AfBpDedBMrTVtEk546ctWpJ0sIHO0cve46vldwTJpca7ag&oe=647011E6'},
-              {url: 'https://scontent.fdub2-4.fna.fbcdn.net/v/t39.30808-6/312942096_552002103595565_1046452538812897477_n.jpg?_nc_cat=111&ccb=1-7&_nc_sid=8bfeb9&_nc_ohc=m0ZPqllC3YQAX894LSZ&_nc_ht=scontent.fdub2-4.fna&oh=00_AfB11yK3cM_OivA7__NbDm_vgyeXGILsMci_vePy86ZIyA&oe=646E7A1F'},
-              {url: 'https://scontent.fdub2-4.fna.fbcdn.net/v/t39.30808-6/292262729_462372032558573_7972972760816399964_n.jpg?_nc_cat=102&ccb=1-7&_nc_sid=8bfeb9&_nc_ohc=7jIAcZ4iz4kAX8gQ8vr&_nc_ht=scontent.fdub2-4.fna&oh=00_AfBY_7sZgORpT3LL80etEVb9HGa7WMfC_qGGKsCckMsDJw&oe=646F208C'},
-              {url: 'https://scontent.fdub2-4.fna.fbcdn.net/v/t39.30808-6/315059624_568350071960768_3153900740500722910_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=8bfeb9&_nc_ohc=cbMnR5z3KM8AX_xlFBd&_nc_ht=scontent.fdub2-4.fna&oh=00_AfC9zlvOC5ny3ZU8j3xtu-EyYipZM4YnmHkyRQlRLsttMA&oe=646E8B4E'},
-              {url: 'https://scontent.fdub2-4.fna.fbcdn.net/v/t39.30808-6/341565597_161321059898085_3951047958934122459_n.jpg?stp=cp6_dst-jpg&_nc_cat=111&ccb=1-7&_nc_sid=8bfeb9&_nc_ohc=C5VUY5DSCWsAX9AAln4&_nc_ht=scontent.fdub2-4.fna&oh=00_AfBVZEohxOSRC0e4qWA6ljc-TFxQTUZV3eIhn6DPxff2gA&oe=646F6A24'},
-              {url: 'https://scontent.fdub2-4.fna.fbcdn.net/v/t39.30808-6/342693844_191385520418437_2711372216129761849_n.jpg?stp=cp6_dst-jpg&_nc_cat=109&ccb=1-7&_nc_sid=8bfeb9&_nc_ohc=_aNtiFNts4IAX-WqKEM&_nc_ht=scontent.fdub2-4.fna&oh=00_AfAJqemlPjufExl9C2VlQOp8yL1MAjDEtliQZYdsG2Ulew&oe=646E593F'},
-              {url: 'https://scontent.fdub2-4.fna.fbcdn.net/v/t39.30808-6/347254438_1816033162127529_6634439168324741950_n.jpg?stp=cp6_dst-jpg&_nc_cat=111&ccb=1-7&_nc_sid=8bfeb9&_nc_ohc=ZJjRekUMQN8AX-aBq-X&_nc_ht=scontent.fdub2-4.fna&oh=00_AfDYSq6kMubJSEcq87DIrkUfEZ8iabhPsWtKt9YFiKIQyg&oe=646F3755'}, 
-              {url: 'https://scontent.fdub2-4.fna.fbcdn.net/v/t39.30808-6/347244087_548795227330362_6747542161048627831_n.jpg?stp=cp6_dst-jpg&_nc_cat=110&ccb=1-7&_nc_sid=8bfeb9&_nc_ohc=Z1gMT7Pp9KIAX-8UT0r&_nc_ht=scontent.fdub2-4.fna&oh=00_AfBJkn4D7LqKBbQEa9ls71lhI1LMmP2-5Uh2-4V-Dgj6DQ&oe=646F68F4'}, 
-              {url: 'https://scontent.fdub2-4.fna.fbcdn.net/v/t39.30808-6/347438881_803885618053854_1779967297671937697_n.jpg?stp=cp6_dst-jpg&_nc_cat=109&ccb=1-7&_nc_sid=8bfeb9&_nc_ohc=OXRPibq-QSgAX9CQrjd&_nc_ht=scontent.fdub2-4.fna&oh=00_AfBhbSRJFBYJnY3D1ozibpRSS46t_LtXtj4Aj6hWQtBRFg&oe=646E8EF2'}, 
-              {url: 'https://scontent.fdub2-4.fna.fbcdn.net/v/t39.30808-6/344871378_2169973869880000_6906980230215327397_n.jpg?stp=cp6_dst-jpg&_nc_cat=110&ccb=1-7&_nc_sid=8bfeb9&_nc_ohc=o7Nb3BYs44AAX94p2Fe&_nc_ht=scontent.fdub2-4.fna&oh=00_AfBS0ov1S-73Z3t7Q-0gNGVbubCvI76OFG8thKQ4FgOu5w&oe=646FBBB4'},
-              {url: 'https://scontent.fdub2-4.fna.fbcdn.net/v/t39.30808-6/343566648_766408581729746_1599029279473760831_n.jpg?stp=cp6_dst-jpg&_nc_cat=111&ccb=1-7&_nc_sid=8bfeb9&_nc_ohc=0y33Qck5ilkAX_6lcZV&_nc_ht=scontent.fdub2-4.fna&oh=00_AfAxLu6HkoQ7FJ64TyUD6ElYMyyPNH1W8-8GzsuV6WGZHw&oe=646EBABE'},
-              {url: 'https://scontent.fdub2-4.fna.fbcdn.net/v/t39.30808-6/347118203_1036636683981159_3661666226286290728_n.jpg?stp=cp6_dst-jpg&_nc_cat=104&ccb=1-7&_nc_sid=8bfeb9&_nc_ohc=yACMwxorc7YAX-7VekQ&_nc_ht=scontent.fdub2-4.fna&oh=00_AfDsv4JfMK2d3bELuKWa_SwPoNjcgvC-zw8YL-rHK0fQIA&oe=646E648E'}]} />
+              {url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2Fdaycare6.jpeg?alt=media&token=738302e5-3122-46a0-bbaf-cc3aa27de906'},
+              {url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2Fdaycare8.jpeg?alt=media&token=48f9aaff-7514-43f5-add4-cf3c8647e336'},
+              {url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2Fdaycare7.jpeg?alt=media&token=84a0a838-754a-405c-b2fd-245f3d2f51fe'},
+              {url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2Fdaycare1.jpeg?alt=media&token=fd0bb6b7-af60-4eda-8a5a-44315fdedb6c'},
+              {url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2Fdaycare3.jpeg?alt=media&token=a5aa94fa-b26b-4b01-b08d-18e158eff878'},
+              {url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2Fdaycare2.jpeg?alt=media&token=2fa40ff6-75e6-4d9b-8495-8dcc96dc0fd6'},
+              {url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2Fdaycare4.jpeg?alt=media&token=1ac626f4-8019-41f0-9421-8ec8c4bbc6d7'},
+              {url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2Fdaycare5.jpeg?alt=media&token=e6094769-47f4-4f1a-907f-6e1dadfed67b'}, 
+              {url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2Fdaycare9.jpeg?alt=media&token=b458e12d-0ca0-4a65-a52c-ca7b9e4e4a99'}, 
+              {url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2Fdaycare10.jpeg?alt=media&token=c843e1cb-db70-42a7-8043-cb4a7dd58446'}, 
+              {url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2Fdaycare11.jpeg?alt=media&token=663dd446-e65a-4d5b-bac4-3d3d6ff52b7f'},
+              {url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2Fdaycare12.jpeg?alt=media&token=7721914d-9b3c-4a3e-999b-1a0462254027'},
+              {url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2Fdaycare13.jpeg?alt=media&token=24658036-d912-4d6f-9ef7-a930250c42b8'},
+              {url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2Fdaycare14.jpeg?alt=media&token=5d062ada-1464-46d6-8a52-76ca1d99f1c8'},
+              {url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2Fdaycare15.jpeg?alt=media&token=8c3d4a87-1f38-4761-a6bc-82c4e5c974e0'}]} />
           </div>
           {/*
           <div className="m-5 bg-white p-7 md:rounded">
