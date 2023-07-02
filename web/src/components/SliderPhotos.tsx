@@ -5,17 +5,19 @@ import { Slide } from 'react-slideshow-image';
 interface SliderPhotosProps {
   images : { url: any }[]
 }
-const divStyle = {
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  backgroundSize: 'cover',
-  height: '400px'
-}
 
 export function SliderPhotos({images} : SliderPhotosProps) {
 
   const [screenSize, setScreenSize] = useState(getCurrentDimension());
+
+  const divStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundSize: 'cover',
+    height: screenSize.width >= 1000 ? '580px' : '370px' 
+  }
+  
 
   console.log(screenSize)
   return (
