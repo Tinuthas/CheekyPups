@@ -3,10 +3,12 @@ import React, { useState } from 'react';
 import { Slide } from 'react-slideshow-image';
 
 interface SliderPhotosProps {
-  images : { url: any }[]
+  images : { url: any }[],
+  mainHeight: string,
+  secondHeight: string
 }
 
-export function SliderPhotos({images} : SliderPhotosProps) {
+export function SliderPhotos({images, mainHeight, secondHeight} : SliderPhotosProps) {
 
   const [screenSize, setScreenSize] = useState(getCurrentDimension());
 
@@ -15,11 +17,9 @@ export function SliderPhotos({images} : SliderPhotosProps) {
     alignItems: 'center',
     justifyContent: 'center',
     backgroundSize: 'cover',
-    height: screenSize.width >= 1000 ? '580px' : '370px' 
+    height: screenSize.width >= 1000 ? mainHeight : secondHeight 
   }
   
-
-  console.log(screenSize)
   return (
     <>
       <Slide slidesToScroll={screenSize.width >= 1000 ? 2 : 1} slidesToShow={screenSize.width >= 1000 ? 2 : 1} indicators={true}>

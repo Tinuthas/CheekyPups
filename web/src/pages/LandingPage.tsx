@@ -62,13 +62,11 @@ export function LandingPage() {
               </tr>
               </tbody>
             </table>
-            <SliderPhotos images={[
+            <SliderPhotos mainHeight="350px" secondHeight="250px" images={[
               {url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2Fdaycare6.jpeg?alt=media&token=738302e5-3122-46a0-bbaf-cc3aa27de906'},
               {url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2Fdaycare8.jpeg?alt=media&token=48f9aaff-7514-43f5-add4-cf3c8647e336'},
               {url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2Fdaycare7.jpeg?alt=media&token=84a0a838-754a-405c-b2fd-245f3d2f51fe'},
-              {url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2Fdaycare1.jpeg?alt=media&token=fd0bb6b7-af60-4eda-8a5a-44315fdedb6c'},
               {url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2Fdaycare3.jpeg?alt=media&token=a5aa94fa-b26b-4b01-b08d-18e158eff878'},
-              {url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2Fdaycare2.jpeg?alt=media&token=2fa40ff6-75e6-4d9b-8495-8dcc96dc0fd6'},
               {url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2Fdaycare4.jpeg?alt=media&token=1ac626f4-8019-41f0-9421-8ec8c4bbc6d7'},
               {url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2Fdaycare5.jpeg?alt=media&token=e6094769-47f4-4f1a-907f-6e1dadfed67b'}, 
               {url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2Fdaycare9.jpeg?alt=media&token=b458e12d-0ca0-4a65-a52c-ca7b9e4e4a99'}, 
@@ -92,7 +90,7 @@ export function LandingPage() {
             <p className="mt-2 mb-5 text-center">THE WORKS SESSION INCLUDES: <strong>Hair cut, Wash & Dry</strong> PLUS <strong>Nails & Ears</strong> at no extra cost.</p>
 
 
-            <SliderPhotos images={[
+            <SliderPhotos mainHeight="580px" secondHeight="370px" images={[
               {url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2FGrooming1.jpg?alt=media&token=23c46778-5023-42a3-a5ed-38d7e1f506bd'}, 
               {url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2FGrooming2.jpg?alt=media&token=f46b095f-341f-4f62-b06c-964c2da19e7b'}, 
               {url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2FGrooming3.jpg?alt=media&token=98daeeae-8f66-4131-bee6-c3de0891bf45'}, 
