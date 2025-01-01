@@ -26,7 +26,7 @@ export function LandingPage() {
           <div className="m-5 bg-white p-7 md:rounded">
           <h3 className="text-center font-medium text-2xl text-neutral-600 font-cursed">WHAT DO WE DO?</h3>
             <p className="mt-5 text-center">Declan’s Cheeky Pups is a calm and controlled environment, we have professional staff who are highly trained to take care of your dog.</p>
-            <p className="mt-2 text-center">We work from Monday to Friday and you can schedule your dog to daycare or grooming by calling or texting us, our phone lines are open from <strong>9AM</strong> ultil <strong>5PM</strong>. For bookings call us on <strong>083 487 3020</strong>.</p>
+            <p className="mt-2 text-center">We work from Monday to Friday and you can schedule your dog to daycare or grooming by calling or texting us, our phone lines are open from <strong>9AM</strong> ultil <strong>5PM</strong>. For bookings call us on <strong>083 487 1320</strong>.</p>
           </div>
           <div className="mx-5 p-7 md: rounded bg-white">
             <h3 className="text-center font-medium text-2xl text-neutral-600 font-cursed">DAYCARE</h3>
@@ -164,7 +164,7 @@ export function LandingPage() {
             </a>
         </div>
         <hr className="mx-10"/>
-        <p className="text-white text-center m-4">Copyright © 2023 Declan's Cheeky Pups</p>
+        <p className="text-white text-center m-4">Copyright © 2025 Declan's Cheeky Pups</p>
       </footer>
     </div>
   )
