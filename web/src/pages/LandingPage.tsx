@@ -18,20 +18,20 @@ export function LandingPage() {
         <div className="flex justify-center">
           <img src={Cropped} className=" max-h-[300px] md:rounded-xl"/>
         </div>
-        <h1 className="font-cursed leading-6 text-center break-words antialiased hover:subpixel-antialiased font-bold text-neutral-50 text-5xl md:text-6xl bg-pinkBackground p-2  mt-10"><span className="text-xl align-middle	">Declan's </span>Cheeky Pups <br/><span className=" text-3xl">Dog Grooming & Daycare</span></h1>
+        <h1 className="font-cursed leading-6 text-center break-words antialiased hover:subpixel-antialiased font-bold text-neutral-50 text-6xl md:text-6xl bg-pinkBackground p-2  mt-10"><span className="text-2xl align-middle	">Declan's </span>Cheeky Pups <br/><span className=" text-4xl">Dog Grooming & Daycare</span></h1>
        
       </header>
-      <main className="w-full bg-pinkBackground text-neutral-500 ">
+      <main className="w-full bg-pinkBackground text-neutral-500 text-base md:text-lg">
         <div className="">
           <div className="m-5 bg-white p-7 md:rounded">
-          <h3 className="text-center font-medium text-2xl text-neutral-600 font-cursed">WHAT DO WE DO?</h3>
+          <h3 className="text-center font-medium text-3xl text-neutral-600 font-cursed">WHAT DO WE DO?</h3>
             <p className="mt-5 text-center">Declan’s Cheeky Pups is a calm and controlled environment, we have professional staff who are highly trained to take care of your dog.</p>
             <p className="mt-2 text-center">We work from Monday to Friday and you can schedule your dog to daycare or grooming by calling or texting us, our phone lines are open from <strong>9AM</strong> ultil <strong>5PM</strong>. For bookings call us on <strong>083 487 1320</strong>.</p>
           </div>
           <div className="mx-5 p-7 md: rounded bg-white">
-            <h3 className="text-center font-medium text-2xl text-neutral-600 font-cursed">DAYCARE</h3>
+            <h3 className="text-center font-medium text-3xl text-neutral-600 font-cursed">DAYCARE</h3>
             <p className="mt-5 text-center">Cheeky Pups Daycare offers your dog a fun, safe and relaxing space to socialise, exercise and learn. We are offering you peace of mind while you are out busy running errands or at work that your dog is being looked after by highly trained staff in a cozy intimate environment. While at Cheeky Pups your dog will make lots of new friends and enjoy mental stimulation throughout the day.</p>
-            <p className="mt-2 text-center">Cheeky Pups dog daycare opens <strong>7:30AM</strong> ultil <strong>6:30PM</strong> Monday to Friday.</p>
+            <p className="mt-2 text-center">Cheeky Pups Dog Daycare opens <strong>7:30AM</strong> ultil <strong>6:30PM</strong> Monday to Friday.</p>
             <table className="table-auto border-collapse border border-zinc-400  hover:border-zinc-600 w-full justify-center align-middle mt-5 mb-5 text-center bolder text-sm md:text-base">
               <thead>
                 <tr>
@@ -42,27 +42,33 @@ export function LandingPage() {
               <tbody>
               <tr>
                 <td className="border border-zinc-300 h-8">Full Day</td>
-                <td className="border border-zinc-300 h-8">€17.50</td>
+                <td className="border border-zinc-300 h-8">€20</td>
               </tr>
               <tr>
                 <td className="border border-zinc-300 h-8">Half Day</td>
-                <td className="border border-zinc-300 h-8">€12.50 (up to 5 hours)</td>
+                <td className="border border-zinc-300 h-8">€15 (up to 5 hours)</td>
               </tr>
               <tr>
                 <td className="border border-zinc-300 h-8">Two dogs per day</td>
-                <td className="border border-zinc-300 h-8">€30 (save €5) </td>
+                <td className="border border-zinc-300 h-8">€35 (save €5) </td>
               </tr>
               <tr>
                 <td className="border border-zinc-300 h-8">Full week for one dog</td>
-                <td className="border border-zinc-300 h-8">€75 (Save €12.50) for this dog</td>
+                <td className="border border-zinc-300 h-8">€85 (Save €15) for this dog</td>
               </tr>
               <tr>
-                <td className="border border-zinc-300 h-8">Full week for second Dog</td>
-                <td className="border border-zinc-300 h-8">€65 (save €22.50) for this dog</td>
+                <td className="border border-zinc-300 h-8">Full week for second dog</td>
+                <td className="border border-zinc-300 h-8">€75 (save €25) for this dog</td>
               </tr>
               </tbody>
             </table>
             <SliderPhotos mainHeight="350px" secondHeight="250px" images={[
+              {url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2Freception.jpg?alt=media&token=8b6945d4-91fc-4551-a99e-db886c929adb'},
+              {url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2Fdaycare12024.jpg?alt=media&token=f08e46b9-3de6-4699-a559-204999e75ba4'},
+              {url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2Fdaycare22024.jpg?alt=media&token=1a3d8826-d421-49f3-bf0e-8ac2daba1ef6'},
+              {url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2Fdaycare32024.jpg?alt=media&token=f2aba298-a163-4e3c-9bb1-101731ff6b70'},
+              {url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2Fdaycare62024.jpg?alt=media&token=879eae2a-fa28-48a8-9d4a-beef51747d85'},
+              {url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2Fdaycare42024.jpg?alt=media&token=d8fb97c1-b517-4a19-9f07-395e2a2bbd29'},
               {url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2Fdaycare6.jpeg?alt=media&token=738302e5-3122-46a0-bbaf-cc3aa27de906'},
               {url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2Fdaycare8.jpeg?alt=media&token=48f9aaff-7514-43f5-add4-cf3c8647e336'},
               {url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2Fdaycare7.jpeg?alt=media&token=84a0a838-754a-405c-b2fd-245f3d2f51fe'},
@@ -85,7 +91,7 @@ export function LandingPage() {
           </div>
           */}
           <div className="m-5 bg-white p-7 md:rounded">
-            <h3 className="text-center font-medium text-2xl text-neutral-600 font-cursed ">GROOMING</h3>
+            <h3 className="text-center font-medium text-3xl text-neutral-600 font-cursed ">GROOMING</h3>
             <p className="mt-5 text-center">We pride ourselves in offering your pooch the best grooming experience possible! We offer a range of services for your furry friend. We cater to Small, Medium & Large dogs.</p>
             <p className="mt-2 mb-5 text-center">THE WORKS SESSION INCLUDES: <strong>Hair cut, Wash & Dry</strong> PLUS <strong>Nails & Ears</strong> at no extra cost.</p>
 
@@ -103,7 +109,7 @@ export function LandingPage() {
           </div>
 
           <div className="m-5 bg-white p-7 md:rounded">
-            <h3 className="text-center font-medium text-2xl text-neutral-600 font-cursed">GET IN TOUCH</h3>
+            <h3 className="text-center font-medium text-3xl text-neutral-600 font-cursed">GET IN TOUCH</h3>
             <p className="mt-5 text-center">
               Give us a call on <span className="font-bold">083 487 1320</span> or send us a email <span className="font-bold">info@cheekypups.com</span>.
             </p>
@@ -112,7 +118,7 @@ export function LandingPage() {
             </p>
           </div>
           <div className="m-5 bg-white p-7 md:rounded w-f">
-            <h3 className="text-center font-medium text-2xl bg-white text-neutral-600 font-cursed">WHERE ARE WE?</h3>
+            <h3 className="text-center font-medium text-3xl bg-white text-neutral-600 font-cursed">WHERE ARE WE?</h3>
             <p className="mt-5 text-center">
               Green Gate Business Centre, Gould St, The Lough, Cork - <strong>T12 Y65D</strong>
             </p>

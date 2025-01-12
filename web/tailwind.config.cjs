@@ -18,7 +18,7 @@ module.exports = {
       },
       fontFamily: {
         cursed: ['Itim', 'sans-serif']
-      }
+      },
     },
     fontFamily: {
       cursed: ['Itim', 'sans-serif']
