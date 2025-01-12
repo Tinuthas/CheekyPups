@@ -18,7 +18,7 @@ export function LandingPage() {
         <div className="flex justify-center">
           <img src={Cropped} className=" max-h-[300px] md:rounded-xl"/>
         </div>
-        <h1 className="font-cursed leading-6 text-center break-words antialiased hover:subpixel-antialiased font-bold text-neutral-50 text-6xl md:text-6xl bg-pinkBackground p-2  mt-10"><span className="text-2xl align-middle	">Declan's </span>Cheeky Pups <br/><span className=" text-4xl">Dog Grooming & Daycare</span></h1>
+        <h1 className="font-cursed leading-6 text-center break-words antialiased hover:subpixel-antialiased font-bold text-neutral-50 text-5xl md:text-7xl bg-pinkBackground p-2  mt-10"><span className="text-xl md:text-2xl align-middle	">Declan's </span>Cheeky Pups <br/><span className="md:text-5xl text-3xl">Dog Grooming & Daycare</span></h1>
        
       </header>
       <main className="w-full bg-pinkBackground text-neutral-500 text-base md:text-lg">
