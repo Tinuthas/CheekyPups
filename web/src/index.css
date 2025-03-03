@@ -1,3 +1,4 @@
+
 :root {
   font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
   font-size: 16px;
@@ -20,7 +21,7 @@
 }
 
 html {
-  background-color: #FF499E;
+  //background-color: #FF499E;
 }
 
 body {
@@ -29,13 +30,21 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
-  background-color: #FF499E;
+  background-image: url("/img/Background.png");
+  //background-color: #FF499E;
   //overflow: hidden;
 }
 
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
+}
+
+h3 {
+  //text-shadow: -2px -2px 0 black, 2px -2px 0 black, -2px 2px 0 black, 2px 2px 0 black;
+  position: relative;
+  -webkit-text-stroke: 2px black;
+  fontFamily: "Boorsok";
 }
 
 button {
@@ -48,6 +57,18 @@ button {
   background-color: #1a1a1a;
   cursor: pointer;
   transition: border-color 0.25s;
+}
+
+@font-face{
+  font-family: "Boorsok";
+  src:local("Boorsok-Regular"),
+  url('/assets/fontsboorsok.otf') 
+}
+
+@font-face{
+  font-family: "Gotham";
+  src:local("Gotham-Regular"),
+  url('/assets/fonts/GothamOffice.otf') 
 }
 
 

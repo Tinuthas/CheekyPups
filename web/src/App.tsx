@@ -12,20 +12,20 @@ function App() {
   const [authenticated, setAuthenticated] = useState<boolean>(false)
   const navigate = useNavigate()
   useEffect(() => {
-    const loggedInUser = localStorage.getItem("authenticated") || "";
+    /*const loggedInUser = localStorage.getItem("authenticated") || "";
     if(loggedInUser !== "") {
       setAuthenticated(true)
     }else{
       navigate("/login", { replace: true });
-    }
+    }*/
   }, [])
 
     return (
-      <div className='bg-pinkBackground w-full h-screen'>
+      <div id='main-div' className='bg-background-image w-full h-screen'>
         <header>
           <NavBar />
         </header>
-        <main className='bg-pinkBackground'> 
+        <main className='bg-background-image'> 
           <Outlet /> 
           <ToastContainer />
         </main>

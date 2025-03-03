@@ -1,5 +1,5 @@
 
-import Cropped from "../assets/thumbnail_daycare.png"
+import Banner from "../assets/cheekypupsbannerfront.png"
 import { Map } from '../components/Map'
 import { SliderPhotos } from "../components/SliderPhotos"
 import '../styles/global.css'
@@ -9,27 +9,30 @@ const API_MAPS = import.meta.env.VITE_API_MAPS || ""
 export function LandingPage() {
 //lg:w-[1024px]
   return (
-    <div className="flex w-full h-full flex-col bg-pinkBackground">
-      <div className="md:mx-[100px] lg:mx-[200px] lg:mt-10  ">
+    <div className="flex w-full h-full flex-col">
+      <div className="bg-mobile-background md:bg-blue-background bg-fixed">
+      <div className="md:mx-[100px] lg:mx-[200px] lg:mt-10">
 
       
-      <header className="bg-pinkBackground h-fit w-full flex flex-col justify-center ">
+      <header className="h-fit w-full flex flex-col justify-center ">
       
         <div className="flex justify-center">
-          <img src={Cropped} className=" max-h-[300px] md:rounded-xl"/>
+          <img src={Banner} className=" max-h-[300px] md:rounded-xl"/>
         </div>
-        <h1 className="font-cursed leading-6 text-center break-words antialiased hover:subpixel-antialiased font-bold text-neutral-50 text-5xl md:text-7xl bg-pinkBackground p-2  mt-10"><span className="text-xl md:text-2xl align-middle	">Declan's </span>Cheeky Pups <br/><span className="md:text-5xl text-3xl">Dog Grooming & Daycare</span></h1>
+        {
+        //<h1 className="font-cursed leading-6 text-center break-words antialiased hover:subpixel-antialiased font-bold text-neutral-50 text-5xl md:text-7xl bg-background-image p-2  mt-10"><span className="text-xl md:text-2xl align-middle	">Declan's </span>Cheeky Pups <br/><span className="md:text-5xl text-3xl">Dog Grooming & Daycare</span></h1>
+        }
        
       </header>
-      <main className="w-full bg-pinkBackground text-neutral-500 text-base md:text-lg">
+      <main className="w-full text-neutral-800 text-base md:text-lg">
         <div className="">
           <div className="m-5 bg-white p-7 md:rounded">
-          <h3 className="text-center font-medium text-3xl text-neutral-600 font-cursed">WHAT DO WE DO?</h3>
+          <h3 className="text-center font-extrabold text-3xl md:text-4xl text-pinkBackground font-borsok">WHAT DO WE DO?</h3>
             <p className="mt-5 text-center">Declan’s Cheeky Pups is a calm and controlled environment, we have professional staff who are highly trained to take care of your dog.</p>
             <p className="mt-2 text-center">We work from Monday to Friday and you can schedule your dog to daycare or grooming by calling or texting us, our phone lines are open from <strong>9AM</strong> ultil <strong>5PM</strong>. For bookings call us on <strong>083 487 1320</strong>.</p>
           </div>
           <div className="mx-5 p-7 md: rounded bg-white">
-            <h3 className="text-center font-medium text-3xl text-neutral-600 font-cursed">DAYCARE</h3>
+            <h3 className="text-center font-extrabold text-3xl md:text-4xl text-pinkBackground font-borsok">DAYCARE</h3>
             <p className="mt-5 text-center">Cheeky Pups Daycare offers your dog a fun, safe and relaxing space to socialise, exercise and learn. We are offering you peace of mind while you are out busy running errands or at work that your dog is being looked after by highly trained staff in a cozy intimate environment. While at Cheeky Pups your dog will make lots of new friends and enjoy mental stimulation throughout the day.</p>
             <p className="mt-2 text-center">Cheeky Pups Dog Daycare opens <strong>7:30AM</strong> ultil <strong>6:30PM</strong> Monday to Friday.</p>
             <table className="table-auto border-collapse border border-zinc-400  hover:border-zinc-600 w-full justify-center align-middle mt-5 mb-5 text-center bolder text-sm md:text-base">
@@ -91,7 +94,7 @@ export function LandingPage() {
           </div>
           */}
           <div className="m-5 bg-white p-7 md:rounded">
-            <h3 className="text-center font-medium text-3xl text-neutral-600 font-cursed ">GROOMING</h3>
+            <h3 className="text-center font-extrabold text-3xl md:text-4xl text-pinkBackground font-borsok">GROOMING</h3>
             <p className="mt-5 text-center">We pride ourselves in offering your pooch the best grooming experience possible! We offer a range of services for your furry friend. We cater to Small, Medium & Large dogs.</p>
             <p className="mt-2 mb-5 text-center">THE WORKS SESSION INCLUDES: <strong>Hair cut, Wash & Dry</strong> PLUS <strong>Nails & Ears</strong> at no extra cost.</p>
 
@@ -109,7 +112,7 @@ export function LandingPage() {
           </div>
 
           <div className="m-5 bg-white p-7 md:rounded">
-            <h3 className="text-center font-medium text-3xl text-neutral-600 font-cursed">GET IN TOUCH</h3>
+            <h3 className="text-center font-extrabold text-3xl md:text-4xl text-pinkBackground font-borsok">GET IN TOUCH</h3>
             <p className="mt-5 text-center">
               Give us a call on <span className="font-bold">083 487 1320</span> or send us a email <span className="font-bold">info@cheekypups.com</span>.
             </p>
@@ -118,7 +121,7 @@ export function LandingPage() {
             </p>
           </div>
           <div className="m-5 bg-white p-7 md:rounded w-f">
-            <h3 className="text-center font-medium text-3xl bg-white text-neutral-600 font-cursed">WHERE ARE WE?</h3>
+            <h3 className="text-center font-extrabold text-4xl text-pinkBackground font-borsok">WHERE ARE WE?</h3>
             <p className="mt-5 text-center">
               Green Gate Business Centre, Gould St, The Lough, Cork - <strong>T12 Y65D</strong>
             </p>
@@ -127,12 +130,12 @@ export function LandingPage() {
         </div>
       </main>
       </div>
-      <footer className="bg-pinkBackground">
+      <footer className="">
         <div className="my-4 flex justify-center">
             <a
               href="https://www.facebook.com/CheekyDogsDogGrooming/?fref=ts"
               type="button"
-              className="m-1 h-9 w-9 rounded-full border-2 border-white uppercase leading-normal text-white transition duration-150 ease-in-out hover:bg-black hover:bg-opacity-5 focus:outline-none focus:ring-0"
+              className="m-1 h-11 w-11 rounded-full border-2 border-pinkBackground uppercase leading-normal text-pinkBackground transition duration-150 ease-in-out hover:bg-black hover:bg-opacity-5 focus:outline-none focus:ring-0"
               data-te-ripple-init
               data-te-ripple-color="light">
               <svg
@@ -147,7 +150,7 @@ export function LandingPage() {
             <a
               href="https://www.instagram.com/cheeky.pups/"
               type="button"
-              className="m-1 h-9 w-9 rounded-full border-2 border-white uppercase leading-normal text-white transition duration-150 ease-in-out hover:bg-black hover:bg-opacity-5 focus:outline-none focus:ring-0"
+              className="m-1 h-11 w-11 rounded-full border-2 border-pinkBackground uppercase leading-normal text-pinkBackground transition duration-150 ease-in-out hover:bg-black hover:bg-opacity-5 focus:outline-none focus:ring-0"
               data-te-ripple-init
               data-te-ripple-color="light">
               <svg
@@ -163,15 +166,16 @@ export function LandingPage() {
             <a
               href="https://www.tiktok.com/@cheeky.pups"
               type="button"
-              className="m-1 h-9 w-9 rounded-full border-2 border-white uppercase leading-normal text-white transition duration-150 ease-in-out hover:bg-black hover:bg-opacity-5 focus:outline-none focus:ring-0"
+              className="m-1 h-11 w-11 rounded-full border-2 border-pinkBackground uppercase leading-normal text-pinkBackground transition duration-150 ease-in-out hover:bg-black hover:bg-opacity-5 focus:outline-none focus:ring-0"
               data-te-ripple-init
               data-te-ripple-color="light">
               <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" className="mx-auto h-full w-4" viewBox="0 0 16 16"> <path d="M9 0h1.98c.144.715.54 1.617 1.235 2.512C12.895 3.389 13.797 4 15 4v2c-1.753 0-3.07-.814-4-1.829V11a5 5 0 1 1-5-5v2a3 3 0 1 0 3 3V0Z"/> </svg>
             </a>
         </div>
-        <hr className="mx-10"/>
-        <p className="text-white text-center m-4">Copyright © 2025 Declan's Cheeky Pups</p>
+        <hr className="mx-10 border-pinkBackground"/>
+        <p className="text-pinkBackground font-medium text-center m-4">Copyright © 2025 Declan's Cheeky Pups</p>
       </footer>
+      </div>
     </div>
   )
 }
