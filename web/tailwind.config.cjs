@@ -27,8 +27,8 @@ module.exports = {
       cursed: ['Itim', 'sans-serif']
     },
     backgroundImage: {
-      'blue-background': "url('src/assets/img/BlueBackground.png')",
-      'mobile-background': "url('src/assets/img/MobileBackground.png')",
+      'blue-background': "url('src/assets/BlueBackground.png')",
+      'mobile-background': "url('src/assets/MobileBackground.png')",
     },
     textShadow: {
       sm: '0 1px 2px var(--tw-shadow-color)',

@@ -121,7 +121,7 @@ export function LandingPage() {
             </p>
           </div>
           <div className="m-5 bg-white p-7 md:rounded w-f">
-            <h3 className="text-center font-extrabold text-4xl text-pinkBackground font-borsok">WHERE ARE WE?</h3>
+            <h3 className="text-center font-extrabold text-3xl md:text-4xl text-pinkBackground font-borsok">WHERE ARE WE?</h3>
             <p className="mt-5 text-center">
               Green Gate Business Centre, Gould St, The Lough, Cork - <strong>T12 Y65D</strong>
             </p>
