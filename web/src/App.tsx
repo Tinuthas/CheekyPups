@@ -1,37 +1,29 @@
-import { NavBar } from './components/NavBar'
-import { Outlet, useNavigate} from 'react-router-dom'
-import './styles/global.css'
-import './lib/datagrind'
-import { useEffect, useState } from 'react'
-import { ToastContainer } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css';
-import { app } from './lib/firebase'
+import { useState } from 'react';
+import { Route, Routes } from "react-router-dom";
+import './App.css';
+
+import { Header } from './pages/Header'
+import { Home } from './pages/Home'
+import { Login } from './pages/Login'
+import { LandingPage } from './pages/LandingPage'
+import { Attendances } from './pages/Attendances'
 
 function App() {
 
-  const [authenticated, setAuthenticated] = useState<boolean>(false)
-  const navigate = useNavigate()
-  useEffect(() => {
-    /*const loggedInUser = localStorage.getItem("authenticated") || "";
-    if(loggedInUser !== "") {
-      setAuthenticated(true)
-    }else{
-      navigate("/login", { replace: true });
-    }*/
-  }, [])
-
-    return (
-      <div id='main-div' className='bg-background-image w-full h-screen'>
-        <header>
-          <NavBar />
-        </header>
-        <main className='bg-background-image'> 
-          <Outlet /> 
-          <ToastContainer />
-        </main>
-      </div>
-    )
- 
+  return (
+    <div className="App">
+      <Routes>
+        <Route path="/" element= {<LandingPage/>} />
+        <Route path="/app" element= {<Header/>}>
+          <Route index path='home' element={<Home/>} />
+          <Route path='attendance' element={<Attendances/>} />
+          
+        </Route>
+        <Route path='app/login' element={<Login/>} />
+        
+      </Routes>
+    </div>
+  )
 }
 
 export default App

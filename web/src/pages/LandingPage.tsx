@@ -125,7 +125,7 @@ export function LandingPage() {
             <p className="mt-5 text-center">
               Green Gate Business Centre, Gould St, The Lough, Cork - <strong>T12 Y65D</strong>
             </p>
-            <Map googleMapsApiKey={API_MAPS} lat={51.890693} lng={-8.482955} zoom={15}/>
+            {/*<Map googleMapsApiKey={API_MAPS} lat={51.890693} lng={-8.482955} zoom={15}/>*/}
           </div>
         </div>
       </main>

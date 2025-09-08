@@ -42,7 +42,7 @@ async function getAllOwners() {
   return await prisma.owner.findMany()
 }
 
-async function getSearchOwnersHandle(request: FastifyRequest<{Querystring: FilterOwnerInput}>, reply: FastifyReply) {
+async function getSearchOwnersHandle(request: { query: FilterOwnerInput; }) {
   try{
     return await getSearchByName(request.query.name)
   }catch(err) {

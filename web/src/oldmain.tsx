@@ -1,23 +1,32 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import { BrowserRouter } from "react-router-dom"
 import { HashRouter, Route, Routes } from 'react-router-dom'
 
+import App from './App'
 import './index.css'
-import App from './App.jsx'
-import { Header } from './pages/Header'
+import { About } from './pages/About'
+import { Attendances } from './pages/Attendances'
+import { Dogs } from './pages/Dogs'
 import { Home } from './pages/Home'
 import { Login } from './pages/Login'
+import { Owners } from './pages/Owners'
+import { Payments } from './pages/Payments'
+import { Vaccines } from './pages/Vaccines'
 import { LandingPage } from './pages/LandingPage'
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
+    <HashRouter>
+      <Routes>
+        <Route path='/' element={<LandingPage/>}/>
+        <Route path="app" element={<App/>}>
+          <Route index element={<Home/>}/>
+        </Route>
+        <Route path='login' element={<Login/>}/>
+      </Routes>
+    </HashRouter>
   </React.StrictMode>
 )
-
 
 /*
  <Route path="app" element={<App/>}>

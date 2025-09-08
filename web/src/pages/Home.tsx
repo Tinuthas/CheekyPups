@@ -2,7 +2,6 @@
 
 export function Home(){
 
-
   return (
     <div className="md:p-10 pt-4 h-full flex flex-col items-center">
       <h1 className="font-bold text-3xl md:text-4xl text-white">Cheeky Pups</h1>
