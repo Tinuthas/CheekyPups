@@ -1,4 +1,4 @@
-import logoImage from '../assets/logo.svg'
+import logoImage from '../assets/roundedlogo.png'
 import { List, X } from 'phosphor-react'
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
@@ -16,31 +16,38 @@ export function NavBar() {
 
   let Links = [
     { name: "Home", path: '/app', },
-    //{ name: "About", path: 'About', },
     { name: "Daycare", 
       links: [
-      {
-        name: "Attendances", path: "Attendances",
-      },
-      {
-        name: "Payments", path: "Payments",
-      },
+        {
+          name: "Attendances", path: "Attendances",
+        },
+        {
+          name: "Payments", path: "Payments",
+        },
       ]},
-      { name: "Manager", 
-        links: [
-          {
-            name: "Dogs", path: "Dogs",
-          },
-          {
-            name: "Owners", path: "Owners",
-          },
-          {
-            name: "Vaccines", path: "Vaccines",
-          }
-        ]
-      }
-      
-    
+    { name: "Grooming", 
+      links: [
+        {
+          name: "Booking", path: "Booking",
+        },
+        {
+          name: "Customers", path: "Customers",
+        },
+      ]},
+    { name: "Manager", 
+      links: [
+        {
+          name: "Dogs", path: "Dogs",
+        },
+        {
+          name: "Owners", path: "Owners",
+        }
+      ]
+    }
+    /*,
+        {
+          name: "Vaccines", path: "Vaccines",
+        }*/
     /*{
       name: "Manager", links: [
         {
@@ -65,13 +72,13 @@ export function NavBar() {
   return(
     <div className="shadow w-full top-0 left-0 ">
       <div className="md:flex items-center justify-between bg-white md:h-[68px] py-4 md:px-10 px-7">
-        <div className="text-pinkBackground font-bold flex items-center text-3xl cursor-pointer py-2">         
-          <img src={logoImage} alt="Cheeky Pubs Logo" className='h-9'/>
-          Cheeky Pups
+        <div className="flex items-center cursor-pointer">         
+          <img src={logoImage} alt="Cheeky Pubs Logo" className='h-9 mr-2'/>
+          <h1 className='font-extrabold text-4xl text-pinkBackground font-borsok pt-2'>CHEEKY PUPS</h1>
         </div>
         <div className='text-3xl absolute right-8 top-5 cursor-pointer md:hidden transition-all duration-500' onClick={()=>setOpen(!open)}>
           {
-            open ? <X className='text-neutral-700'/> : <List className='text-neutral-700'/>
+            open ? <X className='text-neutral-800'/> : <List className='text-neutral-800'/>
           }
         </div>
         <div className={`transition-all duration-300 ease-in ${open ? 'opacity-100 mt-4':'top-[-500px] opacity-0 hidden'} md:opacity-100 md:flex`}>

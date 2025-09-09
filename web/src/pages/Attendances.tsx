@@ -88,7 +88,7 @@ export function Attendances(){
                 </Box>
               </>
             )
-          }, 
+          },/* 
           {
             accessorKey:'total', 
             header: 'Total',
@@ -101,7 +101,7 @@ export function Attendances(){
             header: 'Paid',
             size: 120,
             Cell: ({ renderedCellValue }) => <div className="w-[28px] text-center">{renderedCellValue}</div>
-          }]
+          }*/]
           for (const item of Array.from(dates).sort()) {
             base.push(cellComponent(item, () => clickSearchByDates()))
           }
@@ -146,7 +146,7 @@ export function Attendances(){
 
   return (
     <div className="md:p-10 pt-4 h-full flex flex-col items-center">
-      <h1 className="font-medium text-3xl md:text-4xl text-white">Attendances</h1>
+      <h1 className="font-medium text-3xl md:text-4xl text-white font-borsok">Attendances</h1>
       <FilterDays 
         dateStart={dateStart}
         dateEnd={dateEnd}
