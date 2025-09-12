@@ -76,16 +76,22 @@ export function Attendances(){
         if(rows.length != 0 ) {
           var base:MRT_ColumnDef<any>[] = [{ 
             accessorKey:'name', 
-            header: 'Dog name',
-            size: 200,
+            header: 'Dog Name',
+            size: 180,
             Cell: ({ renderedCellValue, row }) => (
               <>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: '1rem', }}>
+                <Box sx={{ display: 'flex' }}>
+                  <span className="cursor-pointer" onClick={() => handleOpenAvatar(row)}>
+                    <Avatar sx={{ width: 0, height: 0 }} src={row.original.avatarUrl}  />
+                  </span>
+                  <span>{renderedCellValue}</span>
+                </Box>
+                {/*<Box sx={{ display: 'flex', alignItems: 'center', gap: '1rem', }}>
                   <span className="cursor-pointer" onClick={() => handleOpenAvatar(row)}>
                     <Avatar sx={{ width: 30, height: 30 }} src={row.original.avatarUrl}  />
                   </span>
                   <span>{renderedCellValue}</span>
-                </Box>
+                </Box> */}
               </>
             )
           },/* 
@@ -146,7 +152,7 @@ export function Attendances(){
 
   return (
     <div className="md:p-10 pt-4 h-full flex flex-col items-center">
-      <h1 className="font-medium text-3xl md:text-4xl text-white font-borsok">Attendances</h1>
+      <h3 className="font-medium text-3xl md:text-4xl text-white font-borsok">Attendances</h3>
       <FilterDays 
         dateStart={dateStart}
         dateEnd={dateEnd}

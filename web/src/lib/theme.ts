@@ -7,13 +7,13 @@ export const theme = createTheme({
     primary: {
       light: colors.neutral[700],
       //main: colors.neutral[700],
-      main:  '#FF499E',
+      main:  '#f02a77',
       dark: colors.neutral[700],
       contrastText: colors.white,
     },
     secondary: {
       light: colors.white,
-      main: '#FF499E',
+      main: '#f02a77',
       dark: colors.neutral[700],
       contrastText: colors.white,
     },

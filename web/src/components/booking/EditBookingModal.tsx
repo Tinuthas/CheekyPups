@@ -1,8 +1,8 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, fabClasses, Stack, TextField } from "@mui/material";
 import dayjs from "dayjs";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { InputLabel } from "./InputLabelDialog";
+import { InputLabel } from "../InputLabelDialog";
 
 export interface ColumnHeader {
   label: string,
@@ -16,21 +16,26 @@ export interface ColumnHeader {
   setLocalStatus?(status:boolean):void
 }
 
-interface CreateModalProps {
+interface EditBookingModalProps {
   columns: Array<ColumnHeader>;
   onClose: () => void;
   onSubmit: (values: any, valuesData: any) => void;
   open: boolean;
+  callInit: () => any;
 }
 
 //example of creating a mui dialog modal for creating new rows
-export const CreateNewModal = ({
+export const EditBookingNewModal = ({
   open,
   columns,
   onClose,
   onSubmit,
-}: CreateModalProps) => {
+  callInit
+}: EditModalProps) => {
 
+  useEffect(() => {
+    callInit()
+  }, [])
 
   const emptyValues = () =>
   columns.reduce((acc, column) => {
@@ -38,40 +43,21 @@ export const CreateNewModal = ({
     return acc;
   }, {} as any)
 
-  /*const initialValues = columns.reduce((acc, column) => {
-    acc[column.accessorKey ?? ''] = column.value ?? '';
-    return acc;
-  }, {} as any)*/
-
   const [values, setValues] = useState<any>(emptyValues);
-  
   const [selectInput, setSelectInput] = useState<any>({})
 
   const handleClose = () => {
+    console.log()
     setValues(emptyValues)
     onClose()
   }
 
   const handleSubmit = () => {
-    console.log('clicked')
-    //put your validation logic here
-    //console.log(Object.entries(values))
     var validationEmail = false
     var validationRequired = false
     var validationDate = false
-    var validationTime = false
-    console.log(Object.entries(values))
-    console.log(columns)
-
-
     Object.entries(values).forEach((element:any, index) => {
-      console.log(element[1])
-      console.log(columns[index])
       if(columns[index] != null){
-        if(columns[index].type.includes('checkbox')){
-          if(values[element[1]] == undefined) 
-            element[1] = false
-        }
         if(columns[index].required == true) {
           if(validateRequired(element[1]) == false)
             validationRequired = true
@@ -87,30 +73,18 @@ export const CreateNewModal = ({
           if(element[1].length == 0) {
             values[element[0]] = null
           }else{
-            //values[element[0]] = element[1]
             values[element[0]] = dayjs(element[1]).format('DD/MM/YYYY')
-          }
-        }
-        if(columns[index].type.includes('time')){
-          console.log(element[1])
-          if(element[1].length == 0) {
-            values[element[0]] = null
-          }else{
-            values[element[0]] = dayjs(element[1]).format('HH:mm')
           }
         }
         
       }
     });
     if(validationRequired) {
-      toast.error(`You need to fill some fields`, {position: 'top-center', autoClose: 2000,});
-      toast.error(`${JSON.stringify(values)}`, {position: 'top-center', autoClose: 10000,});
+      toast.error("You need to fill some fields", {position: 'top-center', autoClose: 2000,});
     }else if(validationEmail) {
       toast.error("Incorrect Email Field", {position: 'top-center', autoClose: 2000,});
     }else if(validationDate) {
       toast.error("Incorrect Date Field", {position: 'top-center', autoClose: 2000,});
-    }else if(validationTime) {
-      toast.error("Incorrect Time Field", {position: 'top-center', autoClose: 2000,});
     }else{
 
       const valuesData = { ...values };
@@ -122,11 +96,6 @@ export const CreateNewModal = ({
     }
   };
 
-  function onChangeValuesCheck(key:any, value:any) {
-    console.log({[key]: value})
-    setValues({ ...values, [key]: value})
-  }
-
   return (
     <Dialog open={open} sx={{
       "& .MuiDialog-container": {
@@ -137,7 +106,7 @@ export const CreateNewModal = ({
         },
       },
     }}>
-      <DialogTitle textAlign="center">Add</DialogTitle>
+      <DialogTitle textAlign="center">Edit</DialogTitle>
       <DialogContent>
         <form onSubmit={(e) => e.preventDefault()}>
           <Stack
@@ -150,13 +119,13 @@ export const CreateNewModal = ({
             {columns.map((column) => (
               <InputLabel 
                 key={column.accessorKey}
-                onChange={(e) => onChangeValuesCheck(e.target.name, e.target.value) } 
+                onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })} 
                 placeholder={column.name} 
                 type={column.type} 
                 labelName={column.label} 
                 accessorKey={column.accessorKey}
                 onSelect={(key, value) => setSelectInput({ ...selectInput, [key]: value })}
-                onChangeValue={(key, value) => onChangeValuesCheck(key, value)}
+                onChangeValue={(key, value) => setValues({ ...values, [key]: value })}
                 getData={column.getDataSelect}
                 value={column.value}
                 setValue={column.setValue}
@@ -170,16 +139,14 @@ export const CreateNewModal = ({
       <DialogActions sx={{ p: '1.25rem' }}>
         <Button onClick={handleClose}>Cancel</Button>
         <Button color="secondary" onClick={handleSubmit} variant="contained">
-          Add
+          Edit
         </Button>
       </DialogActions>
     </Dialog>
   );
 };
 
-const validateRequired = (value: string) =>  {
-  return !!value.length
-}
+const validateRequired = (value: string) => !!value.length;
 const validateEmail = (email: string) =>
   !!email.length &&
   email

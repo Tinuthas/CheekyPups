@@ -79,6 +79,11 @@ export function DataTableAttendance({attendances, columns, marginTable, handleCr
                 flex: '0 0 auto',
               },
             }}
+            muiTablePaginationProps={{
+              rowsPerPageOptions: [50, 100, 150],
+              showFirstButton: false,
+              showLastButton: false,
+            }}
             />
         
           

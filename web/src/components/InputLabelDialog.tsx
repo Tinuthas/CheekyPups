@@ -4,6 +4,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import { useState } from "react";
 import { boolean } from "zod";
 import { DateField } from "./DateField";
+import { TimeField } from "./TimeField";
 
 interface InputLabelProps{
   labelName: string;
@@ -54,12 +55,13 @@ export const InputLabel = ({labelName, type, placeholder, accessorKey, value, se
       if(onSelect != undefined)
         onSelect(accessorKey.toLowerCase().replace('id', ''), valueField.label)
       onChangeValue(accessorKey, valueField.value.toString())
-    }else if(type == "date") {
+    }else if(type == "date" || type == "time") {
       var date = new Date(valueField)
       if(setValue != undefined)
         setValue(date)
       onChangeValue(accessorKey, date)
     }
+    
    
   }
 
@@ -77,6 +79,8 @@ export const InputLabel = ({labelName, type, placeholder, accessorKey, value, se
           <FormControlLabel control={<Checkbox onChange={setEventChange} sx={{ color: '#FF499E', '& .MuiSvgIcon-root': { fontSize: 28 } }} checked={value}  />}  label={status ? placeholder : labelName}  />
         : type.includes('date') ?
           <DateField label={labelName} value={value} onChange={handleOnChangeValue} />
+        : type.includes('time') ?
+          <TimeField label={labelName} value={value} onChange={handleOnChangeValue} />
         :
           <input
             placeholder={placeholder}

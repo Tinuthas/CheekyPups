@@ -274,7 +274,7 @@ export function Payments(){
 
   return (
     <div className="md:p-10 pt-4 h-full flex flex-col items-center">
-      <h1 className="font-medium text-3xl md:text-4xl text-white">Payments</h1>
+      <h3 className="font-medium text-3xl md:text-4xl text-white font-borsok">Payments</h3>
       { loading ? <div className="w-full flex justify-center"><Loading /> </div> :
         <div className="md:flex bg-white w-full mt-4 rounded">
             <DataTableCustom 
