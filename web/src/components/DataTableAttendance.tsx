@@ -79,6 +79,12 @@ export function DataTableAttendance({attendances, columns, marginTable, handleCr
                 flex: '0 0 auto',
               },
             }}
+            muiTableFooterCellProps={{
+              sx: {
+                flex: '0 0 auto',
+              },
+            }}
+            initialState={{ pagination: { pageSize: 50, pageIndex: 0 } }}
             muiTablePaginationProps={{
               rowsPerPageOptions: [50, 100, 150],
               showFirstButton: false,

@@ -84,7 +84,7 @@ export const InputLabel = ({labelName, type, placeholder, accessorKey, value, se
         :
           <input
             placeholder={placeholder}
-            onChange={setEventChange} autoFocus type={type}
+            onChange={setEventChange} type={type}
             value={value}
             className="block w-full h-12 px-4 py-2 mt-2 text-neutral-600 bg-white border-[1px] border-neutral-300 hover:border-neutral-400 rounded transition-all focus:outline-none focus:border-pinkBackground"
           />

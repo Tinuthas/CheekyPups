@@ -5,7 +5,7 @@ export const theme = createTheme({
   palette: {
     //mode: 'dark',
     primary: {
-      light: colors.neutral[700],
+      light: colors.neutral[500],
       //main: colors.neutral[700],
       main:  '#f02a77',
       dark: colors.neutral[700],
@@ -31,3 +31,10 @@ export const theme = createTheme({
     ].join(','),
   },
 });
+
+export const iconStyle =
+{
+    "fontSize": "35px",
+    "color": "#737373",
+    "&:hover": { "color": "#f02a77" }
+}

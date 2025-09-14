@@ -182,8 +182,8 @@ function handleDelete(id:number) {
   )
 }
 
-export function cellComponent(item: string, onSubmit: () => void) {
-  
+export function cellComponent(item: string, onSubmit: () => void, totalSumDays: number) {
+
   var column:MRT_ColumnDef<any> = {
     accessorKey: item, 
     header: item,
@@ -198,7 +198,8 @@ export function cellComponent(item: string, onSubmit: () => void) {
             onSubmit={onSubmit}/>
         : null}
       </div>
-    )
+    ),
+    Footer: ({  }) => <div className="w-[90px] text-center mr-[43.06px]">{totalSumDays}</div>
   }
   return column
 }

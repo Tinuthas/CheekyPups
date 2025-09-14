@@ -200,7 +200,13 @@ async function getAttendances(input: AttendanceFilterInput){
           name: true,
           nickname: true,
           avatarUrl: true,
-        }
+          Owner: {
+            select: {
+              id: true,
+              name: true
+            }
+          }
+        },
       },
       day: {
         select: {
@@ -222,7 +228,7 @@ async function getAttendances(input: AttendanceFilterInput){
     ]
   })
 
-  let dogsAttendance = new Map<string, { id: number, attendanceIds:[id: number], dog_id:number, name: string, nickname: string | null, avatarUrl: string | null, dates:[date:string], fullDates:[fullDate:boolean], paids:[paid:boolean] }>();
+  let dogsAttendance = new Map<string, { id: number, attendanceIds:[id: number], dog_id:number, owner_id:number, owner_name:string, name: string, nickname: string | null, avatarUrl: string | null, dates:[date:string], fullDates:[fullDate:boolean], paids:[paid:boolean] }>();
   for (let index = 0; index < attendances.length; index++) {
     const element = attendances[index];
     if (dogsAttendance.has(element.dog.id.toString())) {
@@ -235,6 +241,8 @@ async function getAttendances(input: AttendanceFilterInput){
         id: element.dog.id,
         attendanceIds: [element.id],
         dog_id: element.dog.id,
+        owner_id: element.dog.Owner.id,
+        owner_name: element.dog.Owner.name,
         name: `${element.dog.name} ${element.dog.nickname != null ?'- '+ element.dog.nickname : ''}`.trim(),
         nickname: element.dog.nickname,
         avatarUrl: element.dog.avatarUrl,

@@ -13,6 +13,7 @@ import { useState } from "react";
 import dayjs from "dayjs";
 import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "../../lib/theme";
+import { FilterDateBooking } from "./FilterDateBooking";
 
 interface ListFieldProps {
   date: Date
@@ -86,20 +87,7 @@ export function ListField ({date, setDate, loading, setLoading, listBooking}: Li
     <div className="border-neutral-800 md:p-10 pt-4 h-full flex flex-col items-center">
       <div className="flex flex-col justify-center items-center">
         <h3 className="font-medium text-4xl text-white font-borsok md:mr-6 text-center mt-2 md:mt-0">{date.toLocaleString(undefined,{weekday: "long", day: "numeric",month:'long', year:'numeric'})}</h3>
-        <div className="md:flex justify-center items-center md: mt-4">
-          <ThemeProvider theme={theme}>
-          <div className="flex justify-center items-center bg-white rounded">
-            <div className="border rounded-full border-pinkBackground mx-3" onClick={onPreviousDate}>
-              <PreviousIcon color="secondary" fontSize="large"/>
-            </div>
-            <ChooseDateButton label={"Choose Date"} date={date} setDate={date => setDate(new Date(date))} />
-            <div className="border rounded-full border-pinkBackground mx-3" onClick={onNextDate}>
-              <NextIcon color="secondary" fontSize="large"/>
-            </div>
-          </div>
-          </ThemeProvider>
-          <ButtonLight text={"Add Event"} onClick={addEventClick} />
-        </div>
+        <FilterDateBooking date={date} setDate={setDate} loading={loading} setLoading={setLoading} onPreviousDate={onPreviousDate} onNextDate={onNextDate} addEventClick={addEventClick}/>
       </div>
       <div className="w-full md:px-4 my-4">
         { loading ? <div className="w-full flex justify-center"><Loading /> </div> :
