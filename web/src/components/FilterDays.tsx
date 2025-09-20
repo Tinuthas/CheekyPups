@@ -33,7 +33,7 @@ export function FilterDays({onSubmit, loading, dateEnd, dateStart, setDateEnd, s
         <div className="flex">
         <ThemeProvider theme={theme}>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
-            { loading ? <div className="ml-8"><Loading pink={true}/></div> :
+            { loading ? <div className="ml-8"></div> :
               <div className="border rounded-full border-neutral-600 hover:border-pinkBackground mx-3 h-[36px] my-[10px] justify-center" onClick={onPreviousWeek}>
                 <PreviousIcon sx={iconStyle}/>
               </div>
@@ -64,7 +64,7 @@ export function FilterDays({onSubmit, loading, dateEnd, dateStart, setDateEnd, s
                 renderInput={(params) => <TextField {...params} />}
               />
             </div>
-            { loading ? <div className="ml-8"><Loading pink={true}/></div> :
+            { loading ? <div className="ml-8"></div> :
               <div className="border rounded-full border-neutral-600 hover:border-pinkBackground mx-3 h-[36px] my-[10px] justify-center" onClick={onNextWeek}>
                 <NextIcon sx={iconStyle}/>
               </div>

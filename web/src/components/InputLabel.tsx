@@ -15,7 +15,7 @@ export const InputLabel = ({labelName, value, type, placeholder, onChange}: Inpu
       </label>
       <input
         placeholder={placeholder}
-        onChange={onChange} autoFocus type={type}
+        onChange={onChange} type={type}
         className="block w-full px-4 py-2 mt-2 md:ml-6 text-neutral-600 bg-white border-[1px] border-neutral-700 rounded"
       />
     </div>

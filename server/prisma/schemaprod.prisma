@@ -31,10 +31,12 @@ model Dog {
 model Owner {
   id           Int       @id @default(autoincrement())
   name         String
+  secondOwner  String?
   phoneOne     String
   phoneTwo     String?
   emailAddress String    @unique
   address      String?
+  notes        String?
   dogs         Dog[]
   extracts     Extract[]
 
@@ -62,7 +64,7 @@ model Day {
 
 model Attendance {
   id         Int     @id @default(autoincrement())
-  fullDay    Boolean
+  typeDay    String
   paid       Boolean
   day_id     Int
   dog_id     Int

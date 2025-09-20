@@ -13,7 +13,8 @@ export interface ColumnHeader {
   setValue?(value:any):void,
   required?: boolean,
   getDataSelect?: (inputValue: string) => Promise<any>,
-  setLocalStatus?(status:boolean):void
+  setLocalStatus?(status:boolean):void,
+  radioListValues?:Array<{key:string, value:string, label:string}>
 }
 
 interface EditModalProps {
@@ -130,6 +131,7 @@ export const EditNewModal = ({
                 value={column.value}
                 setValue={column.setValue}
                 setLocalStatus={column.setLocalStatus}
+                radioListValues={column.radioListValues}
               />
              
             ))}

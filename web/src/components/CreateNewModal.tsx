@@ -13,7 +13,8 @@ export interface ColumnHeader {
   setValue?(value:any):void,
   required?: boolean,
   getDataSelect?: (inputValue: string) => Promise<any>,
-  setLocalStatus?(status:boolean):void
+  setLocalStatus?(status:boolean):void,
+  radioListValues?:Array<{key:string, value:string, label:string}>
 }
 
 interface CreateModalProps {
@@ -53,7 +54,6 @@ export const CreateNewModal = ({
   }
 
   const handleSubmit = () => {
-    console.log('clicked')
     //put your validation logic here
     //console.log(Object.entries(values))
     var validationEmail = false
@@ -69,6 +69,10 @@ export const CreateNewModal = ({
       console.log(columns[index])
       if(columns[index] != null){
         if(columns[index].type.includes('checkbox')){
+          if(values[element[1]] == undefined) 
+            element[1] = false
+        }
+        if(columns[index].type.includes('radio')){
           if(values[element[1]] == undefined) 
             element[1] = false
         }
@@ -161,6 +165,7 @@ export const CreateNewModal = ({
                 value={column.value}
                 setValue={column.setValue}
                 setLocalStatus={column.setLocalStatus}
+                radioListValues={column.radioListValues}
               />
              
             ))}

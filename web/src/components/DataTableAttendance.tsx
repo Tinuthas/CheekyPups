@@ -15,22 +15,47 @@ import {Loading} from "./Loading";
 
 const HALFDAY = import.meta.env.VITE_HALFDAY
 const FULLDAY = import.meta.env.VITE_FULLDAY
+const FULLWEEK = import.meta.env.VITE_FULLWEEK
+const SECONDDOG = import.meta.env.VITE_SECONDDOG
 
 interface AttendanceTableProps {
   attendances: any[],
   columns: any[],
   marginTable: number,
   loading: boolean,
-  handleCreateNewRow: (values:any) => void,
+  handleCreateNewRow: (values:any) => void
 }
 
 export function DataTableAttendance({attendances, columns, marginTable, handleCreateNewRow, loading}:AttendanceTableProps) {
 
   const [createModalOpen, setCreateModalOpen] = useState(false);
 
-  const [valueField, setValueField] = useState(HALFDAY)
+  const [valueField, setValueField] = useState(FULLDAY)
   const [dateValueField, setDateValueField] = useState(new Date());
-  const [descriptionField, setDescriptionField] = useState(`DAYCARE - ${dayjs().format('DD/MM/YYYY')}`)
+  const [descriptionField, setDescriptionField] = useState(`DAYCARE - ${dayjs(dateValueField).format('DD/MM/YYYY')}`)
+
+  function setDateAndDescription(newDate: Date) {
+    const newDescription = descriptionField.replace(dayjs(dateValueField).format('DD/MM/YYYY'), dayjs(newDate).format('DD/MM/YYYY'))
+    setDescriptionField(newDescription)
+    setDateValueField(newDate)
+  }
+
+  function selectRadioTypeValue(value: any) {
+    switch (value) {
+      case 'FD': 
+        setValueField(FULLDAY)
+        break;
+      case 'HD': 
+        setValueField(HALFDAY)
+        break;
+      case 'FW': 
+        setValueField(FULLWEEK)
+        break;
+      case 'SD': 
+        setValueField(SECONDDOG)
+        break;
+    }
+  }
 
   return (
     <ThemeProvider theme={theme}>
@@ -46,7 +71,7 @@ export function DataTableAttendance({attendances, columns, marginTable, handleCr
           { loading ? <div className="w-full flex justify-center"><Loading /> </div> :
           <div className="bg-white rounded">
          
-            <MaterialReactTable
+          <MaterialReactTable
             columns={columns as MRT_ColumnDef<(typeof attendances)[0]>[]}
             data={attendances}
             renderTopToolbarCustomActions={() => (
@@ -124,16 +149,21 @@ export function DataTableAttendance({attendances, columns, marginTable, handleCr
                   name: '',
                   type: "date",
                   value: dateValueField,
-                  setValue: (value) => setDateValueField(value),
+                  setValue: (value) => setDateAndDescription(value),
                 },
                 {
-                  accessorKey: 'fullDay',
-                  label: 'Half Day',
-                  name: 'Full Day',
-                  type: "checkbox",
-                  setLocalStatus: (status: boolean) => {      
-                    status === true ? setValueField(FULLDAY) : setValueField(HALFDAY)               
-                  }
+                  accessorKey: 'typeDay',
+                  label: 'Type Day',
+                  name: 'Type Day',
+                  type: "radio",
+                  value: "FD",
+                  radioListValues: [
+                    {key: "fullDay", value: "FD", label: "Full Day"},
+                    {key: "halfDay", value: "HD", label: "Half Day"},
+                    {key: "fullWeek", value: "FW", label: "Full Week"},
+                    {key: "secondDog", value: "SD", label: "Second Dog"}
+                  ],
+                  setValue: (value) => selectRadioTypeValue(value),
                 },
                 {
                   accessorKey: 'value',
@@ -141,7 +171,7 @@ export function DataTableAttendance({attendances, columns, marginTable, handleCr
                   name: '',
                   type: "number",
                   value: valueField,
-                  setValue: (value) => setValueField(Number(value)),
+                  setValue: (value) => setValueField(value),
                 },
                 {
                   accessorKey: 'paid',

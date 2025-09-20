@@ -1,5 +1,7 @@
 import { SelectInput } from "./SelectInput";
 import Checkbox from '@mui/material/Checkbox';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import { useState } from "react";
 import { boolean } from "zod";
@@ -18,15 +20,15 @@ interface InputLabelProps{
   onSelect?(key: any, value:any):void;
   getData?:(inputValue: string) => Promise<any>;
   setLocalStatus?(status:boolean):void;
+  radioListValues?:Array<{key:string, value:string, label:string}>
 }
 
-export const InputLabel = ({labelName, type, placeholder, accessorKey, value, setValue, onChange, onChangeValue, onSelect, getData, setLocalStatus}: InputLabelProps) => {
+export const InputLabel = ({labelName, type, placeholder, accessorKey, value, setValue, onChange, onChangeValue, onSelect, getData, setLocalStatus, radioListValues}: InputLabelProps) => {
 
   const [status, setStatus] = useState(false)
 
   function setEventChange(event: React.ChangeEvent<HTMLInputElement>) {
-    console.log(accessorKey)
-   
+
     event.target.name = accessorKey
     if(type == "checkbox"){ 
       var checked = event.target.checked
@@ -37,7 +39,7 @@ export const InputLabel = ({labelName, type, placeholder, accessorKey, value, se
       event.target.value = checked.toString()
       if(setValue != undefined)
         setValue(checked)
-    }else if(value != null && setValue != undefined){
+    } else if(value != null && setValue != undefined){
       setValue(event.target.value)
     }
 
@@ -67,7 +69,7 @@ export const InputLabel = ({labelName, type, placeholder, accessorKey, value, se
 
   return (
     <div className="mb-2">
-      {type.includes('checkbox') ? null :
+      {type.includes('checkbox') || type.includes('radio')? null :
         <label htmlFor={type} className="block text-sm font-medium text-neutral-800">
           {labelName}
         </label>
@@ -77,6 +79,12 @@ export const InputLabel = ({labelName, type, placeholder, accessorKey, value, se
           <SelectInput getData={getData} onChangeSelect={handleOnChangeValue}/>
         : type.includes('checkbox') ? 
           <FormControlLabel control={<Checkbox onChange={setEventChange} sx={{ color: '#FF499E', '& .MuiSvgIcon-root': { fontSize: 28 } }} checked={value}  />}  label={status ? placeholder : labelName}  />
+        : type.includes('radio') ? 
+          <RadioGroup value={value}>
+            {radioListValues?.map( (radio) => (
+              <FormControlLabel key={radio.key} value={radio.value} control={<Radio onChange={setEventChange} sx={{ color: '#FF499E', '& .MuiSvgIcon-root': { fontSize: 18 } }} />} label={radio.label}  />
+            ))}
+          </RadioGroup>
         : type.includes('date') ?
           <DateField label={labelName} value={value} onChange={handleOnChangeValue} />
         : type.includes('time') ?

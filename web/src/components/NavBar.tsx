@@ -65,7 +65,7 @@ export function NavBar() {
     localStorage.setItem("authenticated", "");
     updateToken()
     setauthenticated("")
-    navigate("/login");
+    navigate("/app/login");
   }
 
   //<div className="text-pinkBackground font-bold flex items-center text-3xl drop-shadow-md cursor-pointer py-2">         

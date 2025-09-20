@@ -4,7 +4,7 @@ import {buildJsonSchemas} from 'fastify-zod'
 const createAttendanceBody = z.object({
   dog_id: z.number(),
   date: z.string(),
-  fullDay: z.boolean(),
+  typeDay: z.string().max(2),
   paid: z.boolean(),
   value: z.number(),
   descriptionValue: z.string()
@@ -22,7 +22,7 @@ const dogsAttendance = z.object({
 })
 
 const updateAttendanceBody = z.object({
-  fullDay: z.boolean(),
+  typeDay: z.string().max(2),
   paid: z.boolean(),
   value: z.number(),
   descriptionValue: z.string()

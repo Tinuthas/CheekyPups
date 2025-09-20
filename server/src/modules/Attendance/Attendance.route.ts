@@ -67,7 +67,7 @@ export async function attendanceRoutes(app: FastifyInstance) {
   }
 
   async function addAttendance(input: AttendanceInput){
-    const {dog_id, date, fullDay, paid, value, descriptionValue} = input
+    const {dog_id, date, typeDay, paid, value, descriptionValue} = input
 
     //const parsedDate = dayjs(date).startOf('day')
 
@@ -106,7 +106,7 @@ export async function attendanceRoutes(app: FastifyInstance) {
     let attendance = await prisma.attendance.create(
       {
         data: {
-          fullDay,
+          typeDay,
           paid,
           day: {
             connectOrCreate: {
@@ -192,7 +192,7 @@ async function getAttendances(input: AttendanceFilterInput){
     },
     select: {
       id: true,
-      fullDay: true,
+      typeDay: true,
       paid: true,
       dog: {
         select: {
@@ -235,13 +235,13 @@ async function getAttendances(input: AttendanceFilterInput){
     ]
   })
 
-  let dogsAttendance = new Map<string, { id: number, attendanceIds:[id: number], dog_id:number, owner_id:number, owner_name:string, owner_dogs:number, name: string, nickname: string | null, avatarUrl: string | null, dates:[date:string], fullDates:[fullDate:boolean], paids:[paid:boolean] }>();
+  let dogsAttendance = new Map<string, { id: number, attendanceIds:[id: number], dog_id:number, owner_id:number, owner_name:string, owner_dogs:number, name: string, nickname: string | null, avatarUrl: string | null, dates:[date:string], typeDays:[typeDay:string], paids:[paid:boolean] }>();
   for (let index = 0; index < attendances.length; index++) {
     const element = attendances[index];
     if (dogsAttendance.has(element.dog.id.toString())) {
       dogsAttendance.get(element.dog.id.toString())?.attendanceIds.push(element.id)
       dogsAttendance.get(element.dog.id.toString())?.dates.push(dayjs(element.day.date).format('DD/MM/YYYY'))
-      dogsAttendance.get(element.dog.id.toString())?.fullDates.push(element.fullDay)
+      dogsAttendance.get(element.dog.id.toString())?.typeDays.push(element.typeDay)
       dogsAttendance.get(element.dog.id.toString())?.paids.push(element.paid)
     }else{
       dogsAttendance.set(element.dog.id.toString(), {
@@ -255,13 +255,13 @@ async function getAttendances(input: AttendanceFilterInput){
         nickname: element.dog.nickname,
         avatarUrl: element.dog.avatarUrl,
         dates: [dayjs(element.day.date).format('DD/MM/YYYY')],
-        fullDates: [element.fullDay],
+        typeDays: [element.typeDay],
         paids: [element.paid]
       })
     }
   }
 
-  const convertList: { id: number, attendanceIds: [id: number]; dog_id: number; name: string; nickname: string | null; avatarUrl: string | null; dates: [date: string]; fullDates: [fullDate: boolean]; }[] = [];
+  const convertList: { id: number, attendanceIds: [id: number]; dog_id: number; name: string; nickname: string | null; avatarUrl: string | null; dates: [date: string]; typeDays:[typeDay:string]; }[] = [];
   dogsAttendance.forEach((value, key) => convertList.push(value));
 
   return convertList
@@ -284,7 +284,7 @@ async function getUniqueAttendance(id: number) {
     select: {
       id: true,
       paid: true,
-      fullDay: true,
+      typeDay: true,
       extract: {
         select: {
           value: true,
@@ -355,7 +355,7 @@ async function updateAttendanceHandle(request: FastifyRequest<{Body: AttendanceU
 
 
 async function updateAttendance(input: AttendanceUpdateInput, id: number) {
-  const {fullDay, paid, value, descriptionValue} = input
+  const {typeDay, paid, value, descriptionValue} = input
 
   let att = await prisma.attendance.findUnique({
     where: {
@@ -377,7 +377,7 @@ async function updateAttendance(input: AttendanceUpdateInput, id: number) {
         id: Number(id)
       },
       data: {
-        fullDay, 
+        typeDay, 
         paid, 
         extract : {
           update: {
@@ -395,7 +395,7 @@ async function updateAttendance(input: AttendanceUpdateInput, id: number) {
         id: Number(id)
       },
       data: {
-        fullDay, 
+        typeDay, 
         paid, 
         extract : {
           create: {

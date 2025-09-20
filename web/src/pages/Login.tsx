@@ -1,7 +1,7 @@
 import { AxiosError } from 'axios';
 import { FormEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import logoImage from '../assets/logo.svg'
+import logoImage from '../assets/roundedlogo.png'
 import z, { ZodError } from 'zod'
 import {api, updateToken} from '../lib/axios';
 import { Loading } from '../components/Loading';
@@ -92,10 +92,10 @@ export function Login(){
   return (
     <div className="relative flex flex-col justify-center min-h-screen overflow-hidden">
         <div className="w-full p-6 m-auto bg-white rounded-md shadow-md lg:max-w-xl">
-            <div className='flex justify-center mb-6 ml-4 md:ml-6'>
+            <div className='flex justify-center m-6'>
               <img src={logoImage} alt="Cheeky Pubs Logo" className='h-[100px] md:h-[150px]'/>
             </div>
-            <h1 className="text-3xl font-semibold text-center text-pinkBackground">
+            <h1 className="text-3xl font-semibold text-center text-pinkBackground font-borsok">
                Sign in
             </h1>
             <form className="mt-6" onSubmit={handleSubmit}>
@@ -133,7 +133,7 @@ export function Login(){
                 
                 <div className="mt-6">
                   { loading ? <div className="w-full flex justify-center"><Loading pink={true} /> </div> :
-                    <button className="w-full px-4 py-2 tracking-wide text-white transition-colors duration-200 transform bg-pinkBackground rounded-md hover:bg-pink-600 focus:outline-none focus:bg-bg-pink-600">
+                    <button className="w-full px-4 py-2 font-bold tracking-wide text-white transition-colors duration-200 transform bg-pinkBackground rounded-md hover:bg-pink-600 focus:outline-none focus:bg-bg-pink-600">
                         Login
                     </button>
                   }

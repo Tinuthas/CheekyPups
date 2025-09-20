@@ -14,13 +14,14 @@ import { DataTableAttendance } from "../components/DataTableAttendance";
 import { cellComponent } from "../components/CellAttendanceDate";
 
 
+
 type Attendances = Array<{
   id:string;
   attendanceIds: string[];
   dog_id: string,
   name: string
   dates: string[];
-  fullDates: boolean[];
+  typeDays: string[];
   paids: boolean[];
 }>
 
@@ -79,7 +80,7 @@ export function Attendances(){
             listDates['total'] = 0
             listDates['paid'] = 0 
             for (let i = 0; i < item.dates.length; i++) {
-              listDates[item.dates[i]] = item.paids[i] ? (item.fullDates[i] ? 'DP' : '½DP') : item.fullDates[i] ? 'D' : '½D'
+              listDates[item.dates[i]] = item.paids[i] ? (item.typeDays[i] != 'HD' ? 'DP' : '½DP') : item.typeDays[i] != 'HD' ? 'D' : '½D'
               dates.add(item.dates[i])
               listDates['total'] = listDates['total'] + 1
               listDates['paid'] = item.paids[i]? listDates['paid'] + 1 : listDates['paid']
@@ -101,12 +102,12 @@ export function Attendances(){
                 <>
                   {row?.original?.['dates'].length >= 5 ?
                     <div className="flex flex-row justify-center align-baseline">
-                      <div className="w-[5px] h-[20px] bg-purple-600 mr-2"></div>
+                      <div className="w-[5px] h-[20px] bg-purple-600 mr-2 rounded"></div>
                       <span className="font-medium">{renderedCellValue }</span>
                     </div>
                   :row?.original?.['owner_dogs'] >= 2 ? 
                     <div className="flex flex-row justify-center align-baseline">
-                      <div className="w-[5px] h-[20px] bg-lime-500 mr-2"></div>
+                      <div className="w-[5px] h-[20px] bg-lime-500 mr-2 rounded"></div>
                       <span className="font-medium">{renderedCellValue }</span>
                     </div>
                   : 
@@ -115,7 +116,8 @@ export function Attendances(){
                     </div>
                   }
                 </>
-              )  
+              ), 
+              Footer: ({  }) => <div className="">Total: </div> 
             }]
             for (const item of Array.from(dates).sort()) {
               var totalSumDays = 0
@@ -144,10 +146,11 @@ export function Attendances(){
 
   const handleCreateNewRow = (values: any) => {
     setLoading(true)
+    console.log(values)
     var newValues = {
       dog_id: Number(values.dogId), 
       date: values.date, 
-      fullDay: (values.fullDay?.toLowerCase?.() === 'true'), 
+      typeDay: values.typeDay?.toUpperCase?.(), 
       paid: (values.paid?.toLowerCase?.() === 'true'),  
       value: values.value, 
       descriptionValue: values.descriptionValue

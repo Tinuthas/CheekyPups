@@ -7,7 +7,8 @@ import { useState } from "react";
 
 const HALFDAY = import.meta.env.VITE_HALFDAY
 const FULLDAY = import.meta.env.VITE_FULLDAY
-
+const FULLWEEK = import.meta.env.VITE_FULLWEEK
+const SECONDDOG = import.meta.env.VITE_SECONDDOG
 
 
 function convertToDate(dateString: string) {
@@ -31,9 +32,9 @@ interface ReturnMenuItemCustomProps {
 
 function ReturnMenuItemCustom({renderedCellValue, row, item, onSubmit} : ReturnMenuItemCustomProps) {
 
-  const [valueField, setValueField] = useState(HALFDAY)
+  const [valueField, setValueField] = useState(FULLDAY)
   const [valueDecriptionField, setValueDecriptionField] = useState("")
-  const [fullDayField, setFullDayField] = useState(false);
+  const [typeDayField, setTypeDayField] = useState("FD");
   const [paidField, setPaidField] = useState(false);
 
   function getAttendance(id: number) {
@@ -44,10 +45,11 @@ function ReturnMenuItemCustom({renderedCellValue, row, item, onSubmit} : ReturnM
           Authorization: getToken()
       }}).then(response => {
         var att = response.data
+        console.log(att.typeDay)
         setValueField(Number(att.extract.value))
         setValueDecriptionField(att.extract.description)
         setPaidField(att.paid)
-        setFullDayField(att.fullDay)
+        setTypeDayField(att.typeDay)
       }).catch((err: AxiosError) => {
         const data = err.response?.data as {message: string}
         toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
@@ -58,7 +60,7 @@ function ReturnMenuItemCustom({renderedCellValue, row, item, onSubmit} : ReturnM
 function handleEdit(item:any, row:any, id:number) {
   try{
     var data = {
-      fullDay: (fullDayField.toString().toLowerCase() === 'true'), 
+      typeDay: (typeDayField.toString().toUpperCase()), 
       paid: (paidField.toString().toLowerCase() === 'true'),
       value: Number(valueField), 
       descriptionValue: valueDecriptionField}
@@ -129,6 +131,24 @@ function handleDelete(id:number) {
   }
 }
 
+function selectRadioTypeValue(value: string) {
+  switch (value) {
+    case 'FD': 
+      setValueField(FULLDAY)
+      break;
+    case 'HD': 
+      setValueField(HALFDAY)
+      break;
+    case 'FW': 
+      setValueField(FULLWEEK)
+      break;
+    case 'SD': 
+      setValueField(SECONDDOG)
+      break;
+  }
+  setTypeDayField(value)
+}
+
   return (
     <MenuItemCustom 
             handleDelete={(id) => handleDelete(id)} 
@@ -139,15 +159,18 @@ function handleDelete(id:number) {
             getAttendance={(id:number) => getAttendance(id)}
             editData={[
               {
-                accessorKey: 'fullDay',
-                label: 'Half Day',
-                name: 'Full Day',
-                type: "checkbox",
-                value: fullDayField,
-                setValue: (value) => setFullDayField(value),
-                setLocalStatus: (status) => {      
-                  status === true ? setValueField(FULLDAY) : setValueField(HALFDAY)               
-                }
+                accessorKey: 'typeDay',
+                  label: 'Type Day',
+                  name: 'Type Day',
+                  type: "radio",
+                  value: typeDayField,
+                  radioListValues: [
+                    {key: "fullDay", value: "FD", label: "Full Day"},
+                    {key: "halfDay", value: "HD", label: "Half Day"},
+                    {key: "fullWeek", value: "FW", label: "Full Week"},
+                    {key: "secondDog", value: "SD", label: "Second Dog"}
+                  ],
+                setValue: (value) => selectRadioTypeValue(value),
               },
               {
                 accessorKey: 'value',
@@ -155,7 +178,7 @@ function handleDelete(id:number) {
                 name: '',
                 type: "number",
                 value: valueField,
-                setValue: (value) => setValueField(Number(value)),
+                setValue: (value) => setValueField(value),
               },
               {
                 accessorKey: 'paid',
