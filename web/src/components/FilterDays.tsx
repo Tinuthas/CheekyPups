@@ -23,7 +23,11 @@ interface FilterDaysProps {
 }
 
 export function FilterDays({onSubmit, loading, dateEnd, dateStart, setDateEnd, setDateStart, onPreviousWeek, onNextWeek}: FilterDaysProps) {
-
+  function addDays(date:Date, days:number) {
+    var result = new Date(date);
+    result.setDate(result.getDate() + days);
+    return result;
+  }
   return (
     <div className="md:flex bg-white p-4 md:p-8 mt-4 rounded">
         <div className="flex">
@@ -54,6 +58,8 @@ export function FilterDays({onSubmit, loading, dateEnd, dateStart, setDateEnd, s
                 onChange={(newValue) => {
                   setDateEnd(newValue || new Date());
                 }}
+                minDate={dateStart}
+                maxDate={addDays(dateStart, 7)}
                 inputFormat="DD/MM/YYYY"
                 renderInput={(params) => <TextField {...params} />}
               />

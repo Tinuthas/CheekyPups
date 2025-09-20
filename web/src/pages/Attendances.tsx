@@ -88,6 +88,8 @@ export function Attendances(){
             var obj = Object.assign({}, item, listDates);
             rows.push(obj)
           })
+          console.log("---")
+          console.log(rows)
           setMarginTable(marginDates)
           setAttendances(rows)
           if(rows.length != 0 ) {
@@ -97,34 +99,24 @@ export function Attendances(){
               size: 180,
               Cell: ({ renderedCellValue, row }) => (
                 <>
-                  <Box sx={{ display: 'flex' }}>
-                    <span className="cursor-pointer" onClick={() => handleOpenAvatar(row)}>
-                      <Avatar sx={{ width: 0, height: 0 }} src={row.original.avatarUrl}  />
-                    </span>
-                    <span>{renderedCellValue}</span>
-                  </Box>
-                  {/*<Box sx={{ display: 'flex', alignItems: 'center', gap: '1rem', }}>
-                    <span className="cursor-pointer" onClick={() => handleOpenAvatar(row)}>
-                      <Avatar sx={{ width: 30, height: 30 }} src={row.original.avatarUrl}  />
-                    </span>
-                    <span>{renderedCellValue}</span>
-                  </Box> */}
+                  {row?.original?.['dates'].length >= 5 ?
+                    <div className="flex flex-row justify-center align-baseline">
+                      <div className="w-[5px] h-[20px] bg-purple-600 mr-2"></div>
+                      <span className="font-medium">{renderedCellValue }</span>
+                    </div>
+                  :row?.original?.['owner_dogs'] >= 2 ? 
+                    <div className="flex flex-row justify-center align-baseline">
+                      <div className="w-[5px] h-[20px] bg-lime-500 mr-2"></div>
+                      <span className="font-medium">{renderedCellValue }</span>
+                    </div>
+                  : 
+                    <div>
+                      <span className="font-medium">{renderedCellValue }</span>
+                    </div>
+                  }
                 </>
-              )
-            },/* 
-            {
-              accessorKey:'total', 
-              header: 'Total',
-              size: 125,
-              Header: ({ column }) => <div className="w-[32px] p-0 text-center">{column.columnDef.header}</div>,
-              Cell: ({ renderedCellValue }) => <div className="w-[32px] text-center">{renderedCellValue}</div>
-            },
-            {
-              accessorKey:'paid', 
-              header: 'Paid',
-              size: 120,
-              Cell: ({ renderedCellValue }) => <div className="w-[28px] text-center">{renderedCellValue}</div>
-            }*/]
+              )  
+            }]
             for (const item of Array.from(dates).sort()) {
               var totalSumDays = 0
               rows.map((row) => {
@@ -213,3 +205,27 @@ export function Attendances(){
   )
 }
 
+
+//Adding Avatar Icon in rows name
+{/*<Box sx={{ display: 'flex', alignItems: 'center', gap: '1rem', }}>
+                    <span className="cursor-pointer" onClick={() => handleOpenAvatar(row)}>
+                      <Avatar sx={{ width: 30, height: 30 }} src={row.original.avatarUrl}  />
+                    </span>
+                    <span>{renderedCellValue}</span>
+                  </Box> */}
+
+//Adding Paid and Total columns 
+/* 
+            {
+              accessorKey:'total', 
+              header: 'Total',
+              size: 125,
+              Header: ({ column }) => <div className="w-[32px] p-0 text-center">{column.columnDef.header}</div>,
+              Cell: ({ renderedCellValue }) => <div className="w-[32px] text-center">{renderedCellValue}</div>
+            },
+            {
+              accessorKey:'paid', 
+              header: 'Paid',
+              size: 120,
+              Cell: ({ renderedCellValue }) => <div className="w-[28px] text-center">{renderedCellValue}</div>
+            }*/
