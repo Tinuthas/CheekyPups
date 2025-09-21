@@ -34,9 +34,10 @@ model Owner {
   secondOwner  String?
   phoneOne     String
   phoneTwo     String?
-  emailAddress String    @unique
+  emailAddress String?   @unique
   address      String?
   notes        String?
+  type         String?
   dogs         Dog[]
   extracts     Extract[]
 
@@ -93,6 +94,7 @@ model Extract {
 
 model User {
   id       Int     @id @default(autoincrement())
+  admin    Boolean
   email    String  @unique
   name     String?
   password String

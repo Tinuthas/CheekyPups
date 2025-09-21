@@ -13,6 +13,7 @@ import { Owners } from './pages/Owners'
 import { Payments } from './pages/Payments'
 import { Booking } from './pages/Booking'
 import dayjs from 'dayjs';
+import { Users } from './pages/Users';
 
 function App() {
 
@@ -27,7 +28,7 @@ function App() {
           <Route path="owners" element={<Owners/>}/>
           <Route path="payments" element={<Payments/>}/>
           <Route path="booking" element={<Booking/>}/>
-          
+          <Route path="users" element={<Users/>}/>
         </Route>
         <Route path='app/login' element={<Login/>} />
         

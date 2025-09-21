@@ -27,7 +27,7 @@ interface ReturnMenuItemCustomProps {
   renderedCellValue: any,
   row: any,
   item: string,
-  onSubmit: () => void
+  onSubmit: () => Promise<boolean>
 }
 
 function ReturnMenuItemCustom({renderedCellValue, row, item, onSubmit} : ReturnMenuItemCustomProps) {
@@ -73,10 +73,12 @@ function handleEdit(item:any, row:any, id:number) {
         Authorization: getToken()
       }
     }).then(response => {
-      toast.success(`Updated Attendance`, { position: "top-center", autoClose: 1000, })
-      onSubmit()
+      onSubmit().then((value) => {
+        toast.success(`Attendance Updated`, { position: "top-center", autoClose: 1000, })
+      }).catch((err: Error) => {
+        toast.error(`Unidentified error: ${err.message}`, { position: "top-center", autoClose: 5000, })
+      })
     }).catch((err: AxiosError) => {
-      console.log(err)
       const data = err.response?.data as {message: string}
       toast.error(`Unidentified error: ${data.message || err.response?.data ||err.message}`, { position: "top-center", autoClose: 5000, })
     })
@@ -96,8 +98,11 @@ function handlePaid(item:string, id:number) {
         Authorization: getToken()
       }
     }).then(response => {
-      toast.success(`Updated Attendance`, { position: "top-center", autoClose: 1000, })
-      onSubmit()
+      onSubmit().then((value) => {
+        toast.success(`Attendance Updated`, { position: "top-center", autoClose: 1000, })
+      }).catch((err: Error) => {
+        toast.error(`Unidentified error: ${err.message}`, { position: "top-center", autoClose: 5000, })
+      })
     }).catch((err: AxiosError) => {
       console.log(err)
       const data = err.response?.data as {message: string}
@@ -119,8 +124,11 @@ function handleDelete(id:number) {
         Authorization: getToken()
       }
     }).then(response => {
-      toast.success(`Deleted Attendance`, { position: "top-center", autoClose: 1000, })
-      onSubmit()
+      onSubmit().then((value) => {
+        toast.success(`Attendance Deleted`, { position: "top-center", autoClose: 1000, })
+      }).catch((err: Error) => {
+        toast.error(`Unidentified error: ${err.message}`, { position: "top-center", autoClose: 5000, })
+      })
     }).catch((err: AxiosError) => {
       console.log(err)
       const data = err.response?.data as {message: string}
@@ -205,7 +213,7 @@ function selectRadioTypeValue(value: string) {
   )
 }
 
-export function cellComponent(item: string, onSubmit: () => void, totalSumDays: number) {
+export function cellComponent(item: string, onSubmit: () => Promise<boolean>, totalSumDays: number) {
 
   var column:MRT_ColumnDef<any> = {
     accessorKey: item, 

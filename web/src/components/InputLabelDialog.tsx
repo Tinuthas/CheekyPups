@@ -80,7 +80,7 @@ export const InputLabel = ({labelName, type, placeholder, accessorKey, value, se
         : type.includes('checkbox') ? 
           <FormControlLabel control={<Checkbox onChange={setEventChange} sx={{ color: '#FF499E', '& .MuiSvgIcon-root': { fontSize: 28 } }} checked={value}  />}  label={status ? placeholder : labelName}  />
         : type.includes('radio') ? 
-          <RadioGroup value={value}>
+          <RadioGroup defaultValue={value}>
             {radioListValues?.map( (radio) => (
               <FormControlLabel key={radio.key} value={radio.value} control={<Radio onChange={setEventChange} sx={{ color: '#FF499E', '& .MuiSvgIcon-root': { fontSize: 18 } }} />} label={radio.label}  />
             ))}

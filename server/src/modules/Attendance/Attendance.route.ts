@@ -356,7 +356,6 @@ async function updateAttendanceHandle(request: FastifyRequest<{Body: AttendanceU
 
 async function updateAttendance(input: AttendanceUpdateInput, id: number) {
   const {typeDay, paid, value, descriptionValue} = input
-
   let att = await prisma.attendance.findUnique({
     where: {
       id: Number(id)
@@ -398,7 +397,7 @@ async function updateAttendance(input: AttendanceUpdateInput, id: number) {
         typeDay, 
         paid, 
         extract : {
-          create: {
+          update: {
             value,
             description: descriptionValue,
             date: dayjs().toISOString(),
@@ -450,7 +449,6 @@ async function updatePayAttendance(input: AttendanceUpdatePayInput, id: number) 
       }
     }
   })
-  //if(att?.paid != true) {
     let updAtt = await prisma.attendance.update({
       where: {
         id: Number(id)

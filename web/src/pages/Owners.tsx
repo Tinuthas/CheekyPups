@@ -6,12 +6,13 @@ import { api, getToken } from "../lib/axios";
 import { AxiosError } from "axios";
 import { toast } from "react-toastify";
 import {Loading} from "../components/Loading";
+import { ButtonGroupList } from "../components/ButtonGroupList";
 
 const headers = [
   {
     accessorKey: 'name',
     header: 'Name',
-    size: 180,
+    size: 200,
   },
   {
     accessorKey: 'emailAddress',
@@ -24,6 +25,16 @@ const headers = [
     size: 135,
   },
   {
+    accessorKey: 'type',
+    header: 'D/G',
+    size: 80,
+  },
+  {
+    accessorKey: 'secondOwner',
+    header: '2nd Owner Name',
+    size: 200
+  },
+  {
     accessorKey: 'phoneTwo',
     header: 'Phone 2',
     size: 135,
@@ -31,6 +42,10 @@ const headers = [
   {
     accessorKey: 'address',
     header: 'Address'
+  },
+  {
+    accessorKey: 'notes',
+    header: 'Notes'
   }
 ]
 
@@ -46,20 +61,35 @@ const columnHeaders = [
     accessorKey: 'emailAddress',
     label: 'Email',
     name: 'Owner Email',
-    type: "email",
-    required: true,
+    type: "email"
   },
   {
     accessorKey: 'phoneOne',
     label: 'Phone One',
-    name: '+353 8x xxx xxxx',
+    name: '08x xxx xxxx',
     type: "tel",
     required: true,
   },
   {
+    accessorKey: 'type',
+    label: 'Daycare or Grooming',
+    name: '',
+    value: 'D',
+    type: "radio",
+    radioListValues: [
+      {key: "daycare", value: "D", label: "Daycare"},
+      {key: "grooming", value: "G", label: "Grooming"},
+    ]
+  },
+  {accessorKey: 'secondOwner',
+    label: 'Second Owner Name',
+    name: '',
+    type: "text",
+  },
+  {
     accessorKey: 'phoneTwo',
     label: 'Phone Two',
-    name: '+353 8x xxx xxxx',
+    name: '8x xxx xxxx',
     type: "tel",
   }, 
   {
@@ -67,14 +97,33 @@ const columnHeaders = [
     label: 'Address',
     name: 'Owner Address',
     type: "text",
-    required: true,
+  },
+  {
+    accessorKey: 'notes',
+    label: 'Notes',
+    name: '',
+    type: "text",
   }
 ]
 
 export function Owners(){
 
+  const [searchButton, setSearchButton] = useState('A')
   const [owners, setOwners] = useState([{}])
   const [loading, setLoading] = useState(false)
+
+
+
+  useEffect(() => {
+    getAllOwnersFilter()
+  }, [])
+
+  function getAllOwnersFilter(type?:string) {
+    if(type == null || type == 'A')
+      getAllOwners()
+    else
+      getAllOwnersQuery(type)
+  }
 
   function getAllOwners() {
     setLoading(true)
@@ -94,9 +143,26 @@ export function Owners(){
     })
   }
 
-  useEffect(() => {
-    getAllOwners()
-  }, [])
+  function getAllOwnersQuery(type:string) {
+    setLoading(true)
+    api.get('owners/type', {
+      params: {
+        type: type
+      },  
+      headers: {
+        Authorization: getToken()
+      }
+    }).then(response =>{
+      var data = response.data
+      var listData = JSON.parse(JSON.stringify(data));
+      setOwners(listData)
+      setLoading(false)
+    }).catch((err: AxiosError) => {
+      const data = err.response?.data as {message: string}
+      toast.error(`Unidentified error: ${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
+      setLoading(false) 
+    })
+  }
 
   function updateDataRow(data: object) {
     setLoading(true)
@@ -167,22 +233,33 @@ export function Owners(){
     return promise
   }
 
+  function selectTypeOwner(value:any){
+    setSearchButton(value)
+    getAllOwnersFilter(value)
+  }
+
   return (
     <div className="md:p-10 pt-4 h-full flex flex-col items-center">
       <h3 className="font-medium text-3xl md:text-4xl text-white font-borsok">Owners</h3>
+      
       { loading ? <div className="w-full flex justify-center"><Loading /> </div> :
-        <div className="md:flex bg-white w-full mt-4 rounded">
-          <DataTableCustom 
-            headers={headers} 
-            data={owners} 
-            setData={(data) => setOwners(data)} 
-            title="Owners" 
-            updateRow={(data) => updateDataRow(data)} 
-            createData={columnHeaders}
-            createRow={(data) => createNewRow(data)}
-            deleteRow={(id) => deleteDataRow(id)}
-          />
-        </div>
+        <>
+          <div className="md:flex w-fit rounded m-1 bg-white">
+            <ButtonGroupList listButtons={[{key: "A", name: "All"}, {key: "D", name: "Daycare"}, {key: "G", name: "Grooming"}]} selectButton={(value) => selectTypeOwner(value)} />
+          </div>
+          <div className="md:flex bg-white w-full mt-4 rounded">
+            <DataTableCustom 
+              headers={headers} 
+              data={owners} 
+              setData={(data) => setOwners(data)} 
+              title="Owners" 
+              updateRow={(data) => updateDataRow(data)} 
+              createData={columnHeaders}
+              createRow={(data) => createNewRow(data)}
+              deleteRow={(id) => deleteDataRow(id)}
+            />
+          </div>
+        </>
       }   
     </div>
   )

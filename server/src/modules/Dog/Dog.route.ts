@@ -4,11 +4,18 @@ import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { request } from "http";
 import { z } from "zod";
 import { prisma } from "../../lib/prisma";
-import { $ref, DogInput, DogOwnerInput, DogProfileInput, DogVaccineInput, FilterDogInput, UpdateDogInput } from "./Dog.schema";
+import { $ref, DogInput, DogOwnerInput, DogProfileInput, DogVaccineInput, FilterDogInput, FilterOwnerTypeInput, UpdateDogInput } from "./Dog.schema";
 
 export async function dogRoutes(app: FastifyInstance) {
 
   app.get('/', {preHandler: [app.authenticate]}, getAllDogs)
+
+  app.get('/type', {
+      schema: {
+        querystring: $ref('filterOwnerType')
+      },
+      preHandler: [app.authenticate]
+  }, getSearchDogsByTypeOwnerHandle)
 
   app.get('/select', {
     schema: {
@@ -110,6 +117,38 @@ async function getSearchByName(name:string) {
     }
   })
   return result
+}
+
+async function getSearchDogsByTypeOwnerHandle(request: FastifyRequest<{Querystring: FilterOwnerTypeInput}>, reply: FastifyReply) {
+  try{
+    return await getSearchByTypeOwner(request.query.type)
+  }catch(err) {
+    console.log(err)
+    reply.code(400).send('Error in search owner by name')
+  }
+}
+
+
+async function getSearchByTypeOwner(type:string) {
+  const dogs = await prisma.dog.findMany({
+    where: {
+      Owner: {
+        type: type
+      }
+    },
+    include: {
+      Owner: {
+        select: {
+          name: true
+        }
+      }
+    }
+  })
+
+  const filterDogs = dogs.map(({ id, name, nickname, birthdayDate, gender, colour, breed, avatarUrl, ownerId, Owner }) => 
+  ({ id, name, nickname: (nickname != null ? nickname : ""), birthdayDate, gender, colour, breed, avatarUrl, ownerId, owner: Owner.name }));
+
+  return filterDogs
 }
 
 async function createDogAndOwnerHandle(request: FastifyRequest<{Body: DogOwnerInput}>, reply: FastifyReply) {

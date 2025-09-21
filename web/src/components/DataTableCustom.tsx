@@ -60,7 +60,6 @@ const DataTableCustom = ({headers, data, setData, createData, title, updateRow, 
   }>({});
 
   const handleCreateNewRow = (values: any, valuesData: any) => {
-    console.log('clicked')
     if(createRow != undefined){
       createRow(valuesData).then(() => {
         data.push(values);
@@ -112,9 +111,10 @@ const DataTableCustom = ({headers, data, setData, createData, title, updateRow, 
         data={data}
         enableColumnResizing
         enableEditing
+        enableColumnActions={false}
         onEditingRowSave={handleSaveRowEdits}
         onEditingRowCancel={handleCancelRowEdits}
-        initialState={{ columnVisibility: hideColumns }}
+        initialState={{ columnVisibility: hideColumns,  pagination: { pageSize: 50, pageIndex: 0 }}}
         positionActionsColumn="last"
         displayColumnDefOptions={{
           'mrt-row-actions': {
@@ -122,6 +122,7 @@ const DataTableCustom = ({headers, data, setData, createData, title, updateRow, 
             size: 120, //make actions column wider
           },
         }}
+        
         renderRowActions={({ row, table }) => (
           <Box sx={{ display: 'flex', gap: '1rem', width: 100, maxWidth: 100, }}>
             {updateRow != undefined ?

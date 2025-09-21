@@ -13,8 +13,6 @@ import { FilterDays } from "../components/FilterDays";
 import { DataTableAttendance } from "../components/DataTableAttendance";
 import { cellComponent } from "../components/CellAttendanceDate";
 
-
-
 type Attendances = Array<{
   id:string;
   attendanceIds: string[];
@@ -41,14 +39,26 @@ export function Attendances(){
     clickSearchByDates()
   }, [])
 
+  function onSubmitUpdatePage(){
+    return new Promise<boolean>((resolve, reject) => {
+      clickSearchByDates(dayjs().startOf('isoWeek').toDate(), dayjs().endOf('isoWeek').toDate())
+      resolve(true)
+    })
+  }
+
   function onNextPreviousWeek(days: number) {
     var newDateStart = new Date(dateStart)
     newDateStart.setDate(dateStart.getDate() + days)
-    setDateStart(newDateStart)
     var newDateEnd = new Date(dateEnd)
     newDateEnd.setDate(dateEnd.getDate() + days)
-    setDateEnd(newDateEnd)
+    setDates(newDateStart, newDateEnd)
     clickSearchByDates(newDateStart, newDateEnd)
+  }
+
+  function setDates(newDateStart:Date, newDateEnd:Date) {
+    setDateStart(newDateStart)
+    setDateEnd(newDateEnd)
+    console.log(dateStart + " " +dateEnd )
   }
 
   function handleOpenAvatar(row:any) {
@@ -61,7 +71,6 @@ export function Attendances(){
     setLoading(true)
     if(dateStartField == null) dateStartField = dateStart
     if(dateEndField == null) dateEndField = dateEnd
-    console.log(dateStartField + " " +dateEndField )
     api.get<Attendances>('attendance', {
       params: {
         dateStart: dayjs(dateStartField).toISOString(), 
@@ -69,8 +78,8 @@ export function Attendances(){
       }, headers: {
         Authorization: getToken()
       }}).then(response => {
+        setDates(dateStartField, dateEndField)
         var att = response.data
-        console.log(att)
         if(att.length != 0) {
           var rows: any[] = []
           const dates = new Set<string>();
@@ -89,8 +98,6 @@ export function Attendances(){
             var obj = Object.assign({}, item, listDates);
             rows.push(obj)
           })
-          console.log("---")
-          console.log(rows)
           setMarginTable(marginDates)
           setAttendances(rows)
           if(rows.length != 0 ) {
@@ -125,9 +132,9 @@ export function Attendances(){
                 item in row ? totalSumDays++ : null
               })
               
-              base.push(cellComponent(item, () => clickSearchByDates(), totalSumDays))
+              base.push(cellComponent(item, () => onSubmitUpdatePage(), totalSumDays))
             }
-            console.log(base)
+            //console.log(base)
             setColumns(base)
           }
         }else{
@@ -135,7 +142,6 @@ export function Attendances(){
           setMarginTable(0)
           setColumns([])
         }
-        
         setLoading(false)
       }).catch(err => {
         console.log(err)

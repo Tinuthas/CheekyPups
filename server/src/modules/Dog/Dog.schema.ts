@@ -59,12 +59,17 @@ const filterDogName = z.object({
   name: z.string(),
 })
 
+const filterOwnerType = z.object({
+  type: z.string().max(1),
+})
+
 export type DogVaccineInput = z.infer<typeof createDogVaccineBody>
 export type DogInput = z.infer<typeof createDogBody>
 export type DogOwnerInput = z.infer<typeof createOwnerDogBody>
 export type UpdateDogInput = z.infer<typeof updateDogBody>
 export type FilterDogInput = z.infer<typeof filterDogName>
 export type DogProfileInput = z.infer<typeof updateDogProfileBody>
+export type FilterOwnerTypeInput = z.infer<typeof filterOwnerType>
 
 export const {schemas: dogSchemas, $ref} = buildJsonSchemas({
   updateDogId,
@@ -74,4 +79,5 @@ export const {schemas: dogSchemas, $ref} = buildJsonSchemas({
   createDogBody,
   updateDogBody,
   updateDogProfileBody,
+  filterOwnerType,
 }, { $id: "DogSchemas" })

@@ -8,8 +8,9 @@ import { AvatarModal } from '../components/AvatarProfile';
 import DataTableCustom from '../components/DataTableCustom';
 import { Loading } from '../components/Loading';
 import { api, getToken } from '../lib/axios';
+import { ButtonGroupList } from '../components/ButtonGroupList';
 
-const hideColumns = { owner: false }
+const hideColumns = { owner: true }
 
 const selectPromise = (inputValue: string) => new Promise<any[]>((resolve, reject) => {
   api.get('owners/select', { params: { name: inputValue}, headers: { Authorization: getToken()}}).then(response =>{
@@ -29,6 +30,7 @@ const selectPromise = (inputValue: string) => new Promise<any[]>((resolve, rejec
 
 export function Dogs(){
 
+  const [searchButton, setSearchButton] = useState('A')
   const [dogs, setDogs] = useState([{}])
   const [openAvatar, setOpenAvatar] = useState(false)
   const [openIndex, setOpenIndex] = useState(-1);
@@ -108,22 +110,48 @@ const columnHeaders = [
     })
   }
 
+  function getAllDogsQuery(type:string) {
+    setLoading(true)
+    api.get('dogs/type', {
+      params: {
+        type: type
+      },  
+      headers: {
+        Authorization: getToken()
+      }
+    }).then(response =>{
+      var data = response.data
+      var listData = JSON.parse(JSON.stringify(data));
+      for(const i in listData) {
+        listData[i].birthdayDate = dayjs(listData[i].birthdayDate).format('DD/MM/YYYY')
+        delete listData[i].ownerId;
+      }
+      setDogs(listData)
+      setLoading(false)
+    }).catch((err: AxiosError) => {
+      const data = err.response?.data as {message: string}
+      toast.error(`Unidentified error: ${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
+      setLoading(false) 
+    })
+  }
+
   const headers:MRT_ColumnDef<any>[] = [
     {
       accessorKey: 'name',
       header: 'Name',
+      size: 170,
       Cell: ({ renderedCellValue, row }) => (
         <>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: '1rem',}}> 
-          <span className="cursor-pointer" onClick={() => {
+          {/**<span className="cursor-pointer" onClick={() => {
                 setOpenAvatar(true)
                 setOpenIndex(row.original.id)
           }}>
             <Avatar sx={{ width: 30, height: 30 }} src={row.original.avatarUrl} />
-          </span>
+          </span>**/}
           <span>{renderedCellValue}</span>
         </Box>
-          {row.original.id == openIndex && openAvatar ? 
+          {/**row.original.id == openIndex && openAvatar ? 
             <AvatarModal 
               open={openAvatar}
               onClose={() => setOpenAvatar(false)}
@@ -137,13 +165,14 @@ const columnHeaders = [
               id={Number(row.original.id)}
             />
             : null
-          }
+          **/}
         </>
       )
     },
     {
       accessorKey: 'nickname',
       header: 'Nickname',
+      size: 180,
     },
     {
       accessorKey: 'owner',
@@ -153,18 +182,22 @@ const columnHeaders = [
     {
       accessorKey: 'birthdayDate',
       header: 'Birthday',
+      size: 150
     },
     {
       accessorKey: 'gender',
       header: 'Gender',
+      size: 130,
     },
     {
       accessorKey: 'colour',
       header: 'Colour',
+      size: 130,
     },
     {
       accessorKey: 'breed',
-      header: 'Breed'
+      header: 'Breed',
+      size: 150,
     }
   ]
 
@@ -250,28 +283,36 @@ const columnHeaders = [
     return promise
   }
 
-  /*
-    <div className="md:flex bg-white w-full p-4 md:p-8 mt-4 rounded">
-      <ButtonLight text="New Owner" onClick={newDog}/>
-    </div>
-  */
+  function selectTypeOwner(value:any){
+    setSearchButton(value)
+    if(value == null || value == 'A')
+      getAllDogs()
+    else
+      getAllDogsQuery(value)
+  }
+
 
   return (
     <div className="md:p-10 pt-4 h-full flex flex-col items-center">
       <h3 className="font-medium text-3xl md:text-4xl text-white font-borsok">Dogs</h3>
       { loading ? <div className="w-full flex justify-center"><Loading /> </div> :
-      <div className="md:flex bg-white w-full mt-4 rounded">
-        <DataTableCustom 
-          title='Dogs' 
-          data={dogs} 
-          headers={headers} 
-          createData={columnHeaders}
-          hideColumns={hideColumns}
-          createRow={(data) => createNewRow(data)}
-          updateRow={(data) => updateDataRow(data)}
-          deleteRow={(id) => deleteDataRow(id)}
-          setData={(data) => setDogs(data)} />
-      </div>
+        <>
+          <div className="md:flex w-fit rounded m-1 bg-white">
+            <ButtonGroupList listButtons={[{key: "A", name: "All"}, {key: "D", name: "Daycare"}, {key: "G", name: "Grooming"}]} selectButton={(value) => selectTypeOwner(value)} />
+          </div>
+          <div className="md:flex bg-white w-full mt-4 rounded">
+            <DataTableCustom 
+              title='Dogs' 
+              data={dogs} 
+              headers={headers} 
+              createData={columnHeaders}
+              hideColumns={hideColumns}
+              createRow={(data) => createNewRow(data)}
+              updateRow={(data) => updateDataRow(data)}
+              deleteRow={(id) => deleteDataRow(id)}
+              setData={(data) => setDogs(data)} />
+          </div>
+        </>
       }
     </div>
   )

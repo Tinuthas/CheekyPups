@@ -2,11 +2,18 @@ import dayjs from "dayjs";
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { string } from "zod";
 import { prisma } from "../../lib/prisma";
-import { $ref, CreateOwnerInput, FilterOwnerInput, UpdateOwnerInput } from "./Owner.schema";
+import { $ref, CreateOwnerInput, FilterOwnerInput, FilterOwnerTypeInput, UpdateOwnerInput } from "./Owner.schema";
 
 export async function ownerRoutes(app: FastifyInstance) {
   
   app.get('/', {preHandler: [app.authenticate]}, getAllOwners)
+
+  app.get('/type', {
+    schema: {
+      querystring: $ref('filterTypeOwner')
+    },preHandler: [app.authenticate]},
+  getAllOwnersQuery)
+
   app.get('/select', {
     schema: {
       querystring: $ref('filterOwnerName')
@@ -27,7 +34,8 @@ export async function ownerRoutes(app: FastifyInstance) {
       params: {
         id: { type: 'number' }, // converts the id param to number
       },
-    }
+    },
+    preHandler: [app.authenticate]
   }, deleteOwnerHandle)
 
   app.post('/', {
@@ -39,10 +47,20 @@ export async function ownerRoutes(app: FastifyInstance) {
 }
 
 async function getAllOwners() {
-  return await prisma.owner.findMany()
+  var owners = await prisma.owner.findMany()
+  return owners
 }
 
-async function getSearchOwnersHandle(request: { query: FilterOwnerInput; }) {
+async function getAllOwnersQuery(request:FastifyRequest<{Querystring: FilterOwnerTypeInput}>, reply: FastifyReply) {
+  try{
+    return await getSearchOwnerType(request.query.type)
+  }catch(err) {
+    console.log(err)
+    reply.code(400).send('Error in search owner by name')
+  }
+}
+
+async function getSearchOwnersHandle(request:FastifyRequest<{Querystring: FilterOwnerInput}>, reply: FastifyReply) {
   try{
     return await getSearchByName(request.query.name)
   }catch(err) {
@@ -98,8 +116,19 @@ async function getSearchByName(name:string) {
   return result
 }
 
+async function getSearchOwnerType(type: string) {
+    const result = await prisma.owner.findMany({
+      where: {
+        type: {
+          contains: type
+        }
+      }
+    })
+    return result
+}
+
 async function updateOwner(input: UpdateOwnerInput, id: number) {
-  const {phoneOne, phoneTwo, emailAddress, name, address} = input
+  const {phoneOne, phoneTwo, type, emailAddress, name, address} = input
   
   let owner = await prisma.owner.update({
     where: {
@@ -108,6 +137,7 @@ async function updateOwner(input: UpdateOwnerInput, id: number) {
     data: {
       phoneOne,
       phoneTwo,
+      type,
       emailAddress,
       name,
       address
@@ -127,15 +157,18 @@ async function deleteOwner(id: number) {
 }
 
 async function createOwner(input: UpdateOwnerInput) {
-  const {name, phoneOne, phoneTwo, emailAddress, address} = input
+  const {name, phoneOne, type, secondOwner, phoneTwo, emailAddress, address, notes} = input
 
   let owner = await prisma.owner.create({
     data: {
       name,
       phoneOne,
+      type,
+      secondOwner,
       phoneTwo,
       emailAddress,
-      address
+      address,
+      notes
     }
   })
 

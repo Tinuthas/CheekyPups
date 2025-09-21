@@ -31,7 +31,7 @@ export function FilterDateBooking({date, setDate, loading, setLoading, onPreviou
           </div>
         </div>
       </ThemeProvider>
-      <ButtonLight text={"Add Event"} onClick={addEventClick} />
+      <ButtonLight text={"Event"} onClick={addEventClick} />
     </div>
   )
 }
