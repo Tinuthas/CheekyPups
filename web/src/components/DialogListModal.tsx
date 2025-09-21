@@ -1,5 +1,5 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
-import { useEffect, useState } from "react";
+import { BoxProps, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
+import { ReactElement, useEffect, useState } from "react";
 import DataTableCustom from "./DataTableCustom";
 import {Loading} from "../components/Loading";
 
@@ -15,6 +15,7 @@ interface ListModalProps {
   loading: boolean,
   deleteRow?:(id:number) => Promise<any>,
   updateRow?:(data:object) => Promise<any>,
+  infoData: {owner:string, dogs:string},
 }
 
 export const DialogListModal = ({
@@ -28,7 +29,8 @@ export const DialogListModal = ({
   headers,
   loading,
   deleteRow,
-  updateRow
+  updateRow,
+  infoData
 }: ListModalProps) => {
 
   useEffect(() => {
@@ -49,19 +51,25 @@ export const DialogListModal = ({
         },
       }}>
       <DialogTitle id="responsive-dialog-title">
-        {`Log ${name}`}
+        {`Info ${name}`}
       </DialogTitle>
       <DialogContent>
       { loading ? <div className="w-full flex justify-center"><Loading /> </div> :
-        <div className="md:flex bg-white w-full mt-4 rounded">
-          <DataTableCustom 
-          headers={headers} 
-          data={data} 
-          setData={(data) => setData(data)} 
-          title={name}
-          deleteRow={deleteRow}
-          updateRow={updateRow} />
-        </div>
+        <>
+          <div className="w-full">
+            <p>{`Owner ${infoData.owner}`}</p>
+            <p>{`Dog ${infoData.dogs}`}</p>
+          </div>
+          <div className="md:flex bg-white w-full mt-4 rounded">
+            <DataTableCustom 
+            headers={headers} 
+            data={data} 
+            setData={(data) => setData(data)} 
+            title={name}
+            deleteRow={deleteRow}
+            updateRow={updateRow} />
+          </div>
+        </>
       }
       </DialogContent>
     <DialogActions>

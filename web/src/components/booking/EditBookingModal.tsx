@@ -31,7 +31,7 @@ export const EditBookingNewModal = ({
   onClose,
   onSubmit,
   callInit
-}: EditModalProps) => {
+}: EditBookingModalProps) => {
 
   useEffect(() => {
     callInit()

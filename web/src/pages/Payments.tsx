@@ -131,12 +131,6 @@ export function Payments(){
 
   const headersExtracts:MRT_ColumnDef<any>[] = [
     {
-      accessorKey: 'id',
-      header: 'ID',
-      size: 90,
-      enableEditing: false,
-    },
-    {
       accessorKey: 'date',
       header: 'Date',
       size: 150,
@@ -220,6 +214,7 @@ export function Payments(){
               loading={loadingModal}
               deleteRow={(id) => deleteDataRow(id)}
               updateRow={(data) => updateDataRow(data)}
+              infoData={{owner: row.original.name, dogs: row.original.dogsName}}
             />
           : null}
         </>

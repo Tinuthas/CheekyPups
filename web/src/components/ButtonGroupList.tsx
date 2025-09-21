@@ -11,10 +11,10 @@ export function ButtonGroupList({listButtons, selectButton} : ButtonProps) {
   
   return(
     <ThemeProvider theme={theme}>
-      <ButtonGroup aria-label="button group" sx={{ '--ButtonGroup-radius': '40px' }}>
+      <ButtonGroup variant="outlined" aria-label="button group" sx={{background: "#f02a77", border: "1px solid #FFF"}} >
         {
           listButtons.map((button)=> (
-            <Button key={button.key} onClick={() => selectButton(button.key)} >{button.name}</Button>
+            <Button key={button.key} onClick={() => selectButton(button.key)} sx={{width: '110px',color: '#FFF', "&:hover": { color: "#f02a77", background: "#FFF" }}}>{button.name}</Button>
           ))
         }
       </ButtonGroup>

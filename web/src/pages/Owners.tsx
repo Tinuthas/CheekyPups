@@ -7,47 +7,8 @@ import { AxiosError } from "axios";
 import { toast } from "react-toastify";
 import {Loading} from "../components/Loading";
 import { ButtonGroupList } from "../components/ButtonGroupList";
-
-const headers = [
-  {
-    accessorKey: 'name',
-    header: 'Name',
-    size: 200,
-  },
-  {
-    accessorKey: 'emailAddress',
-    header: 'Email',
-    size: 200,
-  },
-  {
-    accessorKey: 'phoneOne',
-    header: 'Phone',
-    size: 135,
-  },
-  {
-    accessorKey: 'type',
-    header: 'D/G',
-    size: 80,
-  },
-  {
-    accessorKey: 'secondOwner',
-    header: '2nd Owner Name',
-    size: 200
-  },
-  {
-    accessorKey: 'phoneTwo',
-    header: 'Phone 2',
-    size: 135,
-  }, 
-  {
-    accessorKey: 'address',
-    header: 'Address'
-  },
-  {
-    accessorKey: 'notes',
-    header: 'Notes'
-  }
-]
+import { MRT_ColumnDef } from "material-react-table";
+import { DialogListModal } from "../components/DialogListModal";
 
 const columnHeaders = [
   {
@@ -110,13 +71,112 @@ export function Owners(){
 
   const [searchButton, setSearchButton] = useState('A')
   const [owners, setOwners] = useState([{}])
+  const [openIndex, setOpenIndex] = useState(-1)
+  const [openListModal, setOpenListModal] = useState(false)
   const [loading, setLoading] = useState(false)
-
+  const [loadingModal, setLoadingModal] = useState(false) 
+  const [ownerDogInfos, setOwnerDogInfos] = useState([{}])
 
 
   useEffect(() => {
     getAllOwnersFilter()
   }, [])
+
+  const headers:MRT_ColumnDef<any>[] = [
+    {
+      accessorKey: 'name',
+      header: 'Name',
+      size: 200,
+      Cell: ({ renderedCellValue, row }) => (
+        <>
+          <div className="w-full cursor-pointer" onClick={() => {
+            setOpenListModal(true)
+            setOpenIndex(row.original.id)
+          }}>
+            <span>{renderedCellValue}</span>
+          </div>
+          {row.original.id == openIndex && openListModal ? 
+            <DialogListModal 
+              open={openListModal}
+              onClose={() => setOpenListModal(false)}
+              onSubmit={() => console.log('submit')}
+              name={row.original.name}
+              callInit={() => callListOwnerDog(row.original.id)}
+              data={ownerDogInfos}
+              setData={setOwnerDogInfos}
+              headers={headersOwnerDog}
+              loading={loadingModal}
+              deleteRow={(id) => deleteDataRow(id)}
+              updateRow={(data) => updateDataRow(data)}
+              infoData={{owner: row.original.name, dogs: ""}}
+            />
+          : null}
+        </>
+      )
+    },
+    {
+      accessorKey: 'emailAddress',
+      header: 'Email',
+      size: 200,
+    },
+    {
+      accessorKey: 'phoneOne',
+      header: 'Phone',
+      size: 135,
+    },
+    {
+      accessorKey: 'type',
+      header: 'D/G',
+      size: 80,
+    },
+    {
+      accessorKey: 'secondOwner',
+      header: '2nd Owner Name',
+      size: 200
+    },
+    {
+      accessorKey: 'phoneTwo',
+      header: 'Phone 2',
+      size: 135,
+    }, 
+    {
+      accessorKey: 'address',
+      header: 'Address'
+    },
+    {
+      accessorKey: 'notes',
+      header: 'Notes'
+    }
+  ]
+
+  const headersOwnerDog:MRT_ColumnDef<any>[] = [
+      {
+        accessorKey: 'date',
+        header: 'Date',
+        size: 150,
+        enableEditing: false,
+      },
+      {
+        accessorKey: 'value',
+        header: 'Value',
+        size: 130,
+        Cell: ({ renderedCellValue, row }) => (
+          <>
+            { Number(row.original.value) <= 0 ?
+              <span className="text-red-600 font-medium">{renderedCellValue}</span>
+            :
+              <span className="text-green-600 font-medium">{renderedCellValue}</span>
+            }
+          </>
+        )
+      },
+      {
+        accessorKey: 'description',
+        header: 'Description',
+        size: 300,
+      }
+    ]
+
 
   function getAllOwnersFilter(type?:string) {
     if(type == null || type == 'A')
@@ -238,6 +298,26 @@ export function Owners(){
     getAllOwnersFilter(value)
   }
 
+  function callListOwnerDog(id: any): any {
+    setLoadingModal(true)
+    api.get('payment/extracts', {
+      params: {
+        id,
+      },
+      headers: {
+        Authorization: getToken()
+      }
+    }).then(response =>{
+      console.log('return call list extracts')
+      setOwnerDogInfos(JSON.parse(JSON.stringify(response.data)))
+      setLoadingModal(false)
+    }).catch((err: AxiosError) => {
+      const data = err.response?.data as {message: string}
+      toast.error(`Unidentified error: ${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
+      setLoadingModal(false)
+    })
+  }
+
   return (
     <div className="md:p-10 pt-4 h-full flex flex-col items-center">
       <h3 className="font-medium text-3xl md:text-4xl text-white font-borsok">Owners</h3>
@@ -264,3 +344,5 @@ export function Owners(){
     </div>
   )
 }
+
+

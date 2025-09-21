@@ -44,6 +44,7 @@ export function NavBar() {
         {
           name: "Users", path: "Users",
         },
+        
       ]
     }
     /*,
@@ -93,7 +94,7 @@ export function NavBar() {
                       <SubNavBar name={link.name} list={link.links} dismissClick={()=>setOpen(false)}/>
                     </>
                   :
-                    <Link to={link.path} onClick={()=>setOpen(false)} className='z-[1] text-neutral-600 hover:text-neutral-400 duration-300 font-medium inline-block h-12 pt-5 md:h-6 md:pt-0 w-full'>{link.name}</Link>
+                    <Link to={link.name} onClick={()=>setOpen(false)} className='z-[1] text-neutral-600 hover:text-neutral-400 duration-300 font-medium inline-block h-12 pt-5 md:h-6 md:pt-0 w-full'>{link.name}</Link>
                   }
                 </li>
               ))

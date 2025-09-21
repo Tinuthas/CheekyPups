@@ -1,6 +1,7 @@
 import { createTheme } from "@mui/material";
 import colors from "tailwindcss/colors";
 
+
 export const theme = createTheme({
   palette: {
     //mode: 'dark',
