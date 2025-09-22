@@ -10,6 +10,7 @@ import { dogSchemas } from "./modules/Dog/Dog.schema";
 import { vaccinesSchemas } from "./modules/Vaccine/Vaccine.schema";
 import { attendanceSchemas } from "./modules/Attendance/Attendance.schema";
 import { paymentSchemas } from "./modules/Payment/Payment.schema";
+import { bookingSchemas } from "./modules/Booking/Booking.schema";
 
 
 export const app = fastify({ logger: true })
@@ -85,7 +86,7 @@ app.addSchema({
 })
 
 //Schemas
-for(const schemas of [...userSchemas, ...ownerSchemas, ...dogSchemas, ...vaccinesSchemas, ...attendanceSchemas, ...paymentSchemas]) { app.addSchema(schemas)}
+for(const schemas of [...userSchemas, ...ownerSchemas, ...dogSchemas, ...vaccinesSchemas, ...attendanceSchemas, ...paymentSchemas, ...bookingSchemas]) { app.addSchema(schemas)}
 
 app.register(require('@fastify/jwt'), { secret: process.env.SECRET_JWT })
 

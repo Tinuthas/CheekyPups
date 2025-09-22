@@ -9,7 +9,7 @@ import { toast } from "react-toastify";
 import { AxiosError } from "axios";
 import {api, getToken} from "../../lib/axios";
 import { CreateNewModal } from "../CreateNewModal";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import dayjs from "dayjs";
 import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "../../lib/theme";
@@ -27,8 +27,33 @@ interface ListFieldProps {
 export function ListField ({date, setDate, loading, setLoading, listBooking}: ListFieldProps){
 
   const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [bookings, setBookings] = useState<any>([])
+  const [loadingMenuItem, setLoadingMenuItem] = useState(-1);
   
-  
+  useEffect(() => {
+    getBookingFromDate()
+  }, [date])
+
+  function getBookingFromDate() {
+    setLoading(true)
+    api.get('booking', {
+      params: {
+        date: date
+      }, 
+      headers: {
+        Authorization: getToken()
+      }
+    }).then(response =>{
+      var data = response.data
+      var listData = JSON.parse(JSON.stringify(data));
+      setBookings(listData)
+      setLoading(false)
+    }).catch((err: AxiosError) => {
+      const data = err.response?.data as {message: string}
+      toast.error(`Unidentified error: ${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
+      setLoading(false) 
+    })
+  }
 
   function addEventClick() {
     setCreateModalOpen(true)
@@ -50,28 +75,31 @@ export function ListField ({date, setDate, loading, setLoading, listBooking}: Li
     setDate(newDate)
   }
 
-  const listItem = listBooking.map(booking => 
-    <ItemListField key={String(booking.id)} id={booking.id} time={booking.time} ownerName={booking.ownerName} phone={booking.phone} dogName={booking.dogName} dogBread={booking.dogBread}/> 
+  const listItem = bookings.map((booking: { id: number; time: Date; ownerName: String | undefined; phone: String | undefined; dogName: String | undefined; dogBread: String | undefined; }) => 
+    <ItemListField key={String(booking.id)} id={booking.id} time={dayjs(booking.time).format('hh:mm A')} ownerName={booking.ownerName} phone={booking.phone} dogName={booking.dogName} dogBread={booking.dogBread} loadingMenuItem={loadingMenuItem} setLoadingMenuItem={(value) => setLoadingMenuItem(value)}/> 
   )
 
   const handleCreateNewBooking = (values: any) => {
       setLoading(true)
-      console.log(values)
+      date.setSeconds(0)
+      date.setMilliseconds(0)
       var newValues = {
-        time: values.time,
+        date: date,
+        status: "empty",
         owner: null,
         phone: null,
         dog: null,
         bread: null
       }
-      console.log(newValues)
       api.post('booking', newValues, {
         headers: {
           Authorization: getToken()
         }
       }).then(response => {
         toast.success(`Time Created: ${values.time}`, { position: "top-center", autoClose: 1000, })
-        setDate(values.date)
+        setDate(date)
+        getBookingFromDate()
+        setLoading(false)
       }).catch((err: AxiosError) => {
         console.log(err)
         const data = err.response?.data as {message: string}

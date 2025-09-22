@@ -21,6 +21,7 @@ model Dog {
   breed        String
   avatarUrl    String?
   daysDog      Attendance[]
+  daysBooking  Booking[]
   vaccines     Vaccine[]
   Owner        Owner        @relation(fields: [ownerId], references: [id])
   ownerId      Int
@@ -85,11 +86,37 @@ model Extract {
   date        DateTime?
 
   attendanceId Int?        @unique
+  bookingId    Int?        @unique
   ownerId      Int
+  booking      Booking?    @relation(fields: [bookingId], references: [id], onDelete: Cascade)
   attendance   Attendance? @relation(fields: [attendanceId], references: [id], onDelete: Cascade)
   Owner        Owner       @relation(fields: [ownerId], references: [id])
 
   @@map("extracts")
+}
+
+model DayBooking {
+  id          Int       @id @default(autoincrement())
+  date        DateTime
+  notes       String?
+  daysBooking Booking[]
+
+  @@unique([date])
+  @@map("daysBooking")
+}
+
+model Booking {
+  id             Int      @id @default(autoincrement())
+  time           DateTime
+  status         String
+  day_booking_id Int
+  dog_id         Int?
+
+  dayBooking DayBooking @relation(fields: [day_booking_id], references: [id])
+  dog        Dog?       @relation(fields: [dog_id], references: [id])
+  extract    Extract?
+
+  @@map("bookings")
 }
 
 model User {

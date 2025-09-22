@@ -8,6 +8,7 @@ import { dogRoutes } from './modules/Dog/Dog.route'
 import { attendanceRoutes } from './modules/Attendance/Attendance.route'
 import { vaccineRoutes } from './modules/Vaccine/Vaccine.route'
 import { paymentRoutes } from './modules/Payment/Payment.route'
+import { bookingRoutes } from './modules/Booking/Booking.route'
 
 
 export async function appRoutes(app: FastifyInstance){
@@ -18,6 +19,7 @@ export async function appRoutes(app: FastifyInstance){
   app.register(attendanceRoutes, {prefix: '/api/attendance'})
   app.register(vaccineRoutes, {prefix: '/api/vaccine'})
   app.register(paymentRoutes, {prefix: 'api/payment'})
+  app.register(bookingRoutes, {prefix: '/api/booking'})
 
 }
 
