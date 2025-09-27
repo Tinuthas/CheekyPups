@@ -1,10 +1,12 @@
 import MenuItemCustomBooking from "./MenuItemCustomBooking"
 import { ThemeProvider } from "@mui/material/styles";
 import { theme, iconStyle } from "../../lib/theme";
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 
 export interface ItemListFieldProps {
   id: number
   time: String
+  status: String
   ownerName?: String
   phone?: String
   dogName?: String
@@ -13,44 +15,58 @@ export interface ItemListFieldProps {
   setLoadingMenuItem: (loading: number) => void
 }
 
-export function ItemListField({id, time, ownerName, phone, dogName, dogBread, loadingMenuItem, setLoadingMenuItem}:ItemListFieldProps) {
+export function ItemListField({id, time, status, ownerName, phone, dogName, dogBread, loadingMenuItem, setLoadingMenuItem}:ItemListFieldProps) {
 
   
 
   return(
     <>
-      <div key={String(id)} className="h-20 w-[400px] md:w-full mt-4 border border-neutral-300 rounded text-neutral-800 flex flex-row self-center p-4 hover:border-neutral-800 md:text-lg" 
+      <div key={String(id)} className="h-20 w-fit mt-4 border border-neutral-300 rounded text-neutral-800 flex flex-row self-center hover:border-neutral-800 md:text-lg transition delay-300 duration-300" 
         onClick={() => setLoadingMenuItem(id)}>
-        <div className="self-center w-[100px]">
-          <ThemeProvider theme={theme}>
-            <MenuItemCustomBooking 
-              children={
-                <h5>{time}</h5>
-              }
-              handleDelete={(id) => {}}
-              handleEdit={(id) => {}}
-              id={id}
-              getBooking={(id) => {}}
-              editData={[]}
-            />
-          </ThemeProvider>
-          
+        <div className="w-[10px] h-full">
+          { status === 'empty' ?
+            <div className="bg-neutral-400 w-full h-full rounded-bl rounded-tl" />
+          : status === 'confirmed' ?
+            <div className="bg-green-500 w-full h-full rounded-bl rounded-tl" />
+          : status === 'cancelled' ?
+            <div className="bg-red-600 w-full h-full rounded-bl rounded-tl" />
+          : status === 'offered' ?
+            <div className="bg-yellow-400 w-full h-full rounded-bl rounded-tl" />
+          : null
+          }
         </div>
-        <div className="w-[120px] ml-2 md:ml-6 self-center">
-          <h5>{ownerName}</h5>
+        <div className="p-4 flex flex-row self-center">
+          <div className="self-center w-[100px]">
+           <h5>{time}</h5>
+          </div>
+          <div className="w-[120px] ml-2 md:ml-6 self-center">
+            <h5>{ownerName}</h5>
+          </div>
+          <div className="w-[120px] ml-2 md:ml-6 self-center">
+            <h5>{phone}</h5>
+          </div>
+          <div className="w-[120px] ml-2 md:ml-6 self-center">
+            <h5>{dogName}</h5>
+          </div>
+          <div className="w-[120px] ml-2 md:ml-6 self-center">
+            <h5>{dogBread}</h5>
+          </div>
+          <div className="w-[80px] ml-2 md:ml-6 self-center">
+            <ThemeProvider theme={theme}>
+              <MenuItemCustomBooking 
+                children={
+                  <MoreVertIcon />
+                }
+                handleDelete={(id) => {}}
+                handleEdit={(id) => {}}
+                id={id}
+                getBooking={(id) => {}}
+                editData={[]}
+              />
+            </ThemeProvider>
+          </div>
         </div>
-        <div className="w-[120px] ml-2 md:ml-6 self-center">
-          <h5>{phone}</h5>
-        </div>
-        <div className="w-[120px] ml-2 md:ml-6 self-center">
-          <h5>{dogName}</h5>
-        </div>
-        <div className="w-[120px] ml-2 md:ml-6 self-center">
-          <h5>{dogBread}</h5>
-        </div>
-        <div className="w-[80px] ml-2 md:ml-6 self-center">
-          
-        </div>
+        
       </div>
     </>
     

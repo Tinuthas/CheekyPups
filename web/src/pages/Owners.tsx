@@ -325,7 +325,7 @@ export function Owners(){
       { loading ? <div className="w-full flex justify-center"><Loading /> </div> :
         <>
           <div className="md:flex w-fit rounded m-1 bg-white">
-            <ButtonGroupList listButtons={[{key: "A", name: "All"}, {key: "D", name: "Daycare"}, {key: "G", name: "Grooming"}]} selectButton={(value) => selectTypeOwner(value)} />
+            <ButtonGroupList listButtons={[{key: "A", name: "All"}, {key: "D", name: "Daycare"}, {key: "G", name: "Grooming"}]} selectButton={(value) => selectTypeOwner(value)} selectedButton={searchButton}/>
           </div>
           <div className="md:flex bg-white w-full mt-4 rounded">
             <DataTableCustom 

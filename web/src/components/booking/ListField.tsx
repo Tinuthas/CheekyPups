@@ -75,8 +75,8 @@ export function ListField ({date, setDate, loading, setLoading, listBooking}: Li
     setDate(newDate)
   }
 
-  const listItem = bookings.map((booking: { id: number; time: Date; ownerName: String | undefined; phone: String | undefined; dogName: String | undefined; dogBread: String | undefined; }) => 
-    <ItemListField key={String(booking.id)} id={booking.id} time={dayjs(booking.time).format('hh:mm A')} ownerName={booking.ownerName} phone={booking.phone} dogName={booking.dogName} dogBread={booking.dogBread} loadingMenuItem={loadingMenuItem} setLoadingMenuItem={(value) => setLoadingMenuItem(value)}/> 
+  const listItem = bookings.map((booking: { id: number; time: Date; status: String; ownerName: String | undefined; phone: String | undefined; dogName: String | undefined; dogBread: String | undefined; }) => 
+    <ItemListField key={String(booking.id)} id={booking.id} time={dayjs(booking.time).format('hh:mm A')} status={booking.status} ownerName={booking.ownerName} phone={booking.phone} dogName={booking.dogName} dogBread={booking.dogBread} loadingMenuItem={loadingMenuItem} setLoadingMenuItem={(value) => setLoadingMenuItem(value)}/> 
   )
 
   const handleCreateNewBooking = (values: any) => {
@@ -117,9 +117,9 @@ export function ListField ({date, setDate, loading, setLoading, listBooking}: Li
         <h3 className="font-medium text-4xl text-white font-borsok md:mr-6 text-center mt-2 md:mt-0">{date.toLocaleString(undefined,{weekday: "long", day: "numeric",month:'long', year:'numeric'})}</h3>
         <FilterDateBooking date={date} setDate={setDate} loading={loading} setLoading={setLoading} onPreviousDate={onPreviousDate} onNextDate={onNextDate} addEventClick={addEventClick}/>
       </div>
-      <div className="w-full md:px-4 my-4">
+      <div className="w-full md:px-4 my-4 flex justify-center">
         { loading ? <div className="w-full flex justify-center"><Loading /> </div> :
-          <div className="h-[600px] bg-white border rounded p-4 overflow-auto">
+          <div className="min-h-[500px] w-fit bg-white border rounded p-4 overflow-auto">
             <ItemListColumnsField />
             {listItem}
           </div>
