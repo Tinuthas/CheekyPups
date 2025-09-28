@@ -32,6 +32,7 @@ export function DataTableAttendance({title, attendances, columns, marginTable, h
   const [createModalOpen, setCreateModalOpen] = useState(false);
 
   const [valueField, setValueField] = useState(FULLDAY)
+  const [paidField, setPaidField] = useState(false)
   const [dateValueField, setDateValueField] = useState(new Date());
   const [descriptionField, setDescriptionField] = useState(`DAYCARE - ${dayjs(dateValueField).format('DD/MM/YYYY')}`)
 
@@ -179,6 +180,20 @@ export function DataTableAttendance({title, attendances, columns, marginTable, h
                   label: 'Paid',
                   name: 'Paid',
                   type: "checkbox",
+                  value: paidField,
+                  setValue: (value) => setPaidField(value)
+                },
+                {
+                  accessorKey: 'typePaid',
+                  label: 'Payment',
+                  name: 'Choose Payment Type',
+                  type: "select",
+                  noShow: !paidField,
+                  required: true,
+                  getDataSelect: (inputValue: string) => new Promise<any[]>((resolve, reject) => {
+                    var listData:any[] = [{value: 'CASH', label: 'Cash'}, {value: 'CARD', label: 'Card'}, {value: 'REV', label: 'Revolut'}]
+                    resolve(listData)
+                  })
                 },
                 {
                   accessorKey: 'descriptionValue',

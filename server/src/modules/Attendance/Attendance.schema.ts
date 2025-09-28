@@ -6,6 +6,7 @@ const createAttendanceBody = z.object({
   date: z.string(),
   typeDay: z.string().max(2),
   paid: z.boolean(),
+  typePaid: z.string().nullable(),
   value: z.number(),
   descriptionValue: z.string()
 })
@@ -24,11 +25,16 @@ const dogsAttendance = z.object({
 const updateAttendanceBody = z.object({
   typeDay: z.string().max(2),
   paid: z.boolean(),
+  paidValue: z.number().nullable(),
+  typePaid: z.string().nullable(),
   value: z.number(),
   descriptionValue: z.string()
 })
 
 const updateAttendancePay = z.object({
+  done: z.boolean(),
+  paidValue: z.number().nullable(),
+  typePaid: z.string().nullable(),
   descriptionValue: z.string()
 })
 

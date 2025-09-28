@@ -17,7 +17,7 @@ import { ColumnHeader, EditNewModal } from './EditModal';
 interface MenuItemProps {
   children: JSX.Element | JSX.Element[];
   handleDelete: (id:number) => void,
-  handleEdit: (id:number) => void,
+  handleEdit: (id:number, values:any) => void,
   handlePaid: (id:number) => void,
   paid: boolean,
   id: number,
@@ -64,9 +64,9 @@ export default function MenuItemCustom({children, handleDelete, handleEdit, hand
     setOpenEdit(true)
     handleClose(event)
   }
-  const handleEditClose = (event: Event | React.SyntheticEvent) => {
+  const handleEditClose = (values: any, valuesData: any) => {
     setOpenDelete(false)
-    handleEdit(id)
+    handleEdit(id, values)
   }
 
   function handleListKeyDown(event: React.KeyboardEvent) {
@@ -162,7 +162,7 @@ export default function MenuItemCustom({children, handleDelete, handleEdit, hand
           columns={editData}
           open={openEdit}
           onClose={() => setOpenEdit(false)}
-          onSubmit={handleEditClose}
+          onSubmit={(values, valuesData) => handleEditClose(values, valuesData)}
           callInit={() => getAttendance(id)}
         /> : null
       }

@@ -14,7 +14,7 @@ export async function attendanceRoutes(app: FastifyInstance) {
 
   app.get('/', {
     schema: {
-     querystring: $ref('filterAttendance')
+      querystring: $ref('filterAttendance')
     },
     preHandler: [app.authenticate]
   }, getAttendancesByDate)
@@ -48,30 +48,30 @@ export async function attendanceRoutes(app: FastifyInstance) {
         id: { type: 'number' }, // converts the id param to number
       },
     }
-  }, deleteAttendanceHandle)   
+  }, deleteAttendanceHandle)
 
-  async function addAttendanceHandle(request: FastifyRequest<{Body: AttendanceInput}>, reply: FastifyReply) {
-    try{
+  async function addAttendanceHandle(request: FastifyRequest<{ Body: AttendanceInput }>, reply: FastifyReply) {
+    try {
       return await addAttendance(request.body)
-    }catch(err) {
+    } catch (err) {
       reply.code(400).send('Error in add dog attendance')
     }
   }
 
-  async function getAttendancesByDate(request: FastifyRequest<{Querystring: AttendanceFilterInput}>, reply: FastifyReply) {
-    try{
+  async function getAttendancesByDate(request: FastifyRequest<{ Querystring: AttendanceFilterInput }>, reply: FastifyReply) {
+    try {
       return await getAttendances(request.query)
-    }catch(err) {
+    } catch (err) {
       reply.code(400).send('Error in get attendances by filter')
     }
   }
 
-  async function addAttendance(input: AttendanceInput){
-    const {dog_id, date, typeDay, paid, value, descriptionValue} = input
-
+  async function addAttendance(input: AttendanceInput) {
+    const { dog_id, date, typeDay, paid, typePaid, value, descriptionValue } = input
+    console.log('test')
     //const parsedDate = dayjs(date).startOf('day')
 
-    
+
 
     let dog = await prisma.dog.findUnique({
       where: {
@@ -82,26 +82,29 @@ export async function attendanceRoutes(app: FastifyInstance) {
       }
     })
 
-
-    var dateParts:any[] = date.split('/')
+    var dateParts: any[] = date.split('/')
     var dateObject = new Date(+dateParts[2], dateParts[1] - 1, +dateParts[0])
     var parsedDate = dayjs(dateObject).startOf('day').toISOString()
     console.log(parsedDate)
 
     let checkedAttendance = await prisma.attendance.findFirst({
       where: {
-       dog: {
-        id: Number(dog_id)
-       },
-       day: {
-        date: parsedDate,
-       }
+        dog: {
+          id: Number(dog_id)
+        },
+        day: {
+          date: parsedDate,
+        }
       }
     })
 
-    if(checkedAttendance != undefined && checkedAttendance.id != null) {
+    if (checkedAttendance != undefined && checkedAttendance.id != null) {
       return checkedAttendance
     }
+
+    console.log(' --------- ')
+    console.log(typePaid)
+    console.log(value)
 
     let attendance = await prisma.attendance.create(
       {
@@ -123,11 +126,15 @@ export async function attendanceRoutes(app: FastifyInstance) {
               id: dog_id
             }
           },
-          extract : {
+          extract: {
             create: {
               value,
               description: descriptionValue,
               date: dayjs().toISOString(),
+              type: typePaid,
+              done: paid,
+              paidValue: paid ? value : null,
+              totalValue: paid ? 0 : value,
               Owner: {
                 connect: {
                   id: dog?.ownerId
@@ -135,7 +142,7 @@ export async function attendanceRoutes(app: FastifyInstance) {
               }
             }
           }
-          
+
         },
         include: {
           day: true,
@@ -144,31 +151,6 @@ export async function attendanceRoutes(app: FastifyInstance) {
         }
       }
     )
-
-    if(paid == true) {
-      let updAtt = await prisma.attendance.update({
-        where: {
-          id: attendance.id
-        },
-        data: {
-          extract: {
-            create: {
-              value: -value,
-              description: descriptionValue,
-              date: dayjs().toISOString(),
-              Owner: {
-                connect: {
-                  id: dog?.ownerId
-                }
-              }
-            }
-          }
-        }
-      })
-    }
-
-
-
     return attendance
   }
 
@@ -176,8 +158,8 @@ export async function attendanceRoutes(app: FastifyInstance) {
 
 
 
-async function getAttendances(input: AttendanceFilterInput){
-  var {dateStart, dateEnd} = input
+async function getAttendances(input: AttendanceFilterInput) {
+  var { dateStart, dateEnd } = input
   const parsedDateStart = dayjs(dateStart).startOf('day').toISOString()
   const parsedDateEnd = dayjs(dateEnd).startOf('day').toISOString()
 
@@ -235,7 +217,7 @@ async function getAttendances(input: AttendanceFilterInput){
     ]
   })
 
-  let dogsAttendance = new Map<string, { id: number, attendanceIds:[id: number], dog_id:number, owner_id:number, owner_name:string, owner_dogs:number, name: string, nickname: string | null, avatarUrl: string | null, dates:[date:string], typeDays:[typeDay:string], paids:[paid:boolean] }>();
+  let dogsAttendance = new Map<string, { id: number, attendanceIds: [id: number], dog_id: number, owner_id: number, owner_name: string, owner_dogs: number, name: string, nickname: string | null, avatarUrl: string | null, dates: [date: string], typeDays: [typeDay: string], paids: [paid: boolean] }>();
   for (let index = 0; index < attendances.length; index++) {
     const element = attendances[index];
     if (dogsAttendance.has(element.dog.id.toString())) {
@@ -243,7 +225,7 @@ async function getAttendances(input: AttendanceFilterInput){
       dogsAttendance.get(element.dog.id.toString())?.dates.push(dayjs(element.day.date).format('DD/MM/YYYY'))
       dogsAttendance.get(element.dog.id.toString())?.typeDays.push(element.typeDay)
       dogsAttendance.get(element.dog.id.toString())?.paids.push(element.paid)
-    }else{
+    } else {
       dogsAttendance.set(element.dog.id.toString(), {
         id: element.dog.id,
         attendanceIds: [element.id],
@@ -251,7 +233,7 @@ async function getAttendances(input: AttendanceFilterInput){
         owner_id: element.dog.Owner.id,
         owner_name: element.dog.Owner.name,
         owner_dogs: element.dog.Owner._count.dogs,
-        name: `${element.dog.name} ${element.dog.nickname != null ?'- '+ element.dog.nickname : ''}`.trim(),
+        name: `${element.dog.name} ${element.dog.nickname != null ? '- ' + element.dog.nickname : ''}`.trim(),
         nickname: element.dog.nickname,
         avatarUrl: element.dog.avatarUrl,
         dates: [dayjs(element.day.date).format('DD/MM/YYYY')],
@@ -261,16 +243,16 @@ async function getAttendances(input: AttendanceFilterInput){
     }
   }
 
-  const convertList: { id: number, attendanceIds: [id: number]; dog_id: number; name: string; nickname: string | null; avatarUrl: string | null; dates: [date: string]; typeDays:[typeDay:string]; }[] = [];
+  const convertList: { id: number, attendanceIds: [id: number]; dog_id: number; name: string; nickname: string | null; avatarUrl: string | null; dates: [date: string]; typeDays: [typeDay: string]; }[] = [];
   dogsAttendance.forEach((value, key) => convertList.push(value));
 
   return convertList
 }
 
-async function getUniqueAttendanceHandle(request: FastifyRequest<{Querystring: {id:number}}>, reply: FastifyReply) {
-  try{
+async function getUniqueAttendanceHandle(request: FastifyRequest<{ Querystring: { id: number } }>, reply: FastifyReply) {
+  try {
     return await getUniqueAttendance(request.query.id)
-  }catch(err) {
+  } catch (err) {
     console.log(err)
     reply.code(400).send('Error in get unique attendance')
   }
@@ -288,7 +270,9 @@ async function getUniqueAttendance(id: number) {
       extract: {
         select: {
           value: true,
-          description: true
+          description: true,
+          paidValue: true,
+          type:true
         }
       },
       day: {
@@ -302,10 +286,10 @@ async function getUniqueAttendance(id: number) {
 }
 
 
-async function deleteAttendanceHandle(request: FastifyRequest<{Querystring: {id:number}}>, reply: FastifyReply) {
-  try{
+async function deleteAttendanceHandle(request: FastifyRequest<{ Querystring: { id: number } }>, reply: FastifyReply) {
+  try {
     return await deleteAttendance(request.query.id)
-  }catch(err) {
+  } catch (err) {
     console.log(err)
     reply.code(400).send('Error in delete attendance')
   }
@@ -318,13 +302,13 @@ async function deleteAttendance(id: number) {
       id: Number(id)
     }
   })
-  if(att?.paid != true) {
+  if (att?.paid != true) {
     const deleteAttendance = await prisma.attendance.delete({
       where: {
         id: Number(id)
       },
       select: {
-        extract:{
+        extract: {
           select: {
             id: true,
           }
@@ -339,15 +323,15 @@ async function deleteAttendance(id: number) {
       })
     }*/
     return deleteAttendance
-  }else {
+  } else {
     return new Error('Attendance cannot be deleted because it was already paid')
   }
 }
 
-async function updateAttendanceHandle(request: FastifyRequest<{Body: AttendanceUpdateInput, Querystring: {id:number}}>, reply: FastifyReply) {
-  try{
+async function updateAttendanceHandle(request: FastifyRequest<{ Body: AttendanceUpdateInput, Querystring: { id: number } }>, reply: FastifyReply) {
+  try {
     return await updateAttendance(request.body, request.query.id)
-  }catch(err) {
+  } catch (err) {
     console.log(err)
     reply.code(400).send('Error in update attendance')
   }
@@ -355,72 +339,41 @@ async function updateAttendanceHandle(request: FastifyRequest<{Body: AttendanceU
 
 
 async function updateAttendance(input: AttendanceUpdateInput, id: number) {
-  const {typeDay, paid, value, descriptionValue} = input
-  let att = await prisma.attendance.findUnique({
+  const { typeDay, paid, value, paidValue, typePaid, descriptionValue } = input
+
+  let totalValue = paid ? (Number(value) - Number(paidValue)) : value
+
+  console.log(' --------- ')
+  console.log(typePaid)
+  console.log(paidValue)
+
+  let attendanceUpt = await prisma.attendance.update({
     where: {
       id: Number(id)
-    }, 
-    select: {
-      paid:true,
-      dog: {
-        select: {
-          ownerId: true,
-        },
+    },
+    data: {
+      typeDay,
+      paid,
+      extract: {
+        update: {
+          value,
+          description: descriptionValue,
+          paidValue: paidValue,
+          totalValue,
+          done: paid,
+          type: typePaid,
+          date: dayjs().toISOString(),
+        }
       }
     }
   })
-
-  if(att?.paid != paid) {
-    let attendanceUpt = await prisma.attendance.update({
-      where: {
-        id: Number(id)
-      },
-      data: {
-        typeDay, 
-        paid, 
-        extract : {
-          update: {
-            value,
-            description: descriptionValue,
-            date: dayjs().toISOString(),
-          }
-        }
-      }
-    })  
-    return attendanceUpt
-  } else {
-    let attendanceUpt = await prisma.attendance.update({
-      where: {
-        id: Number(id)
-      },
-      data: {
-        typeDay, 
-        paid, 
-        extract : {
-          update: {
-            value,
-            description: descriptionValue,
-            date: dayjs().toISOString(),
-            Owner: {
-              connect: {
-                id: att?.dog?.ownerId
-              }
-            }
-          }
-        }
-      }
-    })
-    return attendanceUpt
-  }
-
-  
-  return att
+  return attendanceUpt
 }
 
-async function updateAttendancePayHandle(request: FastifyRequest<{Body: AttendanceUpdatePayInput, Querystring: {id:number}}>, reply: FastifyReply) {
-  try{
+async function updateAttendancePayHandle(request: FastifyRequest<{ Body: AttendanceUpdatePayInput, Querystring: { id: number } }>, reply: FastifyReply) {
+  try {
     return await updatePayAttendance(request.body, request.query.id)
-  }catch(err) {
+  } catch (err) {
     console.log(err)
     reply.code(400).send('Error in update attendance payment')
   }
@@ -428,12 +381,12 @@ async function updateAttendancePayHandle(request: FastifyRequest<{Body: Attendan
 
 async function updatePayAttendance(input: AttendanceUpdatePayInput, id: number) {
 
-  const {descriptionValue} = input
+  const { done, paidValue, typePaid, descriptionValue } = input
 
   let att = await prisma.attendance.findUnique({
     where: {
       id: Number(id)
-    }, 
+    },
     select: {
       paid: true,
       extract: {
@@ -449,26 +402,34 @@ async function updatePayAttendance(input: AttendanceUpdatePayInput, id: number) 
       }
     }
   })
-    let updAtt = await prisma.attendance.update({
-      where: {
-        id: Number(id)
-      },
-      data: {
-        paid: !att?.paid,
-        extract: {
-          create: {
-            value: - att!.extract!.value,
-            description: descriptionValue,
-            date: dayjs().toISOString(),
-            Owner: {
-              connect: {
-                id: att?.dog?.ownerId
-              }
+
+  let totalValue = done ? (Number(att?.extract?.value) - Number(paidValue)) : att?.extract?.value
+
+  let updAtt = await prisma.attendance.update({
+    where: {
+      id: Number(id)
+    },
+    data: {
+      paid: done,
+      extract: {
+        update: {
+          description: descriptionValue,
+          date: dayjs().toISOString(),
+          done,
+          paidValue,
+          totalValue,
+          type: typePaid,
+          Owner: {
+            connect: {
+              id: att?.dog?.ownerId
             }
           }
         }
       }
-    })
+    }
+  })
+
+  return updAtt;
   /*}else {
     let updAtt = await prisma.attendance.update({
       where: {
@@ -479,10 +440,10 @@ async function updatePayAttendance(input: AttendanceUpdatePayInput, id: number) 
       }
     })*/
 
-    /*let extract = await prisma.extract.delete({
-      where: {
-        id: att.extract?.id
-      }
-    })*/
+  /*let extract = await prisma.extract.delete({
+    where: {
+      id: att.extract?.id
+    }
+  })*/
   //}
 }

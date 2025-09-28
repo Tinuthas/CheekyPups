@@ -11,6 +11,12 @@ const createPayBody = z.object({
   ...payBody
 })
 
+const createPayPaidBody = z.object({
+  ...payBody,
+  done: z.boolean(),
+  paidValue: z.number(),
+})
+
 const payResponseSchema = z.object({
   ...payBody,
   date: z.coerce.date()
@@ -32,15 +38,23 @@ const updatePaymentId = z.object({
   id: z.number()
 })
 
+const statusDone = z.object({
+  all: z.boolean(),
+  done: z.boolean()
+})
+
 export type TotalOwnerInput = z.infer<typeof totalOwnerSchema>
 export type PayOwnerInput = z.infer<typeof createPayBody>
+export type PaidOwnerInput = z.infer<typeof createPayPaidBody>
 export type UpdatePaymentInput = z.infer<typeof updatePaymentBody>
 
 export const {schemas: paymentSchemas, $ref} = buildJsonSchemas({
   createPayBody,
+  createPayPaidBody,
   payResponseSchema,
   totalOwnerSchema,
   totalOwnerResponse,
   updatePaymentBody,
-  updatePaymentId
+  updatePaymentId,
+  statusDone
 }, { $id: "PaymentSchemas" })

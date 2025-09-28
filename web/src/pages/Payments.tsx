@@ -5,19 +5,20 @@ import { toast } from "react-toastify"
 import DataTableCustom from "../components/DataTableCustom"
 import { DialogListModal } from "../components/DialogListModal"
 import { api, getToken } from "../lib/axios"
-import {Loading} from "../components/Loading";
+import { Loading } from "../components/Loading";
+import { ButtonGroupList } from "../components/ButtonGroupList"
 
 const selectPromise = (inputValue: string) => new Promise<any[]>((resolve, reject) => {
   console.log('call select list')
-  api.get('owners/select', { params: { name: inputValue}, headers: { Authorization: getToken()}}).then(response =>{
+  api.get('owners/select', { params: { name: inputValue }, headers: { Authorization: getToken() } }).then(response => {
     var data = response.data
-    var listData:any[] = []
-    data.forEach((element:any) => {
-      listData.push({value: element.id, label: element.name})
+    var listData: any[] = []
+    data.forEach((element: any) => {
+      listData.push({ value: element.id, label: element.name })
     });
     resolve(listData)
   }).catch((err: AxiosError) => {
-    const data = err.response?.data as {message: string}
+    const data = err.response?.data as { message: string }
     toast.error(`Unidentified error: ${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
     throw new Error(`Unidentified error: ${data.message || err.response?.data || err.message}`);
   })
@@ -25,7 +26,7 @@ const selectPromise = (inputValue: string) => new Promise<any[]>((resolve, rejec
 
 
 
-export function Payments(){
+export function Payments() {
 
   const [payments, setPayments] = useState([{}])
   const [extracts, setExtracts] = useState([{}])
@@ -33,20 +34,35 @@ export function Payments(){
   const [openListModal, setOpenListModal] = useState(false)
   const [loading, setLoading] = useState(false)
   const [loadingModal, setLoadingModal] = useState(false)
+  const [searchButton, setSearchButton] = useState('O')
 
-  function handlePayments() {
+  useEffect(() => {
+    handlePayments(searchButton)
+  }, [])
+
+  function handlePayments(status: string) {
     setLoading(true)
+
+    const all = status === 'A';
+    const done = status === 'C';
     console.log('call payments')
+    console.log('all '+ all)
+    console.log('done '+ done)
     api.get('payment', {
+      params: {
+          all,
+          done,
+      },
       headers: {
         Authorization: getToken()
       }
-    }).then(response =>{
-      console.log('return payments')
-      setPayments(JSON.parse(JSON.stringify(response.data)))
+    }).then(response => {
+      var listResponde = JSON.parse(JSON.stringify(response.data))
+      console.log(listResponde)
+      setPayments(listResponde)
       setLoading(false)
     }).catch((err: AxiosError) => {
-      const data = err.response?.data as {message: string}
+      const data = err.response?.data as { message: string }
       toast.error(`Unidentified error: ${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
       setLoading(false)
     })
@@ -71,10 +87,10 @@ export function Payments(){
         resolve(`Updated payment: ${response.data?.id}`);
         setLoading(false)
       }).catch((err: AxiosError) => {
-        const data = err.response?.data as {message: string}
-        toast.error(`Unidentified error: ${data.message || err.response?.data ||err.message}`, { position: "top-center", autoClose: 5000, })
+        const data = err.response?.data as { message: string }
+        toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
         setLoading(false)
-        throw new Error(`Unidentified error: ${data.message || err.response?.data || err.message}`);   
+        throw new Error(`Unidentified error: ${data.message || err.response?.data || err.message}`);
       })
     })
     return promise
@@ -96,10 +112,10 @@ export function Payments(){
         resolve(`Deleted payment: ${response.data?.id}`);
         setLoading(false)
       }).catch((err: AxiosError) => {
-        const data = err.response?.data as {message: string}
+        const data = err.response?.data as { message: string }
         toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
         setLoading(false)
-        throw new Error(`Unidentified error: ${data.message || err.response?.data || err.message}`);  
+        throw new Error(`Unidentified error: ${data.message || err.response?.data || err.message}`);
       })
     });
     return promise
@@ -107,7 +123,7 @@ export function Payments(){
 
   function createNewRow(data: any) {
     setLoading(true)
-    var newData = {owner_id: Number(data['owner']), value: Number(data.value), description: data.description};
+    var newData = { owner_id: Number(data['owner']), value: Number(data.value), description: data.description };
     console.log('craeted')
     const promise = new Promise((resolve, reject) => {
       api.post('payment', newData, {
@@ -117,10 +133,10 @@ export function Payments(){
       }).then(response => {
         toast.success(`Created payment: ${response.data?.id}`, { position: "top-center", autoClose: 1000, })
         setLoading(false)
-        handlePayments()
+        handlePayments(searchButton)
         resolve(`Created payment: ${response.data?.id}`);
       }).catch((err: AxiosError) => {
-        const data = err.response?.data as {message: string}
+        const data = err.response?.data as { message: string }
         toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
         setLoading(false)
         throw new Error(`Unidentified error: ${data.message || err.response?.data || err.message}`);
@@ -129,7 +145,7 @@ export function Payments(){
     return promise
   }
 
-  const headersExtracts:MRT_ColumnDef<any>[] = [
+  const headersExtracts: MRT_ColumnDef<any>[] = [
     {
       accessorKey: 'date',
       header: 'Date',
@@ -142,9 +158,9 @@ export function Payments(){
       size: 130,
       Cell: ({ renderedCellValue, row }) => (
         <>
-          { Number(row.original.value) <= 0 ?
+          {Number(row.original.value) <= 0 ?
             <span className="text-red-600 font-medium">{renderedCellValue}</span>
-          :
+            :
             <span className="text-green-600 font-medium">{renderedCellValue}</span>
           }
         </>
@@ -167,19 +183,21 @@ export function Payments(){
       headers: {
         Authorization: getToken()
       }
-    }).then(response =>{
+    }).then(response => {
       console.log('return call list extracts')
-      console.log(response.data)
-      setExtracts(JSON.parse(JSON.stringify(response.data)))
+      var listResponde = JSON.parse(JSON.stringify(response.data))
+      var listExtract = []
+      console.log(listResponde)
+      setExtracts([])
       setLoadingModal(false)
     }).catch((err: AxiosError) => {
-      const data = err.response?.data as {message: string}
+      const data = err.response?.data as { message: string }
       toast.error(`Unidentified error: ${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
       setLoadingModal(false)
     })
   }
 
-  const headers:MRT_ColumnDef<any>[] = [
+  const headers: MRT_ColumnDef<any>[] = [
     {
       accessorKey: 'name',
       header: 'Name',
@@ -193,7 +211,7 @@ export function Payments(){
     {
       accessorKey: 'extracts',
       header: 'Count',
-      size: 120,
+      size: 100,
       Cell: ({ renderedCellValue, row }) => (
         <>
           <div className="w-full cursor-pointer" onClick={() => {
@@ -202,8 +220,8 @@ export function Payments(){
           }}>
             <span>{renderedCellValue}</span>
           </div>
-          {row.original.id == openIndex && openListModal ? 
-            <DialogListModal 
+          {row.original.id == openIndex && openListModal ?
+            <DialogListModal
               open={openListModal}
               onClose={() => setOpenListModal(false)}
               onSubmit={() => console.log('submit')}
@@ -215,24 +233,58 @@ export function Payments(){
               loading={loadingModal}
               deleteRow={(id) => deleteDataRow(id)}
               updateRow={(data) => updateDataRow(data)}
-              infoData={{owner: row.original.name, dogs: row.original.dogsName}}
+              infoData={{ owner: row.original.name, dogs: row.original.dogsName }}
             />
-          : null}
+            : null}
         </>
       )
     },
     {
-      accessorKey: 'total',
-      header: 'Total Valor',
-      size: 125,
+      accessorKey: 'value',
+      header: 'Value',
+      size: 100,
       Cell: ({ renderedCellValue, row }) => (
         <div className="w-full cursor-pointer" onClick={() => {
           setOpenListModal(true)
           setOpenIndex(row.original.id)
         }}>
-          { row.original.total > 0 || row.original.total < 0 ?
+          {row.original.total > 0 || row.original.total < 0 ?
             <span className="text-red-600 font-medium">{renderedCellValue}</span>
-          :
+            :
+            <span className="text-green-600 font-medium">{renderedCellValue}</span>
+          }
+        </div>
+      )
+    },
+    {
+      accessorKey: 'paidValue',
+      header: 'Paid',
+      size: 100,
+      Cell: ({ renderedCellValue, row }) => (
+        <div className="w-full cursor-pointer" onClick={() => {
+          setOpenListModal(true)
+          setOpenIndex(row.original.id)
+        }}>
+          {row.original.total > 0 || row.original.total < 0 ?
+            <span className="text-red-600 font-medium">{renderedCellValue}</span>
+            :
+            <span className="text-green-600 font-medium">{renderedCellValue}</span>
+          }
+        </div>
+      )
+    },
+    {
+      accessorKey: 'totalValue',
+      header: 'Owned',
+      size: 100,
+      Cell: ({ renderedCellValue, row }) => (
+        <div className="w-full cursor-pointer" onClick={() => {
+          setOpenListModal(true)
+          setOpenIndex(row.original.id)
+        }}>
+          {row.original.total > 0 || row.original.total < 0 ?
+            <span className="text-red-600 font-medium">{renderedCellValue}</span>
+            :
             <span className="text-green-600 font-medium">{renderedCellValue}</span>
           }
         </div>
@@ -264,25 +316,33 @@ export function Payments(){
     },
   ]
 
-  useEffect(() => {
-    handlePayments()
-  }, [])
+  
+
+  function selectOrders(value: any) {
+    setSearchButton(value)
+    handlePayments(value)
+  }
 
   return (
     <div className="md:p-10 pt-4 h-full flex flex-col items-center">
-      <h3 className="font-medium text-3xl md:text-4xl text-white font-borsok">Payments</h3>
-      { loading ? <div className="w-full flex justify-center"><Loading /> </div> :
-        <div className="md:flex bg-white w-full mt-4 rounded">
-            <DataTableCustom 
-              headers={headers} 
-              data={payments} 
-              setData={(data) => setPayments(data)} 
+      <h3 className="font-medium text-3xl md:text-4xl text-white font-borsok">Payments/Orders</h3>
+      {loading ? <div className="w-full flex justify-center"><Loading /> </div> :
+        <>
+          <div className="md:flex w-fit rounded m-1 bg-white">
+            <ButtonGroupList listButtons={[{ key: "O", name: "Opened" }, { key: "C", name: "Closed" }, { key: "A", name: "All" }]} selectButton={(value) => selectOrders(value)} selectedButton={searchButton} />
+          </div>
+          <div className="md:flex bg-white w-full mt-4 rounded">
+            <DataTableCustom
+              headers={headers}
+              data={payments}
+              setData={(data) => setPayments(data)}
               title="Payments"
               createData={columnHeadersPayment}
               createRow={(data) => createNewRow(data)}
             />
-          
-        </div>
+          </div>
+        </>
+
       }
     </div>
   )

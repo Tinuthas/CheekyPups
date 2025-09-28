@@ -82,8 +82,12 @@ model Attendance {
 model Extract {
   id          Int       @id @default(autoincrement())
   value       Decimal
+  paidValue   Decimal?
+  totalValue  Decimal
   description String?
+  done        Boolean
   date        DateTime?
+  type        String?
 
   attendanceId Int?        @unique
   bookingId    Int?        @unique

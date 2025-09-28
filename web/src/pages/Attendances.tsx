@@ -160,6 +160,7 @@ export function Attendances(){
       typeDay: values.typeDay?.toUpperCase?.(), 
       paid: (values.paid?.toLowerCase?.() === 'true'),  
       value: values.value, 
+      typePaid: values.typePaid?.toUpperCase?.(),
       descriptionValue: values.descriptionValue
     }
     api.post('attendance', newValues, {

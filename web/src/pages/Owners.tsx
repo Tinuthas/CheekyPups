@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { api, getToken } from "../lib/axios";
 import { AxiosError } from "axios";
 import { toast } from "react-toastify";
-import {Loading} from "../components/Loading";
+import { Loading } from "../components/Loading";
 import { ButtonGroupList } from "../components/ButtonGroupList";
 import { MRT_ColumnDef } from "material-react-table";
 import { DialogListModal } from "../components/DialogListModal";
@@ -38,11 +38,12 @@ const columnHeaders = [
     value: 'D',
     type: "radio",
     radioListValues: [
-      {key: "daycare", value: "D", label: "Daycare"},
-      {key: "grooming", value: "G", label: "Grooming"},
+      { key: "daycare", value: "D", label: "Daycare" },
+      { key: "grooming", value: "G", label: "Grooming" },
     ]
   },
-  {accessorKey: 'secondOwner',
+  {
+    accessorKey: 'secondOwner',
     label: 'Second Owner Name',
     name: '',
     type: "text",
@@ -52,7 +53,7 @@ const columnHeaders = [
     label: 'Phone Two',
     name: '8x xxx xxxx',
     type: "tel",
-  }, 
+  },
   {
     accessorKey: 'address',
     label: 'Address',
@@ -67,14 +68,14 @@ const columnHeaders = [
   }
 ]
 
-export function Owners(){
+export function Owners() {
 
   const [searchButton, setSearchButton] = useState('A')
   const [owners, setOwners] = useState([{}])
   const [openIndex, setOpenIndex] = useState(-1)
   const [openListModal, setOpenListModal] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [loadingModal, setLoadingModal] = useState(false) 
+  const [loadingModal, setLoadingModal] = useState(false)
   const [ownerDogInfos, setOwnerDogInfos] = useState([{}])
 
 
@@ -82,7 +83,7 @@ export function Owners(){
     getAllOwnersFilter()
   }, [])
 
-  const headers:MRT_ColumnDef<any>[] = [
+  const headers: MRT_ColumnDef<any>[] = [
     {
       accessorKey: 'name',
       header: 'Name',
@@ -95,8 +96,8 @@ export function Owners(){
           }}>
             <span>{renderedCellValue}</span>
           </div>
-          {row.original.id == openIndex && openListModal ? 
-            <DialogListModal 
+          {row.original.id == openIndex && openListModal ?
+            <DialogListModal
               open={openListModal}
               onClose={() => setOpenListModal(false)}
               onSubmit={() => console.log('submit')}
@@ -108,9 +109,9 @@ export function Owners(){
               loading={loadingModal}
               deleteRow={(id) => deleteDataRow(id)}
               updateRow={(data) => updateDataRow(data)}
-              infoData={{owner: row.original.name, dogs: ""}}
+              infoData={{ owner: row.original.name, dogs: "" }}
             />
-          : null}
+            : null}
         </>
       )
     },
@@ -138,7 +139,7 @@ export function Owners(){
       accessorKey: 'phoneTwo',
       header: 'Phone 2',
       size: 135,
-    }, 
+    },
     {
       accessorKey: 'address',
       header: 'Address'
@@ -149,37 +150,37 @@ export function Owners(){
     }
   ]
 
-  const headersOwnerDog:MRT_ColumnDef<any>[] = [
-      {
-        accessorKey: 'date',
-        header: 'Date',
-        size: 150,
-        enableEditing: false,
-      },
-      {
-        accessorKey: 'value',
-        header: 'Value',
-        size: 130,
-        Cell: ({ renderedCellValue, row }) => (
-          <>
-            { Number(row.original.value) <= 0 ?
-              <span className="text-red-600 font-medium">{renderedCellValue}</span>
+  const headersOwnerDog: MRT_ColumnDef<any>[] = [
+    {
+      accessorKey: 'date',
+      header: 'Date',
+      size: 150,
+      enableEditing: false,
+    },
+    {
+      accessorKey: 'value',
+      header: 'Value',
+      size: 130,
+      Cell: ({ renderedCellValue, row }) => (
+        <>
+          {Number(row.original.value) <= 0 ?
+            <span className="text-red-600 font-medium">{renderedCellValue}</span>
             :
-              <span className="text-green-600 font-medium">{renderedCellValue}</span>
-            }
-          </>
-        )
-      },
-      {
-        accessorKey: 'description',
-        header: 'Description',
-        size: 300,
-      }
-    ]
+            <span className="text-green-600 font-medium">{renderedCellValue}</span>
+          }
+        </>
+      )
+    },
+    {
+      accessorKey: 'description',
+      header: 'Description',
+      size: 300,
+    }
+  ]
 
 
-  function getAllOwnersFilter(type?:string) {
-    if(type == null || type == 'A')
+  function getAllOwnersFilter(type?: string) {
+    if (type == null || type == 'A')
       getAllOwners()
     else
       getAllOwnersQuery(type)
@@ -191,36 +192,36 @@ export function Owners(){
       headers: {
         Authorization: getToken()
       }
-    }).then(response =>{
+    }).then(response => {
       var data = response.data
       var listData = JSON.parse(JSON.stringify(data));
       setOwners(listData)
       setLoading(false)
     }).catch((err: AxiosError) => {
-      const data = err.response?.data as {message: string}
+      const data = err.response?.data as { message: string }
       toast.error(`Unidentified error: ${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
-      setLoading(false) 
+      setLoading(false)
     })
   }
 
-  function getAllOwnersQuery(type:string) {
+  function getAllOwnersQuery(type: string) {
     setLoading(true)
     api.get('owners/type', {
       params: {
         type: type
-      },  
+      },
       headers: {
         Authorization: getToken()
       }
-    }).then(response =>{
+    }).then(response => {
       var data = response.data
       var listData = JSON.parse(JSON.stringify(data));
       setOwners(listData)
       setLoading(false)
     }).catch((err: AxiosError) => {
-      const data = err.response?.data as {message: string}
+      const data = err.response?.data as { message: string }
       toast.error(`Unidentified error: ${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
-      setLoading(false) 
+      setLoading(false)
     })
   }
 
@@ -239,8 +240,8 @@ export function Owners(){
         resolve(`Updated: ${response.data?.name}`);
         setLoading(false)
       }).catch((err: AxiosError) => {
-        const data = err.response?.data as {message: string}
-        toast.error(`Unidentified error: ${data.message || err.response?.data ||err.message}`, { position: "top-center", autoClose: 5000, })
+        const data = err.response?.data as { message: string }
+        toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
         setLoading(false)
         throw new Error(`Unidentified error: ${data.message || err.response?.data || err.message}`);
       })
@@ -260,7 +261,7 @@ export function Owners(){
         resolve(`Created: ${response.data?.name}`);
         setLoading(false)
       }).catch((err: AxiosError) => {
-        const data = err.response?.data as {message: string}
+        const data = err.response?.data as { message: string }
         toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
         setLoading(false)
         throw new Error(`Unidentified error: ${data.message || err.response?.data || err.message}`);
@@ -284,7 +285,7 @@ export function Owners(){
         resolve(`Deleted: ${response.data?.name}`);
         setLoading(false)
       }).catch((err: AxiosError) => {
-        const data = err.response?.data as {message: string}
+        const data = err.response?.data as { message: string }
         toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
         setLoading(false)
         throw new Error(`Unidentified error: ${data.message || err.response?.data || err.message}`);
@@ -293,7 +294,7 @@ export function Owners(){
     return promise
   }
 
-  function selectTypeOwner(value:any){
+  function selectTypeOwner(value: any) {
     setSearchButton(value)
     getAllOwnersFilter(value)
   }
@@ -307,12 +308,12 @@ export function Owners(){
       headers: {
         Authorization: getToken()
       }
-    }).then(response =>{
+    }).then(response => {
       console.log('return call list extracts')
       setOwnerDogInfos(JSON.parse(JSON.stringify(response.data)))
       setLoadingModal(false)
     }).catch((err: AxiosError) => {
-      const data = err.response?.data as {message: string}
+      const data = err.response?.data as { message: string }
       toast.error(`Unidentified error: ${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
       setLoadingModal(false)
     })
@@ -321,26 +322,26 @@ export function Owners(){
   return (
     <div className="md:p-10 pt-4 h-full flex flex-col items-center">
       <h3 className="font-medium text-3xl md:text-4xl text-white font-borsok">Owners</h3>
-      
-      { loading ? <div className="w-full flex justify-center"><Loading /> </div> :
+
+      {loading ? <div className="w-full flex justify-center"><Loading /> </div> :
         <>
           <div className="md:flex w-fit rounded m-1 bg-white">
-            <ButtonGroupList listButtons={[{key: "A", name: "All"}, {key: "D", name: "Daycare"}, {key: "G", name: "Grooming"}]} selectButton={(value) => selectTypeOwner(value)} selectedButton={searchButton}/>
+            <ButtonGroupList listButtons={[{ key: "A", name: "All" }, { key: "D", name: "Daycare" }, { key: "G", name: "Grooming" }]} selectButton={(value) => selectTypeOwner(value)} selectedButton={searchButton} />
           </div>
           <div className="md:flex bg-white w-full mt-4 rounded">
-            <DataTableCustom 
-              headers={headers} 
-              data={owners} 
-              setData={(data) => setOwners(data)} 
-              title="Owners" 
-              updateRow={(data) => updateDataRow(data)} 
+            <DataTableCustom
+              headers={headers}
+              data={owners}
+              setData={(data) => setOwners(data)}
+              title="Owners"
+              updateRow={(data) => updateDataRow(data)}
               createData={columnHeaders}
               createRow={(data) => createNewRow(data)}
               deleteRow={(id) => deleteDataRow(id)}
             />
           </div>
         </>
-      }   
+      }
     </div>
   )
 }

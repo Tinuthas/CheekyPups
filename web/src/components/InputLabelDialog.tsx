@@ -54,6 +54,8 @@ export const InputLabel = ({labelName, type, placeholder, accessorKey, value, se
 
   function handleOnChangeValue(valueField: any) {
     if(type == "select"){
+      console.log('change selector')
+      console.log(valueField)
       if(onSelect != undefined)
         onSelect(accessorKey.toLowerCase().replace('id', ''), valueField.label)
       onChangeValue(accessorKey, valueField.value.toString())
@@ -80,7 +82,7 @@ export const InputLabel = ({labelName, type, placeholder, accessorKey, value, se
         : type.includes('checkbox') ? 
           <FormControlLabel control={<Checkbox onChange={setEventChange} sx={{ color: '#FF499E', '& .MuiSvgIcon-root': { fontSize: 28 } }} checked={value}  />}  label={status ? placeholder : labelName}  />
         : type.includes('radio') ? 
-          <RadioGroup defaultValue={value}>
+          <RadioGroup value={value}>
             {radioListValues?.map( (radio) => (
               <FormControlLabel key={radio.key} value={radio.value} control={<Radio onChange={setEventChange} sx={{ color: '#FF499E', '& .MuiSvgIcon-root': { fontSize: 18 } }} />} label={radio.label}  />
             ))}

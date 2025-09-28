@@ -12,6 +12,7 @@ export interface ColumnHeader {
   value?: any,
   setValue?(value:any):void,
   required?: boolean,
+  noShow?: boolean,
   getDataSelect?: (inputValue: string) => Promise<any>,
   setLocalStatus?(status:boolean):void,
   radioListValues?:Array<{key:string, value:string, label:string}>
@@ -76,9 +77,11 @@ export const CreateNewModal = ({
           if(values[element[1]] == undefined) 
             element[1] = false
         }
-        if(columns[index].required == true) {
-          if(validateRequired(element[1]) == false)
-            validationRequired = true
+        if(columns[index].noShow == null || columns[index].noShow != true){
+          if(columns[index].required == true) {
+            if(validateRequired(element[1]) == false)
+              validationRequired = true
+          }
         }
         if(columns[index].type.includes('email')){
           if(validateEmail(element[1]) == null) 
@@ -152,6 +155,7 @@ export const CreateNewModal = ({
             }}
           >
             {columns.map((column) => (
+              column.noShow ? null :
               <InputLabel 
                 key={column.accessorKey}
                 onChange={(e) => onChangeValuesCheck(e.target.name, e.target.value) } 
