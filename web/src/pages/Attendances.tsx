@@ -95,6 +95,7 @@ export function Attendances(){
               listDates['paid'] = item.paids[i]? listDates['paid'] + 1 : listDates['paid']
             }
             marginDates = listDates['total'] > marginDates ? listDates['total'] : marginDates
+            
             var obj = Object.assign({}, item, listDates);
             rows.push(obj)
           })
@@ -193,6 +194,7 @@ export function Attendances(){
         />
         
       <DataTableAttendance 
+        title={"" + dateStart.toLocaleString(undefined, {weekday: "short"}) + " " + dayjs(dateStart).format('DD/MM/YYYY') + " - " +dateEnd.toLocaleString(undefined, {weekday: "short"}) + " " + dayjs(dateEnd).format('DD/MM/YYYY')}
         attendances={attendances}
         columns={columns}
         marginTable={marginTable}

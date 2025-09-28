@@ -73,11 +73,6 @@ async function getAllPayments(request: FastifyRequest, reply: FastifyReply) {
       _sum: {
         value: true,
       },
-      orderBy: {
-        _sum: {
-          value: 'desc',
-        },
-      },
     })
 
     let ids = pays.map((obj) => obj.ownerId);

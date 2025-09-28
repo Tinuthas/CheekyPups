@@ -169,6 +169,7 @@ export function Payments(){
       }
     }).then(response =>{
       console.log('return call list extracts')
+      console.log(response.data)
       setExtracts(JSON.parse(JSON.stringify(response.data)))
       setLoadingModal(false)
     }).catch((err: AxiosError) => {

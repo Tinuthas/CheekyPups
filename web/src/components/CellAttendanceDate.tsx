@@ -4,6 +4,7 @@ import MenuItemCustom from "./MenuItemCustom"
 import {api, getToken} from "../lib/axios";
 import { toast } from "react-toastify";
 import { useState } from "react";
+import dayjs from "dayjs";
 
 const HALFDAY = import.meta.env.VITE_HALFDAY
 const FULLDAY = import.meta.env.VITE_FULLDAY
@@ -214,10 +215,10 @@ function selectRadioTypeValue(value: string) {
 }
 
 export function cellComponent(item: string, onSubmit: () => Promise<boolean>, totalSumDays: number) {
-
+  console.log(dayjs(item, 'DD/MM/YYYY').format('ddd DD'))
   var column:MRT_ColumnDef<any> = {
     accessorKey: item, 
-    header: item,
+    header: dayjs(item, 'DD/MM/YYYY').format('ddd DD'),
     Header: ({ column }) => <div className="w-[90px] p-0 text-center">{column.columnDef.header}</div>,
     Cell: ({ renderedCellValue, row }) => (
       <div className="w-[133.055px]">

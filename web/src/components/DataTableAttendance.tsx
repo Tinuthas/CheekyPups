@@ -19,6 +19,7 @@ const FULLWEEK = import.meta.env.VITE_FULLWEEK
 const SECONDDOG = import.meta.env.VITE_SECONDDOG
 
 interface AttendanceTableProps {
+  title: string,
   attendances: any[],
   columns: any[],
   marginTable: number,
@@ -26,7 +27,7 @@ interface AttendanceTableProps {
   handleCreateNewRow: (values:any) => void
 }
 
-export function DataTableAttendance({attendances, columns, marginTable, handleCreateNewRow, loading}:AttendanceTableProps) {
+export function DataTableAttendance({title, attendances, columns, marginTable, handleCreateNewRow, loading}:AttendanceTableProps) {
 
   const [createModalOpen, setCreateModalOpen] = useState(false);
 
@@ -76,7 +77,7 @@ export function DataTableAttendance({attendances, columns, marginTable, handleCr
             data={attendances}
             renderTopToolbarCustomActions={() => (
               <Box sx={{ fontSize: 16, fontWeight: 'medium', paddingTop: 0, paddingLeft: 1 }}>
-                {"Attendances"}
+                {title}
                 <IconButton onClick={() => {
                     //setValueField(HALF_DAY)
                     setCreateModalOpen(true)
