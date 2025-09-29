@@ -1,17 +1,17 @@
 import { ThemeProvider } from "@mui/material/styles";
-import { theme } from "../lib/theme";
+import { theme } from "../../lib/theme";
 import clsx from 'clsx'
 import { useState } from "react";
 import MaterialReactTable, { MRT_ColumnDef } from "material-react-table";
 import Box from '@mui/material/Box';
 import { Add } from '@mui/icons-material';
 import { IconButton } from "@mui/material";
-import { CreateNewModal } from "../components/CreateNewModal";
+import { CreateNewModal } from "../../components/CreateNewModal";
 import { AxiosError } from "axios";
 import { toast } from "react-toastify";
-import {api, getToken} from "../lib/axios";
+import {api, getToken} from "../../lib/axios";
 import dayjs from "dayjs";
-import {Loading} from "./Loading";
+import {Loading} from "../Loading";
 
 const HALFDAY = import.meta.env.VITE_HALFDAY
 const FULLDAY = import.meta.env.VITE_FULLDAY
@@ -30,7 +30,7 @@ interface AttendanceTableProps {
 export function DataTableAttendance({title, attendances, columns, marginTable, handleCreateNewRow, loading}:AttendanceTableProps) {
 
   const [createModalOpen, setCreateModalOpen] = useState(false);
-
+  const [typeDayField, setTypeDayField] = useState("FD")
   const [valueField, setValueField] = useState(FULLDAY)
   const [paidField, setPaidField] = useState(false)
   const [dateValueField, setDateValueField] = useState(new Date());
@@ -57,6 +57,7 @@ export function DataTableAttendance({title, attendances, columns, marginTable, h
         setValueField(SECONDDOG)
         break;
     }
+    setTypeDayField(value)
   }
 
   return (
@@ -158,7 +159,7 @@ export function DataTableAttendance({title, attendances, columns, marginTable, h
                   label: 'Type Day',
                   name: 'Type Day',
                   type: "radio",
-                  value: "FD",
+                  value: typeDayField,
                   radioListValues: [
                     {key: "fullDay", value: "FD", label: "Full Day"},
                     {key: "halfDay", value: "HD", label: "Half Day"},

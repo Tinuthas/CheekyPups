@@ -1,7 +1,7 @@
 import { AxiosError } from "axios"
 import { MRT_ColumnDef } from "material-react-table"
 import MenuItemCustom from "./MenuItemCustom"
-import { api, getToken } from "../lib/axios";
+import { api, getToken } from "../../lib/axios";
 import { toast } from "react-toastify";
 import { useEffect, useState } from "react";
 import dayjs from "dayjs";
@@ -59,7 +59,8 @@ function ReturnMenuItemCustom({ renderedCellValue, row, item, onSubmit }: Return
       setValueDecriptionField(att.extract.description)
       setPaidField(att.paid)
       setTypeDayField(att.typeDay)
-      setPaidValueField(Number(att.extract.paidValue))
+      const paidValue = Number(att.extract.paidValue)
+      setPaidValueField(paidValue == 0 ? Number(att.extract.value) : paidValue)
       setPaidTypeField(att.extract.type)
     }).catch((err: AxiosError) => {
       const data = err.response?.data as { message: string }
@@ -76,7 +77,7 @@ function ReturnMenuItemCustom({ renderedCellValue, row, item, onSubmit }: Return
       var paid = (paidField.toString().toLowerCase() === 'true')
       console.log('type field '+ paidTypeField)
       var data = {
-        typeDay: (typeDayField.toString().toUpperCase()),
+        typeDay: (values.typeDay?.toUpperCase?.()),
         paid,
         value: Number(valueField),
         paidValue: paid ? Number(paidValueField) : 0,
@@ -106,10 +107,16 @@ function ReturnMenuItemCustom({ renderedCellValue, row, item, onSubmit }: Return
     }
   }
 
-  function handlePaid(item: string, id: number) {
+  function handlePaid(item: string, id: number, values:any) {
     try {
-      console.log(item, id)
-      api.put('attendance/pay', { descriptionValue: `DAYCARE - ${item}` }, {
+      var paid = (paidField.toString().toLowerCase() === 'true')
+      api.put('attendance/pay', 
+        { 
+          done: paid,
+          paidValue: paid ? Number(paidValueField) : 0,
+          typePaid: values.typePaid?.toUpperCase?.(),
+          descriptionValue: valueDecriptionField
+        }, {
         params: {
           id,
         },
@@ -180,7 +187,7 @@ function ReturnMenuItemCustom({ renderedCellValue, row, item, onSubmit }: Return
     <MenuItemCustom
       handleDelete={(id) => handleDelete(id)}
       handleEdit={(id, values) => handleEdit(item, row, id, values)}
-      handlePaid={(id) => handlePaid(item, id)}
+      handlePaid={(id, values) => handlePaid(item, id, values)}
       id={getIdAttendance(item, row)}
       paid={renderedCellValue?.toString().toUpperCase().includes('P')}
       getAttendance={(id: number) => getAttendance(id)}
@@ -206,6 +213,51 @@ function ReturnMenuItemCustom({ renderedCellValue, row, item, onSubmit }: Return
           type: "number",
           value: valueField,
           setValue: (value) => setValueField(value),
+        },
+        {
+          accessorKey: 'paid',
+          label: 'Paid',
+          name: 'Paid',
+          type: "checkbox",
+          value: paidField,
+          setValue: (value) => setPaidField(value),
+        },
+        {
+          accessorKey: 'paidValue',
+          label: 'Value Paid',
+          name: '',
+          type: "number",
+          noShow: !paidField,
+          value: paidValueField,
+          setValue: (value) => setPaidValueField(value),
+        },
+        {
+          accessorKey: 'typePaid',
+          label: 'Payment',
+          name: 'Choose Payment Type',
+          type: "select",
+          noShow: !paidField,
+          required: true,
+          getDataSelect: (inputValue: string) => new Promise<any[]>((resolve, reject) => {
+            var listData: any[] = [{ value: 'CASH', label: 'Cash' }, { value: 'CARD', label: 'Card' }, { value: 'REV', label: 'Revolut' }]
+            resolve(listData)
+          })
+        },
+        {
+          accessorKey: 'descriptionValue',
+          label: 'Description',
+          name: '',
+          type: "text",
+          value: valueDecriptionField,
+          setValue: (value) => setValueDecriptionField(value),
+        }]}
+        paidData={[
+        {
+          accessorKey: 'value',
+          label: 'Value',
+          name: '',
+          type: "number",
+          value: valueField,
         },
         {
           accessorKey: 'paid',

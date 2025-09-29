@@ -10,8 +10,8 @@ import { AxiosError } from "axios";
 import { toast } from "react-toastify";
 import { AvatarModal } from "../components/AvatarProfile";
 import { FilterDays } from "../components/FilterDays";
-import { DataTableAttendance } from "../components/DataTableAttendance";
-import { cellComponent } from "../components/CellAttendanceDate";
+import { DataTableAttendance } from "../components/attendance/DataTableAttendance";
+import { cellComponent } from "../components/attendance/CellAttendanceDate";
 
 type Attendances = Array<{
   id:string;
@@ -37,11 +37,11 @@ export function Attendances(){
 
   useEffect(() => {
     clickSearchByDates()
-  }, [])
+  }, [dateStart, dateEnd])
 
   function onSubmitUpdatePage(){
+    clickSearchByDates()
     return new Promise<boolean>((resolve, reject) => {
-      clickSearchByDates(dayjs().startOf('isoWeek').toDate(), dayjs().endOf('isoWeek').toDate())
       resolve(true)
     })
   }
@@ -127,7 +127,7 @@ export function Attendances(){
               ), 
               Footer: ({  }) => <div className="">Total: </div> 
             }]
-            for (const item of Array.from(dates).sort()) {
+            for (const item of Array.from(dates)) {
               var totalSumDays = 0
               rows.map((row) => {
                 item in row ? totalSumDays++ : null
@@ -154,11 +154,13 @@ export function Attendances(){
   const handleCreateNewRow = (values: any) => {
     setLoading(true)
     console.log(values)
+    console.log('paid')
+    console.log(values.paid)
     var newValues = {
       dog_id: Number(values.dogId), 
       date: values.date, 
       typeDay: values.typeDay?.toUpperCase?.(), 
-      paid: (values.paid?.toLowerCase?.() === 'true'),  
+      paid: values.paid,  
       value: values.value, 
       typePaid: values.typePaid?.toUpperCase?.(),
       descriptionValue: values.descriptionValue

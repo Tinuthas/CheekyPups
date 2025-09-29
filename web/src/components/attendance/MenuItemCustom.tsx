@@ -11,24 +11,26 @@ import PaidIcon from '@mui/icons-material/Paid';
 import React from 'react';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemIcon from '@mui/material/ListItemIcon';
-import { DeleteModal } from './DeleteModal';
-import { ColumnHeader, EditNewModal } from './EditModal';
+import { DeleteModal } from '../DeleteModal';
+import { ColumnHeader, EditNewModal } from '../EditModal';
 
 interface MenuItemProps {
   children: JSX.Element | JSX.Element[];
   handleDelete: (id:number) => void,
   handleEdit: (id:number, values:any) => void,
-  handlePaid: (id:number) => void,
+  handlePaid: (id:number, values:any) => void,
   paid: boolean,
   id: number,
   getAttendance: (id:number) => void,
   editData: ColumnHeader[],
+  paidData: ColumnHeader[],
 }
 
-export default function MenuItemCustom({children, handleDelete, handleEdit, handlePaid, editData, id, paid, getAttendance}: MenuItemProps) {
+export default function MenuItemCustom({children, handleDelete, handleEdit, handlePaid, editData, paidData, id, paid, getAttendance}: MenuItemProps) {
   const [open, setOpen] = React.useState(false);
   const [openDelete, setOpenDelete] = React.useState(false);
   const [openEdit, setOpenEdit] = React.useState(false);
+  const [openPaid, setOpenPaid] = React.useState(false);
   const anchorRef = React.useRef<HTMLButtonElement>(null);
 
   const handleToggle = () => {
@@ -51,11 +53,6 @@ export default function MenuItemCustom({children, handleDelete, handleEdit, hand
     handleClose(event)
   }
 
-  const handlePaidOpen = (event: Event | React.SyntheticEvent) => {
-    handlePaid(id)
-    handleClose(event)
-  }
-
   const handleDeleteClose = (event: Event | React.SyntheticEvent) => {
     setOpenDelete(false)
     handleDelete(id)
@@ -65,8 +62,19 @@ export default function MenuItemCustom({children, handleDelete, handleEdit, hand
     handleClose(event)
   }
   const handleEditClose = (values: any, valuesData: any) => {
-    setOpenDelete(false)
+    console.log('handle edit close')
+    setOpenEdit(false)
     handleEdit(id, values)
+  }
+
+  const handlePaidOpen = (event: Event | React.SyntheticEvent) => {
+    setOpenPaid(true)
+    handleClose(event)
+  }
+
+  const handlePaidClose = (values: any, valuesData: any) => {
+    setOpenPaid(false)
+    handlePaid(id, values)
   }
 
   function handleListKeyDown(event: React.KeyboardEvent) {
@@ -163,6 +171,16 @@ export default function MenuItemCustom({children, handleDelete, handleEdit, hand
           open={openEdit}
           onClose={() => setOpenEdit(false)}
           onSubmit={(values, valuesData) => handleEditClose(values, valuesData)}
+          callInit={() => getAttendance(id)}
+        /> : null
+      }
+      {
+        openPaid ? 
+        <EditNewModal 
+          columns={paidData}
+          open={openPaid}
+          onClose={() => setOpenPaid(false)}
+          onSubmit={(values, valuesData) => handlePaidClose(values, valuesData)}
           callInit={() => getAttendance(id)}
         /> : null
       }

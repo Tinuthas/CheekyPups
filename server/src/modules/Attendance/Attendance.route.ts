@@ -67,11 +67,9 @@ export async function attendanceRoutes(app: FastifyInstance) {
   }
 
   async function addAttendance(input: AttendanceInput) {
+    
     const { dog_id, date, typeDay, paid, typePaid, value, descriptionValue } = input
-    console.log('test')
     //const parsedDate = dayjs(date).startOf('day')
-
-
 
     let dog = await prisma.dog.findUnique({
       where: {
@@ -101,10 +99,6 @@ export async function attendanceRoutes(app: FastifyInstance) {
     if (checkedAttendance != undefined && checkedAttendance.id != null) {
       return checkedAttendance
     }
-
-    console.log(' --------- ')
-    console.log(typePaid)
-    console.log(value)
 
     let attendance = await prisma.attendance.create(
       {

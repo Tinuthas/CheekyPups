@@ -7,6 +7,7 @@ import { useState } from "react";
 import { boolean } from "zod";
 import { DateField } from "./DateField";
 import { TimeField } from "./TimeField";
+import { CurrencyField } from "./CurrencyField";
 
 interface InputLabelProps{
   labelName: string;
@@ -91,6 +92,8 @@ export const InputLabel = ({labelName, type, placeholder, accessorKey, value, se
           <DateField label={labelName} value={value} onChange={handleOnChangeValue} />
         : type.includes('time') ?
           <TimeField label={labelName} value={value} onChange={handleOnChangeValue} />
+        :type.includes('number') ?
+          <CurrencyField label={placeholder} value={value} onChange={setEventChange} />
         :
           <input
             placeholder={placeholder}
