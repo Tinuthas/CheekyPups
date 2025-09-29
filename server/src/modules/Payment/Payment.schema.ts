@@ -40,7 +40,17 @@ const updatePaymentId = z.object({
 
 const statusDone = z.object({
   all: z.boolean(),
-  done: z.boolean()
+  done: z.boolean(),
+  startDate: z.string(),
+  endDate: z.string()
+})
+
+const statusDoneExtracts = z.object({
+  id: z.number(),
+  all: z.boolean(),
+  done: z.boolean(),
+  startDate: z.string(),
+  endDate: z.string()
 })
 
 export type TotalOwnerInput = z.infer<typeof totalOwnerSchema>
@@ -56,5 +66,6 @@ export const {schemas: paymentSchemas, $ref} = buildJsonSchemas({
   totalOwnerResponse,
   updatePaymentBody,
   updatePaymentId,
-  statusDone
+  statusDone,
+  statusDoneExtracts
 }, { $id: "PaymentSchemas" })

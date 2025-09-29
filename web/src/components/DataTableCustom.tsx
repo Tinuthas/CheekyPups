@@ -2,10 +2,11 @@ import React, { useCallback, useMemo, useState } from 'react';
 import MaterialReactTable, { MaterialReactTableProps, MRT_ColumnDef, MRT_Row } from 'material-react-table';
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton, Tooltip } from '@mui/material';
 import colors from 'tailwindcss/colors';
-import { Delete, Edit, Add } from '@mui/icons-material';
+import { Delete, Edit, Add,  DateRange} from '@mui/icons-material';
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { ColumnHeader, CreateNewModal } from './CreateNewModal';
 import { DeleteModal } from './DeleteModal';
+import { CalendarModal } from './CalendarModal';
 
 const theme = createTheme({
   palette: {
@@ -48,11 +49,14 @@ interface DataTableProps {
   updateRow?:(data:object) => Promise<any>,
   createRow?:(data:object) => Promise<any>,
   deleteRow?:(id:number) => Promise<any>,
+  searchCalendar?:(data:Array<any>) => Promise<any>,
+  calendarData?:Array<any>,
 }
 
-const DataTableCustom = ({headers, data, setData, createData, title, updateRow, createRow, deleteRow, hideColumns}: DataTableProps) => {
+const DataTableCustom = ({headers, data, setData, createData, title, updateRow, createRow, deleteRow, hideColumns, searchCalendar, calendarData}: DataTableProps) => {
 
   const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [calendarModalOpen, setCalendarModalOpen] = useState(false);
   const [open, setOpen] = React.useState(false);
   const [openIndex, setOpenIndex] = React.useState(-1);
   const [validationErrors, setValidationErrors] = useState<{
@@ -66,6 +70,13 @@ const DataTableCustom = ({headers, data, setData, createData, title, updateRow, 
         if(setData != undefined)
           setData([...data]);
       })
+    }
+  };
+
+  const handleCalendarSearch = (data: Array<any>) => {
+    if(searchCalendar != undefined){
+      searchCalendar(data)
+      setCalendarModalOpen(false)
     }
   };
 
@@ -159,8 +170,13 @@ const DataTableCustom = ({headers, data, setData, createData, title, updateRow, 
             <Box sx={{ fontSize: 16, fontWeight: 'medium', paddingTop: 0, paddingLeft: 1 }}>
               {title}
               {createRow != null ?
-                <IconButton onClick={() => setCreateModalOpen(true)}>
+                <IconButton sx={{marginLeft: '2px'}} onClick={() => setCreateModalOpen(true)}>
                   <Add />
+                </IconButton>
+               :null}
+              {searchCalendar != null ?
+                <IconButton sx={{marginLeft: '2px'}} onClick={() => setCalendarModalOpen(true)}>
+                  <DateRange />
                 </IconButton>
                :null}
             </Box>
@@ -174,6 +190,14 @@ const DataTableCustom = ({headers, data, setData, createData, title, updateRow, 
           open={createModalOpen}
           onClose={() => setCreateModalOpen(false)}
           onSubmit={handleCreateNewRow}
+        /> : null
+      }
+      {calendarModalOpen ? 
+        <CalendarModal
+          open={calendarModalOpen}
+          onClose={() => setCalendarModalOpen(false)}
+          onSubmit={handleCalendarSearch}
+          data={calendarData as any[]}
         /> : null
       }
       </div>

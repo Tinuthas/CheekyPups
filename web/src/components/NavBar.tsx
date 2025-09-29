@@ -18,10 +18,10 @@ export function NavBar() {
     { name: "Daycare", 
       links: [
         {
-          name: "Attendances", path: "Attendances",
+          name: "List", path: "Attendances",
         },
         {
-          name: "Payments", path: "Payments",
+          name: "Orders", path: "Payments",
         }
       ]},
     { name: "Grooming", 

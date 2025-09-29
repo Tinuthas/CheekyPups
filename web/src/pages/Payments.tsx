@@ -7,6 +7,7 @@ import { DialogListModal } from "../components/DialogListModal"
 import { api, getToken } from "../lib/axios"
 import { Loading } from "../components/Loading";
 import { ButtonGroupList } from "../components/ButtonGroupList"
+import dayjs from "dayjs"
 
 const selectPromise = (inputValue: string) => new Promise<any[]>((resolve, reject) => {
   console.log('call select list')
@@ -35,23 +36,30 @@ export function Payments() {
   const [loading, setLoading] = useState(false)
   const [loadingModal, setLoadingModal] = useState(false)
   const [searchButton, setSearchButton] = useState('O')
+  const [endDate, setEndDate] = useState<Date>(dayjs().toDate());
+  const [startDate, setStartDate] = useState<Date>(dayjs().subtract(1, 'month').toDate());
+  const [selectDateType, setSelectDateType] = useState<string>('M')
+  
 
   useEffect(() => {
     handlePayments(searchButton)
-  }, [])
+  }, [searchButton, startDate, endDate, selectDateType])
 
   function handlePayments(status: string) {
     setLoading(true)
-
     const all = status === 'A';
     const done = status === 'C';
-    console.log('call payments')
-    console.log('all '+ all)
-    console.log('done '+ done)
+    const startDateParsed = dayjs(startDate).toISOString()
+    const endDateParsed = dayjs(endDate).toISOString()
+    console.log('parsed')
+    console.log(startDateParsed)
+    console.log(endDateParsed)
     api.get('payment', {
       params: {
           all,
           done,
+          startDate: startDateParsed,
+          endDate: endDateParsed
       },
       headers: {
         Authorization: getToken()
@@ -145,24 +153,72 @@ export function Payments() {
     return promise
   }
 
+  function changeCalendarDates(data: any[]) {
+    setStartDate(data[0])
+    setEndDate(data[1])
+    setSelectDateType(data[2])
+    console.log('change calendar dates')
+    console.log(data)
+    const promise = new Promise((resolve, reject) => {
+        handlePayments(searchButton)
+        resolve("");
+    });
+    return promise
+  }
+
   const headersExtracts: MRT_ColumnDef<any>[] = [
     {
       accessorKey: 'date',
       header: 'Date',
-      size: 150,
+      size: 130,
       enableEditing: false,
     },
     {
       accessorKey: 'value',
-      header: 'Value',
-      size: 130,
+      header: 'Sales',
+      size: 100,
       Cell: ({ renderedCellValue, row }) => (
         <>
-          {Number(row.original.value) <= 0 ?
-            <span className="text-red-600 font-medium">{renderedCellValue}</span>
+          <span className="font-semibold">{'€ '}</span>
+          <span className="text-green-600 font-semibold">{renderedCellValue}</span>
+        </>
+      )
+    },
+    {
+      accessorKey: 'paidValue',
+      header: 'Paid',
+      size: 100,
+      Cell: ({ renderedCellValue, row }) => (
+        (renderedCellValue == null) ? null :
+          <>
+            <span className="font-semibold">{'€ '}</span>
+            <span className="text-green-600 font-semibold">{renderedCellValue}</span>
+          </>
+      )
+    },
+
+    {
+      accessorKey: 'totalValue',
+      header: 'Owned',
+      size: 100,
+      Cell: ({ renderedCellValue, row }) => (
+        <>
+          <span className="font-semibold">{'€ '}</span>
+          {Number(renderedCellValue) > 0 ?
+            <span className="text-red-600 font-semibold">{renderedCellValue}</span>
             :
-            <span className="text-green-600 font-medium">{renderedCellValue}</span>
+            <span className="text-green-600 font-semibold">{renderedCellValue}</span>
           }
+        </>
+      )
+    },
+    {
+      accessorKey: 'done',
+      header: 'Done',
+      size: 100,
+       Cell: ({ renderedCellValue, row }) => (
+        <>
+          <span className="text-neutral-600 font-bold">{renderedCellValue ? 'X' : ''}</span>
         </>
       )
     },
@@ -175,10 +231,17 @@ export function Payments() {
 
   function callListExtracts(id: number) {
     setLoadingModal(true)
-    console.log('call list extracts')
+    const all = searchButton === 'A';
+    const done = searchButton === 'C';
+    const startDateParsed = dayjs(startDate).toISOString()
+    const endDateParsed = dayjs(endDate).toISOString()
     api.get('payment/extracts', {
       params: {
-        id,
+          id,
+          all,
+          done,
+          startDate: startDateParsed,
+          endDate: endDateParsed
       },
       headers: {
         Authorization: getToken()
@@ -188,7 +251,7 @@ export function Payments() {
       var listResponde = JSON.parse(JSON.stringify(response.data))
       var listExtract = []
       console.log(listResponde)
-      setExtracts([])
+      setExtracts(listResponde)
       setLoadingModal(false)
     }).catch((err: AxiosError) => {
       const data = err.response?.data as { message: string }
@@ -210,7 +273,7 @@ export function Payments() {
     },
     {
       accessorKey: 'extracts',
-      header: 'Count',
+      header: 'Items',
       size: 100,
       Cell: ({ renderedCellValue, row }) => (
         <>
@@ -218,7 +281,7 @@ export function Payments() {
             setOpenListModal(true)
             setOpenIndex(row.original.id)
           }}>
-            <span>{renderedCellValue}</span>
+            <span className="font-semibold">{renderedCellValue}</span>
           </div>
           {row.original.id == openIndex && openListModal ?
             <DialogListModal
@@ -241,18 +304,15 @@ export function Payments() {
     },
     {
       accessorKey: 'value',
-      header: 'Value',
+      header: 'Sales',
       size: 100,
       Cell: ({ renderedCellValue, row }) => (
         <div className="w-full cursor-pointer" onClick={() => {
           setOpenListModal(true)
           setOpenIndex(row.original.id)
         }}>
-          {row.original.total > 0 || row.original.total < 0 ?
-            <span className="text-red-600 font-medium">{renderedCellValue}</span>
-            :
-            <span className="text-green-600 font-medium">{renderedCellValue}</span>
-          }
+          <span className="font-semibold">{'€ '}</span>
+          <span className="text-green-600 font-semibold">{renderedCellValue}</span>
         </div>
       )
     },
@@ -265,10 +325,11 @@ export function Payments() {
           setOpenListModal(true)
           setOpenIndex(row.original.id)
         }}>
-          {row.original.total > 0 || row.original.total < 0 ?
-            <span className="text-red-600 font-medium">{renderedCellValue}</span>
-            :
-            <span className="text-green-600 font-medium">{renderedCellValue}</span>
+          {(renderedCellValue == null) ? null :
+            <>
+              <span className="font-semibold">{'€ '}</span>
+              <span className="text-green-600 font-semibold">{renderedCellValue}</span>
+            </>
           }
         </div>
       )
@@ -282,10 +343,11 @@ export function Payments() {
           setOpenListModal(true)
           setOpenIndex(row.original.id)
         }}>
-          {row.original.total > 0 || row.original.total < 0 ?
-            <span className="text-red-600 font-medium">{renderedCellValue}</span>
+          <span className="font-semibold">{'€ '}</span>
+          {Number(renderedCellValue) > 0 ?
+            <span className="text-red-600 font-semibold">{renderedCellValue}</span>
             :
-            <span className="text-green-600 font-medium">{renderedCellValue}</span>
+            <span className="text-green-600 font-semibold">{renderedCellValue}</span>
           }
         </div>
       )
@@ -339,6 +401,8 @@ export function Payments() {
               title="Payments"
               createData={columnHeadersPayment}
               createRow={(data) => createNewRow(data)}
+              searchCalendar={(data) => changeCalendarDates(data)}
+              calendarData={[startDate, endDate, selectDateType]}
             />
           </div>
         </>
