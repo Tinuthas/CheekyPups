@@ -18,6 +18,18 @@ const headers = [
   }
 ]
 
+const headersSettings = [
+  {
+    accessorKey: 'key',
+    header: 'Key',
+    size: 180,
+  },
+  {
+    accessorKey: 'value',
+    header: 'Value',
+    size: 200,
+  }
+]
 
 const columnHeaders = [
   {
@@ -43,9 +55,28 @@ const columnHeaders = [
   }
 ]
 
+
+const columnHeadersSettings = [
+  {
+    accessorKey: 'key',
+    label: 'Key',
+    name: 'Key',
+    type: "text",
+    required: true,
+  },
+  {
+    accessorKey: 'value',
+    label: 'Value',
+    name: 'Value',
+    type: "text",
+    required: true,
+  }
+]
+
 export function Users() {
 
   const [users, setUsers] = useState([{}])
+  const [settings, setSettings] = useState([{}])
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
@@ -62,6 +93,24 @@ export function Users() {
         var data = response.data
         var listData = JSON.parse(JSON.stringify(data));
         setUsers(listData)
+        getAllSettings()
+      }).catch((err: AxiosError) => {
+        const data = err.response?.data as {message: string}
+        toast.error(`Unidentified error: ${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
+        setLoading(false) 
+      })
+    }
+
+    function getAllSettings() {
+      setLoading(true)
+      api.get('preference', {
+        headers: {
+          Authorization: getToken()
+        }
+      }).then(response =>{
+        var data = response.data
+        var listData = JSON.parse(JSON.stringify(data));
+        setSettings(listData)
         setLoading(false)
       }).catch((err: AxiosError) => {
         const data = err.response?.data as {message: string}
@@ -140,13 +189,83 @@ export function Users() {
     });
     return promise
   }
-  
-    
+
+
+  function updateDataRowSetting(data: object) {
+    setLoading(true)
+    console.log((data as any).id)
+    const promise = new Promise((resolve, reject) => {
+      api.put('preference', data, {
+        params: {
+          id: (data as any).id
+        },
+        headers: {
+          Authorization: getToken()
+        }
+      }).then(response => {
+        toast.success(`Updated: ${response.data?.key}`, { position: "top-center", autoClose: 1000, })
+        resolve(`Updated: ${response.data?.key}`);
+        setLoading(false)
+      }).catch((err: AxiosError) => {
+        const data = err.response?.data as {message: string}
+        toast.error(`Unidentified error: ${data.message || err.response?.data ||err.message}`, { position: "top-center", autoClose: 5000, })
+        setLoading(false)
+        throw new Error(`Unidentified error: ${data.message || err.response?.data || err.message}`);
+      })
+    })
+    return promise
+  }
+
+  function createNewRowSetting(data: object) {
+    setLoading(true)
+    const promise = new Promise((resolve, reject) => {
+      api.post('preference', data, {
+        headers: {
+          Authorization: getToken()
+        }
+      }).then(response => {
+        toast.success(`Created: ${response.data?.key}`, { position: "top-center", autoClose: 1000, })
+        resolve(`Created: ${response.data?.key}`);
+        setLoading(false)
+      }).catch((err: AxiosError) => {
+        const data = err.response?.data as {message: string}
+        toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
+        setLoading(false)
+        throw new Error(`Unidentified error: ${data.message || err.response?.data || err.message}`);
+      })
+    });
+    return promise
+  }
+
+  function deleteDataRowSetting(id: number) {
+    setLoading(true)
+    const promise = new Promise((resolve, reject) => {
+      api.delete('preference', {
+        params: {
+          id,
+        },
+        headers: {
+          Authorization: getToken()
+        }
+      }).then(response => {
+        toast.success(`Deleted: ${response.data?.key}`, { position: "top-center", autoClose: 1000, })
+        resolve(`Deleted: ${response.data?.key}`);
+        setLoading(false)
+      }).catch((err: AxiosError) => {
+        const data = err.response?.data as {message: string}
+        toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
+        setLoading(false)
+        throw new Error(`Unidentified error: ${data.message || err.response?.data || err.message}`);
+      })
+    });
+    return promise
+  }
 
   return(
     <div className="md:p-10 pt-4 h-full flex flex-col items-center">
-      <h3 className="font-medium text-3xl md:text-4xl text-white font-borsok">Owners</h3>
+      <h3 className="font-medium text-3xl md:text-5xl text-pinkBackground font-borsok">Settings</h3>
       { loading ? <div className="w-full flex justify-center"><Loading /> </div> :
+        <>
         <div className="md:flex bg-white w-full mt-4 rounded">
           <DataTableCustom 
             headers={headers} 
@@ -159,6 +278,19 @@ export function Users() {
             deleteRow={(id) => deleteDataRow(id)}
           />
         </div>
+          <div className="md:flex bg-white w-full mt-4 rounded">
+            <DataTableCustom 
+              headers={headersSettings} 
+              data={settings} 
+              setData={(data) => setSettings(data)} 
+              title="Settings" 
+              updateRow={(data) => updateDataRowSetting(data)} 
+              createData={columnHeadersSettings}
+              createRow={(data) => createNewRowSetting(data)}
+              deleteRow={(id) => deleteDataRowSetting(id)}
+            />
+          </div>
+        </>
       }   
     </div>
   )

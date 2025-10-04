@@ -113,7 +113,7 @@ export const EditBookingNewModal = ({
             sx={{
               width: '100%',
               minWidth: { xs: '300px', sm: '360px', md: '400px' },
-              gap: '1.5rem',
+              gap: '1rem',
             }}
           >
             {columns.map((column) => (

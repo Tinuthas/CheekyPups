@@ -8,36 +8,7 @@ export function Booking(){
   const [date, setDate] = useState(newDate)
   const [loading, setLoading] = useState(false)
 
-
-  const listBooking = [
-    {
-      id: 1,
-      time: "9:30AM",
-      ownerName: "Declan",
-      phone: "083 333 5546",
-      dogName: "Einstein",
-      dogBread: "Collie X"
-    },
-    {
-      id: 2,
-      time: "11AM"
-    },
-    {
-      id: 3,
-      time: "11AM"
-    },
-    {
-      id: 4,
-      time: "12:30PM"
-    },
-    {
-      id: 5,
-      time: "12:30PM"
-    }
-  ]
-
   return (
-
     
     <div>
       <ListField 
@@ -45,7 +16,6 @@ export function Booking(){
         setDate={setDate} 
         loading={loading} 
         setLoading={setLoading}
-        listBooking={listBooking}
       />
 
     </div>

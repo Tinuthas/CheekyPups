@@ -33,6 +33,12 @@ export const CalendarModal = ({
     setSelectDateType('M')
   }
 
+  function selectThreeMonthDate() {
+    setStartDate(dayjs().subtract(3, 'month').toDate())
+    setEndDate(dayjs().toDate())
+    setSelectDateType('T')
+  }
+
   function selectWeekDate() {
     setStartDate(dayjs().startOf('isoWeek').toDate())
     setEndDate(dayjs().endOf('isoWeek').toDate())
@@ -50,6 +56,10 @@ export const CalendarModal = ({
       case 'W':
         setStartDate(dayjs(startDate).subtract(1, 'week').toDate())
         setEndDate(dayjs(endDate).subtract(1, 'week').toDate())
+        break;
+      case 'T':
+        setStartDate(dayjs(startDate).subtract(3, 'month').toDate())
+        setEndDate(dayjs(endDate).subtract(3, 'month').toDate())
         break;
       case 'M':
         setStartDate(dayjs(startDate).subtract(1, 'month').toDate())
@@ -71,6 +81,10 @@ export const CalendarModal = ({
       case 'M':
         setStartDate(dayjs(startDate).add(1, 'month').toDate())
         setEndDate(dayjs(endDate).add(1, 'month').toDate())
+        break;
+      case 'T':
+        setStartDate(dayjs(startDate).add(3, 'month').toDate())
+        setEndDate(dayjs(endDate).add(3, 'month').toDate())
         break;
       case 'Y':
         setStartDate(dayjs(startDate).add(1, 'year').toDate())
@@ -134,9 +148,10 @@ export const CalendarModal = ({
           </ThemeProvider>
         </div>
         <div className="flex flex-row justify-evenly m-6">
-          <button onClick={() => selectWeekDate()} className={`rounded w-[75px] h-[35px] border border-pinkBackground ${selectDateType == 'W' ? 'bg-white  text-pinkBackground hover:bg-pinkBackground hover:text-white' : 'bg-pinkBackground  text-white hover:bg-white hover:text-pinkBackground'}`}>WEEK</button>
-          <button onClick={() => selectMonthDate()} className={`rounded w-[75px] h-[35px] border border-pinkBackground ${selectDateType == 'M' ? 'bg-white  text-pinkBackground hover:bg-pinkBackground hover:text-white' : 'bg-pinkBackground  text-white hover:bg-white hover:text-pinkBackground'}`}>MONTH</button>
-          <button onClick={() => selectYearDate()} className={`rounded w-[75px] h-[35px] border border-pinkBackground ${selectDateType == 'Y' ? 'bg-white  text-pinkBackground hover:bg-pinkBackground hover:text-white' : 'bg-pinkBackground  text-white hover:bg-white hover:text-pinkBackground'}`}>YEAR</button>
+          <button onClick={() => selectWeekDate()} className={`rounded w-[90px] h-[35px] border border-pinkBackground ${selectDateType == 'W' ? 'bg-white  text-pinkBackground hover:bg-pinkBackground hover:text-white' : 'bg-pinkBackground  text-white hover:bg-white hover:text-pinkBackground'}`}>WEEK</button>
+          <button onClick={() => selectMonthDate()} className={`rounded w-[90px] h-[35px] border border-pinkBackground ${selectDateType == 'M' ? 'bg-white  text-pinkBackground hover:bg-pinkBackground hover:text-white' : 'bg-pinkBackground  text-white hover:bg-white hover:text-pinkBackground'}`}>1 MONTH</button>
+          <button onClick={() => selectThreeMonthDate()} className={`rounded w-[90px] h-[35px] border border-pinkBackground ${selectDateType == 'T' ? 'bg-white  text-pinkBackground hover:bg-pinkBackground hover:text-white' : 'bg-pinkBackground  text-white hover:bg-white hover:text-pinkBackground'}`}> 3 MONTH</button>
+          <button onClick={() => selectYearDate()} className={`rounded w-[90px] h-[35px] border border-pinkBackground ${selectDateType == 'Y' ? 'bg-white  text-pinkBackground hover:bg-pinkBackground hover:text-white' : 'bg-pinkBackground  text-white hover:bg-white hover:text-pinkBackground'}`}>YEAR</button>
           {/**<button className={`rounded w-[75px] h-[35px] border border-pinkBackground ${selectDateType == 'A' ? 'bg-white  text-pinkBackground hover:bg-pinkBackground hover:text-white' : 'bg-pinkBackground  text-white hover:bg-white hover:text-pinkBackground'}`}>ALL</button>*/}
         </div>
       </DialogContent>

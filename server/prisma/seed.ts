@@ -14,6 +14,15 @@ async function run() {
   await Promise.all([
     prisma.user.create({
       data: {
+        email: 'main@cheekypups.com',
+        name: 'Main User',
+        admin: true,
+        password: '96b02f0ac9f8e6d1d0b702414ce7c632a67c6b2c94e5f476e44f9853af9032e7579108c745f7488c0adf99f6ca340ac0177516ea6da6c694e904eda8c265378f',
+        salt: 'cb5952d265424e47609f2134dd96d85e'
+      }
+    }),
+    prisma.user.create({
+      data: {
         email: 'admin@admin.com',
         name: 'Admin User',
         admin: true,
@@ -21,6 +30,14 @@ async function run() {
         salt: 'cb5952d265424e47609f2134dd96d85e'
       }
     }),
+    prisma.preferences.create({
+      data: {
+        key: "FullDayBooking",
+        value: `[\'09:30\',\'09:30\',\'11:00\',\'11:00\',\'12:30\',\'12:30\']`
+      }
+    })
+
+    
   ])
 }
 

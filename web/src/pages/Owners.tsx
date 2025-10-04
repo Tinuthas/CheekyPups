@@ -10,7 +10,25 @@ import { ButtonGroupList } from "../components/ButtonGroupList";
 import { MRT_ColumnDef } from "material-react-table";
 import { DialogListModal } from "../components/DialogListModal";
 
-const columnHeaders = [
+
+
+export function Owners() {
+
+  const [searchButton, setSearchButton] = useState('A')
+  const [owners, setOwners] = useState([{}])
+  const [openIndex, setOpenIndex] = useState(-1)
+  const [openListModal, setOpenListModal] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [loadingModal, setLoadingModal] = useState(false)
+  const [ownerDogInfos, setOwnerDogInfos] = useState([{}])
+  const [ownerType, setOwnerType] = useState('D')
+
+
+  useEffect(() => {
+    getAllOwnersFilter()
+  }, [])
+
+  const columnHeaders = [
   {
     accessorKey: 'name',
     label: 'Name',
@@ -35,7 +53,8 @@ const columnHeaders = [
     accessorKey: 'type',
     label: 'Daycare or Grooming',
     name: '',
-    value: 'D',
+    value: ownerType,
+    setValue: (value: string) => setOwnerType(value),
     type: "radio",
     radioListValues: [
       { key: "daycare", value: "D", label: "Daycare" },
@@ -67,21 +86,6 @@ const columnHeaders = [
     type: "text",
   }
 ]
-
-export function Owners() {
-
-  const [searchButton, setSearchButton] = useState('A')
-  const [owners, setOwners] = useState([{}])
-  const [openIndex, setOpenIndex] = useState(-1)
-  const [openListModal, setOpenListModal] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [loadingModal, setLoadingModal] = useState(false)
-  const [ownerDogInfos, setOwnerDogInfos] = useState([{}])
-
-
-  useEffect(() => {
-    getAllOwnersFilter()
-  }, [])
 
   const headers: MRT_ColumnDef<any>[] = [
     {
@@ -321,7 +325,7 @@ export function Owners() {
 
   return (
     <div className="md:p-10 pt-4 h-full flex flex-col items-center">
-      <h3 className="font-medium text-3xl md:text-4xl text-white font-borsok">Owners</h3>
+      <h3 className="font-medium text-3xl md:text-5xl text-pinkBackground font-borsok">Owners</h3>
 
       {loading ? <div className="w-full flex justify-center"><Loading /> </div> :
         <>

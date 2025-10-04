@@ -9,26 +9,87 @@ import dayjs from "dayjs";
 interface ChooseDateButtonProps {
   label: String;
   date: Date;
-  setDate: (date:Date) => void;
+  setDate: (date: Date) => void;
 }
 
-export function ChooseDateButton({label, date, setDate}: ChooseDateButtonProps) {
+export function ChooseDateButton({ label, date, setDate }: ChooseDateButtonProps) {
 
   return (
-    <div className="">
+    <div className="h-10 my-2 ">
       <ThemeProvider theme={theme}>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <DatePicker 
-            className=""
-            value={date} 
+          <DatePicker
+            className=" transition-all"
+            value={date}
+
             //label={label}
-            onChange={date => date!= null ?  setDate(date) : null} 
+            /*PopperProps={{
+              //desktopPaper: { // Or 'mobilePaper' for the mobile variant
+                sx: {
+                  width: 350, // Adjust this to your desired width in pixels
+                  minWidth: 350, // Ensure a minimum width
+                  '& .MuiDateCalendar-root': { // Target the calendar's root element
+                    width: '100%', // Make the calendar itself take the full width of the paper
+                    height: 350 // You can also adjust the height if desired
+                  }
+                },
+                
+              //},
+            }}*/
+            PopperProps={{
+              sx: {
+                '& .MuiPaper-root': { // Targets the paper container of the popper
+                  minWidth: '400px', // Sets a minimum width for the popup
+                  // You can also set a fixed width: width: '400px',
+                  width: '400px',
+                  height: '460px',
+                },
+                '& .css-epd502': {height: '450px', maxHeight: '450px', width: '400px'},
+                '& .MuiCalendarOrClockPicker-root': {height: '450px', maxHeight: '450px', width: '400px'},
+                '& .MuiCalendarPicker-root': { height: '450px', maxHeight: '450px', width: '400px'},
+                '& .MuiDayPicker-slideTransition': {height: '450px', maxHeight: '450px'},
+                '& .MuiDayPicker-monthContainer': {height: '450px', maxHeight: '450px', width: '400px'},
+                '& .MuiDayPicker-header':{width: '400px'},
+                '& .MuiDayPicker-weekDayLabel': {
+                  fontSize: '20px',
+                  marginX: '9px',
+                  marginY: '8px',
+                },
+                '& .MuiPickersDay-root': { // Target the days
+                  fontSize: '22px', // Increase font size for the days
+                  marginX: '9px',
+                  marginY: '8px',
+                  color: '#404040',
+                  width: '36px',
+                  maxWidth: '36px',
+                  height: '36px'
+                },
+                '& .MuiDayCalendar-header': { // Target the header (month, year)
+                  //fontSize: '20px', // Increase font size for the header
+                },
+              },
+            }}
+            onChange={date => date != null ? setDate(date) : null}
             inputFormat="DD/MM/YYYY"
-            renderInput={(params) => <TextField {...params} className="w-full"/>}
+            renderInput={(params) => <TextField {...params} sx={{
+              "& .MuiInputBase-input": {
+                height: "8px" // Set your height here.
+              }, '& .MuiOutlinedInput-root': {
+                '& fieldset': {
+                  borderColor: '#737373',
+                },
+                '&:hover fieldset': {
+                  borderColor: '#f02a77',
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: '#f02a77',
+                },
+              },
+            }} className="w-full p-0 m-0" />}
           />
         </LocalizationProvider>
       </ThemeProvider>
     </div>
-    
+
   )
 }

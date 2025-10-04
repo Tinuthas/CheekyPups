@@ -1,4 +1,4 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, fabClasses, Stack, TextField } from "@mui/material";
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, fabClasses, Grid, Stack, TextField } from "@mui/material";
 import dayjs from "dayjs";
 import { useState } from "react";
 import { toast } from "react-toastify";
@@ -13,9 +13,12 @@ export interface ColumnHeader {
   setValue?(value:any):void,
   required?: boolean,
   noShow?: boolean,
+  noEdit?:boolean,
   getDataSelect?: (inputValue: string) => Promise<any>,
   setLocalStatus?(status:boolean):void,
   radioListValues?:Array<{key:string, value:string, label:string}>
+  gridXS?:number,
+  gridMS?:number,
 }
 
 interface CreateModalProps {
@@ -23,6 +26,7 @@ interface CreateModalProps {
   onClose: () => void;
   onSubmit: (values: any, valuesData: any) => void;
   open: boolean;
+  grid?: boolean;
 }
 
 //example of creating a mui dialog modal for creating new rows
@@ -31,6 +35,7 @@ export const CreateNewModal = ({
   columns,
   onClose,
   onSubmit,
+  grid,
 }: CreateModalProps) => {
 
 
@@ -140,40 +145,71 @@ export const CreateNewModal = ({
         "& .MuiPaper-root": {
           width: "100%",
           margin: "auto",
-          maxWidth: "500px",  // Set your width here
+          //minWidth: {sm: '360px', md: '400px' },
+          maxWidth: {md: '550px', lg: '700px' },  // Set your width here
+          //maxWidth: "500px",  // Set your width here
         },
       },
     }}>
       <DialogTitle textAlign="center">Add</DialogTitle>
       <DialogContent>
         <form onSubmit={(e) => e.preventDefault()}>
-          <Stack
-            sx={{
-              width: '100%',
-              minWidth: { xs: '300px', sm: '360px', md: '400px' },
-              gap: '1.5rem',
-            }}
-          >
-            {columns.map((column) => (
-              column.noShow ? null :
-              <InputLabel 
-                key={column.accessorKey}
-                onChange={(e) => onChangeValuesCheck(e.target.name, e.target.value) } 
-                placeholder={column.name} 
-                type={column.type} 
-                labelName={column.label} 
-                accessorKey={column.accessorKey}
-                onSelect={(key, value) => setSelectInput({ ...selectInput, [key]: value })}
-                onChangeValue={(key, value) => onChangeValuesCheck(key, value)}
-                getData={column.getDataSelect}
-                value={column.value}
-                setValue={column.setValue}
-                setLocalStatus={column.setLocalStatus}
-                radioListValues={column.radioListValues}
-              />
-             
-            ))}
-          </Stack>
+          {grid != null && grid == true ?
+            <Grid 
+              container 
+              spacing={2}
+              style={{width: '100%'}}
+              sx={{width: '100%', margin: '0px', paddingRight: '16px'}}
+              >
+              {columns.map((column) => (
+                column.noShow ? null :
+                <Grid key={column.accessorKey} item xs={column.gridXS == null ? 12 : column.gridXS} md={column.gridMS == null ? 6 : column.gridMS}>
+                  <InputLabel 
+                    key={column.accessorKey}
+                    onChange={(e) => onChangeValuesCheck(e.target.name, e.target.value) } 
+                    placeholder={column.name} 
+                    type={column.type} 
+                    labelName={column.label} 
+                    accessorKey={column.accessorKey}
+                    onSelect={(key, value) => setSelectInput({ ...selectInput, [key]: value })}
+                    onChangeValue={(key, value) => onChangeValuesCheck(key, value)}
+                    getData={column.getDataSelect}
+                    value={column.value}
+                    setValue={column.setValue}
+                    setLocalStatus={column.setLocalStatus}
+                    radioListValues={column.radioListValues}
+                    noEdit={column.noEdit}
+                  />
+                </Grid>
+              ))}
+            </Grid>
+          :
+            <Stack
+              sx={{
+                width: '100%',
+                minWidth: { xs: '300px', sm: '360px', md: '400px' },
+                gap: '1rem',
+              }}>
+              {columns.map((column) => (
+                column.noShow ? null :
+                <InputLabel 
+                  key={column.accessorKey}
+                  onChange={(e) => onChangeValuesCheck(e.target.name, e.target.value) } 
+                  placeholder={column.name} 
+                  type={column.type} 
+                  labelName={column.label} 
+                  accessorKey={column.accessorKey}
+                  onSelect={(key, value) => setSelectInput({ ...selectInput, [key]: value })}
+                  onChangeValue={(key, value) => onChangeValuesCheck(key, value)}
+                  getData={column.getDataSelect}
+                  value={column.value}
+                  setValue={column.setValue}
+                  setLocalStatus={column.setLocalStatus}
+                  radioListValues={column.radioListValues}
+                />
+              ))}
+            </Stack>
+          }
         </form>
       </DialogContent>
       <DialogActions sx={{ p: '1.25rem' }}>

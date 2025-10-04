@@ -38,7 +38,7 @@ export function Payments() {
   const [searchButton, setSearchButton] = useState('O')
   const [endDate, setEndDate] = useState<Date>(dayjs().toDate());
   const [startDate, setStartDate] = useState<Date>(dayjs().subtract(1, 'month').toDate());
-  const [selectDateType, setSelectDateType] = useState<string>('M')
+  const [selectDateType, setSelectDateType] = useState<string>('T')
   
 
   useEffect(() => {
@@ -387,7 +387,7 @@ export function Payments() {
 
   return (
     <div className="md:p-10 pt-4 h-full flex flex-col items-center">
-      <h3 className="font-medium text-3xl md:text-4xl text-white font-borsok">Payments/Orders</h3>
+      <h3 className="font-medium text-3xl md:text-5xl text-pinkBackground font-borsok">Payments/Orders</h3>
       {loading ? <div className="w-full flex justify-center"><Loading /> </div> :
         <>
           <div className="md:flex w-fit rounded m-1 bg-white">

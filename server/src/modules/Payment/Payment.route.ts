@@ -68,16 +68,14 @@ export async function paymentRoutes(app: FastifyInstance) {
 async function getAllPayments(request: FastifyRequest<{ Querystring: { all: boolean, done: boolean, startDate: string, endDate: string } }>, reply: FastifyReply) {
   try {
     const { all, done, startDate, endDate } = request.query
-    console.log(' ---- ' + all)
-    console.log(' ---- ' + done)
     const parsedDateStart = dayjs(startDate).toISOString()
     const parsedDateEnd = dayjs(endDate).toISOString()
-    console.log(' ---- ' + parsedDateStart)
-    console.log(' ---- ' + parsedDateEnd)
-    if (all == true) {
+    if (all ) {
       return await getAllExtractsRole(parsedDateStart, parsedDateEnd)
-    } else {
-      return await getAllExtractsByDone(done, parsedDateStart, parsedDateEnd)
+    } else if(done) {
+      return await getAllExtractsByDoneDate(done, parsedDateStart, parsedDateEnd)
+    }else {
+      return await getAllExtractsByDone(done)
     }
   } catch (err) {
     reply.code(400).send('Error in get payments')
@@ -103,40 +101,30 @@ async function getAllExtractsRole(startDate: string, endDate: string) {
     },
   })
 
-  let ids = pays.map((obj) => obj.ownerId);
-
-  const payments = await prisma.owner.findMany({
-    where: {
-      id: {
-        in: ids,
-      },
-    },
-    include: {
-      dogs: {
-        select: {
-          name: true,
-        }
-      }
-    }
-  })
-
-  var listPayments: { id: number; name: string; dogsName: string, extracts: number; value: Decimal | null; paidValue: Decimal | null; totalValue: Decimal | null; }[] = []
-  payments.forEach((element, index) => {
-    listPayments.push({
-      id: element.id,
-      name: element.name,
-      dogsName: element.dogs.map(dog => dog.name).join(' - '),
-      extracts: pays[index]._count.id,
-      value: pays[index]._sum.value,
-      paidValue: pays[index]._sum.paidValue,
-      totalValue: pays[index]._sum.totalValue,
-    })
-  })
-  return listPayments
+  return await filterAllExtracts(pays)
 }
 
-async function getAllExtractsByDone(done: boolean, startDate: string, endDate: string) {
+async function getAllExtractsByDone(done: boolean) {
 
+  const pays = await prisma.extract.groupBy({
+    by: ['ownerId'],
+    where: {
+      done,
+    },
+    _count: {
+      id: true,
+    },
+    _sum: {
+      value: true,
+      paidValue: true,
+      totalValue: true
+    },
+  })
+
+  return await filterAllExtracts(pays)
+}
+
+async function getAllExtractsByDoneDate(done: boolean, startDate: string, endDate: string) {
 
   const pays = await prisma.extract.groupBy({
     by: ['ownerId'],
@@ -156,10 +144,11 @@ async function getAllExtractsByDone(done: boolean, startDate: string, endDate: s
       totalValue: true
     },
   })
-  console.log(pays)
 
-  console.log('htrot')
+  return await filterAllExtracts(pays)
+}
 
+async function filterAllExtracts(pays: any[]) {
   let ids = pays.map((obj) => obj.ownerId);
 
   const payments = await prisma.owner.findMany({
@@ -176,7 +165,6 @@ async function getAllExtractsByDone(done: boolean, startDate: string, endDate: s
       }
     }
   })
-  console.log('htrot')
 
   var listPayments: { id: number; name: string; dogsName: string, extracts: number; value: Decimal | null; paidValue: Decimal | null; totalValue: Decimal | null; }[] = []
   payments.forEach((element, index) => {
@@ -190,7 +178,6 @@ async function getAllExtractsByDone(done: boolean, startDate: string, endDate: s
       totalValue: pays[index]._sum.totalValue,
     })
   })
-  console.log('htrot')
   console.log(listPayments)
   return listPayments
 }
@@ -200,10 +187,12 @@ async function getAllExtractByOwner(request: FastifyRequest<{ Querystring: { id:
     const { id, all, done, startDate, endDate } = request.query
     const parsedDateStart = dayjs(startDate).toISOString()
     const parsedDateEnd = dayjs(endDate).toISOString()
-    if (all == true) {
+    if (all) {
       return await getAllExtractByOwnerAll(id, parsedDateStart, parsedDateEnd)
-    } else {
-      return await getAllExtractByOwnerDone(done, id, parsedDateStart, parsedDateEnd)
+    } else if(done){
+      return await getAllExtractByOwnerDoneDate(done, id, parsedDateStart, parsedDateEnd)
+    }else {
+      return await getAllExtractByOwnerDone(done, id)
     }
 
   } catch (err) {
@@ -224,21 +213,23 @@ async function getAllExtractByOwnerAll(id: number, startDate: string, endDate: s
       id: 'desc'
     }
   })
-
-  const filterExtracts = extracts.map(({ id, description, value, date, attendanceId, paidValue, totalValue, done }) => ({
-    id,
-    description,
-    value,
-    date: dayjs(date).format('DD/MM/YYYY HH:mm'),
-    attendanceId,
-    paidValue,
-    totalValue,
-    done
-  }));
-  return filterExtracts
+  return await filterAllExtractByOwner(extracts)
 }
 
-async function getAllExtractByOwnerDone(done: boolean, id: number, startDate: string, endDate: string) {
+async function getAllExtractByOwnerDone(done: boolean, id: number) {
+  const extracts = await prisma.extract.findMany({
+      where: {
+        ownerId: Number(id),
+        done,
+      },
+      orderBy: {
+        id: 'desc'
+      }
+    })
+    return await filterAllExtractByOwner(extracts)
+}
+
+async function getAllExtractByOwnerDoneDate(done: boolean, id: number, startDate: string, endDate: string) {
   const extracts = await prisma.extract.findMany({
       where: {
         ownerId: Number(id),
@@ -254,8 +245,11 @@ async function getAllExtractByOwnerDone(done: boolean, id: number, startDate: st
     })
     console.log('extract')
    
+  return await filterAllExtractByOwner(extracts)
+}
 
-    const filterExtracts = extracts.map(({ id, description, value, date, attendanceId, paidValue, totalValue, done, type }) => ({
+async function filterAllExtractByOwner(extracts: any[]) {
+  const filterExtracts = extracts.map(({ id, description, value, date, attendanceId, paidValue, totalValue, done, type }) => ({
       id,
       description,
       value,
@@ -266,11 +260,8 @@ async function getAllExtractByOwnerDone(done: boolean, id: number, startDate: st
       done,
       type
     }));
-     console.log(filterExtracts)
     return filterExtracts
 }
-
-
 
 async function getTotalHandle(request: FastifyRequest<{ Querystring: TotalOwnerInput }>, reply: FastifyReply) {
   try {

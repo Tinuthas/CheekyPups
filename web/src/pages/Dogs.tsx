@@ -346,7 +346,7 @@ export function Dogs() {
 
   return (
     <div className="md:p-10 pt-4 h-full flex flex-col items-center">
-      <h3 className="font-medium text-3xl md:text-4xl text-white font-borsok">Dogs</h3>
+      <h3 className="font-medium text-3xl md:text-5xl text-pinkBackground font-borsok">Dogs</h3>
       {loading ? <div className="w-full flex justify-center"><Loading /> </div> :
         <>
           <div className="md:flex w-fit rounded m-1 bg-white">

@@ -41,7 +41,7 @@ export function SelectInput({getData, onChangeSelect}:SelectInputProps) {
       loadOptions={promiseOptions}
       onChange={handleChange}
       onBlur={handleBlue}
-      classNames={{ control: (state) => "block w-full h-12 mt-2 transition-all focus:outline-none",}}
+      classNames={{ control: (state) => "block w-full h-10 mt-1 transition-all focus:outline-none",}}
       theme={(theme) => ({
         ...theme,
         borderRadius: 4,

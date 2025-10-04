@@ -21,10 +21,11 @@ interface InputLabelProps{
   onSelect?(key: any, value:any):void;
   getData?:(inputValue: string) => Promise<any>;
   setLocalStatus?(status:boolean):void;
-  radioListValues?:Array<{key:string, value:string, label:string}>
+  radioListValues?:Array<{key:string, value:string, label:string}>;
+  noEdit?:boolean;
 }
 
-export const InputLabel = ({labelName, type, placeholder, accessorKey, value, setValue, onChange, onChangeValue, onSelect, getData, setLocalStatus, radioListValues}: InputLabelProps) => {
+export const InputLabel = ({labelName, type, placeholder, accessorKey, value, setValue, onChange, onChangeValue, onSelect, getData, setLocalStatus, radioListValues, noEdit}: InputLabelProps) => {
 
   const [status, setStatus] = useState(false)
 
@@ -57,6 +58,8 @@ export const InputLabel = ({labelName, type, placeholder, accessorKey, value, se
     if(type == "select"){
       console.log('change selector')
       console.log(valueField)
+      if(setValue != undefined) 
+        setValue(valueField)
       if(onSelect != undefined)
         onSelect(accessorKey.toLowerCase().replace('id', ''), valueField.label)
       onChangeValue(accessorKey, valueField.value.toString())
@@ -71,7 +74,7 @@ export const InputLabel = ({labelName, type, placeholder, accessorKey, value, se
   }
 
   return (
-    <div className="mb-2">
+    <div className="mb-1">
       {type.includes('checkbox') || type.includes('radio')? null :
         <label htmlFor={type} className="block text-sm font-medium text-neutral-800">
           {labelName}
@@ -81,11 +84,11 @@ export const InputLabel = ({labelName, type, placeholder, accessorKey, value, se
         type.includes('select') ?
           <SelectInput getData={getData} onChangeSelect={handleOnChangeValue}/>
         : type.includes('checkbox') ? 
-          <FormControlLabel control={<Checkbox onChange={setEventChange} sx={{ color: '#FF499E', '& .MuiSvgIcon-root': { fontSize: 28 } }} checked={value}  />}  label={status ? placeholder : labelName}  />
+          <FormControlLabel control={<Checkbox onChange={setEventChange} sx={{ color: '#FF499E', '& .MuiSvgIcon-root': { fontSize: 24 } }} checked={value}  />}  label={status ? placeholder : labelName}  />
         : type.includes('radio') ? 
-          <RadioGroup value={value}>
+          <RadioGroup row={true} style={{ width: '100%', height: 'auto', display: 'inline-block', flexWrap: 'nowrap', flexDirection: 'row', }} value={value}>
             {radioListValues?.map( (radio) => (
-              <FormControlLabel key={radio.key} value={radio.value} control={<Radio onChange={setEventChange} sx={{ color: '#FF499E', '& .MuiSvgIcon-root': { fontSize: 18 } }} />} label={radio.label}  />
+              <FormControlLabel sx={{height: '20px', marginTop: '8px', marginBottom: '8px'}} key={radio.key} value={radio.value} control={<Radio onChange={setEventChange} sx={{ color: '#FF499E' ,'& .MuiSvgIcon-root': { fontSize: 24 } }} />} label={radio.label}  />
             ))}
           </RadioGroup>
         : type.includes('date') ?
@@ -99,7 +102,8 @@ export const InputLabel = ({labelName, type, placeholder, accessorKey, value, se
             placeholder={placeholder}
             onChange={setEventChange} type={type}
             value={value}
-            className="block w-full h-12 px-4 py-2 mt-2 text-neutral-600 bg-white border-[1px] border-neutral-300 hover:border-neutral-400 rounded transition-all focus:outline-none focus:border-pinkBackground"
+            readOnly={noEdit != undefined ? noEdit : false}
+            className="block w-full h-10 px-4 py-2 mt-1 text-neutral-600 bg-white border-[1px] border-neutral-300 hover:border-neutral-400 rounded transition-all focus:outline-none focus:border-pinkBackground"
           />
       }
       

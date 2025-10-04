@@ -42,7 +42,7 @@ export function NavBar() {
           name: "Owners", path: "Owners",
         },
         {
-          name: "Users", path: "Users",
+          name: "Settings", path: "Users",
         },
         
       ]
@@ -77,7 +77,7 @@ export function NavBar() {
       <div className="md:flex items-center justify-between bg-white md:h-[68px] py-4 md:px-10 px-7">
         <div className="flex items-center cursor-pointer">         
           <img src={logoImage} alt="Cheeky Pubs Logo" className='h-9 mr-2'/>
-          <h1 className='font-extrabold text-4xl text-pinkBackground font-borsok pt-2'>CHEEKY PUPS</h1>
+          <h3 className='font-extrabold text-4xl text-pinkBackground font-borsok pt-2'>CHEEKY PUPS</h3>
         </div>
         <div className='text-3xl absolute right-8 top-5 cursor-pointer md:hidden transition-all duration-500' onClick={()=>setOpen(!open)}>
           {

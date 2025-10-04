@@ -183,8 +183,8 @@ export function Attendances(){
 
   return (
     <div className="md:p-10 pt-4 h-full flex flex-col items-center">
-      <h3 className="font-medium text-3xl md:text-4xl text-white font-borsok">Daycare</h3>
-      <h3 className="text-white font-borsok text-lg md:text-xl">{dateStart.toLocaleString(undefined,{weekday: "short", day: "numeric", month:'short', year:'numeric'})} - {dateEnd.toLocaleString(undefined,{weekday: "short", day: "numeric", month:'short', year:'numeric'})}</h3>
+      <h3 className="font-medium text-3xl md:text-4xl lg:text-5xl text-pinkBackground font-borsok">Daycare</h3>
+      <h3 className="text-white font-borsok text-lg md:text-2xl lg:text-4xl">{dateStart.toLocaleString(undefined,{weekday: "short", day: "numeric", month:'short', year:'numeric'})} - {dateEnd.toLocaleString(undefined,{weekday: "short", day: "numeric", month:'short', year:'numeric'})}</h3>
       <FilterDays 
         dateStart={dateStart}
         dateEnd={dateEnd}
