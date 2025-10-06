@@ -39,3 +39,10 @@ export const iconStyle =
     "color": "#737373",
     "&:hover": { "color": "#f02a77" }
 }
+
+export const iconSmallStyle =
+{
+    "fontSize": "24px",
+    "color": "#737373",
+    "&:hover": { "color": "#f02a77" }
+}

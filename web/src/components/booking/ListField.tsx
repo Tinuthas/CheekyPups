@@ -17,6 +17,7 @@ import { FilterDateBooking } from "./FilterDateBooking";
 import { FillSpacesModal } from "./FillSpacesModal";
 import { CreateNewCustomer } from "./CreateNewCustomer";
 import { CreateExistedCustomer } from "./CreateExistedCustomer";
+import { CreateNewOffering } from "./CreateNewOffering";
 
 interface ListFieldProps {
   date: Date
@@ -31,6 +32,7 @@ export function ListField({ date, setDate, loading, setLoading }: ListFieldProps
   const [createEventModalOpen, setCreateEventModalOpen] = useState(false);
   const [createBookModalOpen, setCreateBookModalOpen] = useState(false);
   const [createExistedModalOpen, setCreateExistedModalOpen] = useState(false);
+  const [createOfferingModalOpen, setCreateOfferingModalOpen] = useState(false);
   const [fillSpacesModalOpen, setFillSpacesModalOpen] = useState(false);
   const [bookings, setBookings] = useState<any>([])
   const [emptyBooking, setEmptyBooking] = useState<any>([])
@@ -53,11 +55,12 @@ export function ListField({ date, setDate, loading, setLoading }: ListFieldProps
     }).then(response => {
       var data = response.data
       var listData = JSON.parse(JSON.stringify(data));
+      console.log(listData)
       setBookings(listData)
       var emptyBooking:Array<{}> = new Array()
       listData.forEach((time: any) => {
         if((time.status as string).includes('empty')){
-          emptyBooking.push({id: time.id, value: time.time, label: dayjs(time.time).format('hh:mm A')})
+          emptyBooking.push({value: time.id, label: dayjs(time.time).format('hh:mm A')})
         }
       });
       setEmptyBooking(emptyBooking)
@@ -93,8 +96,24 @@ export function ListField({ date, setDate, loading, setLoading }: ListFieldProps
     setDate(newDate)
   }
 
-  const listItem = bookings.map((booking: { id: number; time: Date; status: String; ownerName: String | undefined; phone: String | undefined; dogName: String | undefined; dogBread: String | undefined; }) =>
-    <ItemListField key={String(booking.id)} id={booking.id} time={dayjs(booking.time).format('hh:mm A')} status={booking.status} ownerName={booking.ownerName} phone={booking.phone} dogName={booking.dogName} dogBread={booking.dogBread} loadingMenuItem={loadingMenuItem} setLoadingMenuItem={(value) => setLoadingMenuItem(value)} deleteRow={(id)=>handleDelete(id) } />
+  const listItem = bookings.map((booking: any) =>
+    <ItemListField 
+      key={String(booking.id)} 
+      id={booking.id} 
+      time={dayjs(booking.time).format('hh:mm A')} 
+      status={booking.status} 
+      ownerName={booking.status.includes('offered') ? Object(booking.offering)['owner']: (booking.dog == null ? "" : booking.dog.Owner.name)} 
+      phone={booking.status.includes('offered') ? Object(booking.offering)['phone'] : (booking.dog == null ? "" : booking.dog.Owner.phoneOne)} 
+      dogName={booking.dog == null ? "" : booking.dog.name} 
+      dogBread={booking.dog == null ? "" : booking.dog.breed} 
+      loadingMenuItem={loadingMenuItem} 
+      setLoadingMenuItem={(value) => setLoadingMenuItem(value)} 
+      deleteRow={(id)=>handleDelete(id) } 
+      listTimes={emptyBooking}
+      createRowOffered={(values) => handleOfferedConfirmedCustomer(values)}
+      finishRowBooking={(values) => handleFinishRowBooking(values)}
+      cancelBookingRow={(id) => handleCancel(id)}
+      />
   )
 
   const handleCreateNewBooking = (values: any) => {
@@ -171,8 +190,151 @@ export function ListField({ date, setDate, loading, setLoading }: ListFieldProps
     }
   }
 
-  function handleCreateNewDogAndCustomer() {
+  function handleCancel(id: number) {
+    try {
+      setLoading(true)
+      api.put('booking/cancel', {}, {
+        params: {
+          id,
+        },
+        headers: {
+          Authorization: getToken()
+        }
+      }).then(response => {
+        toast.success(`Appointment cancelled`, { position: "top-center", autoClose: 1000, })
+        getBookingFromDate()
+        setLoading(false)
+      }).catch((err: AxiosError) => {
+        const data = err.response?.data as { message: string }
+        toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
+      })
+    } catch (e) {
+      toast.error(`Unidentified error`, { position: "top-center", autoClose: 5000, })
+    }
+  }
 
+  function handleCreateNewDogAndCustomer(ownerDog:any) {
+    try {
+      setLoading(true)
+      console.log('handleCreateNewDogAndCustomer')
+      console.log(ownerDog)
+      api.post('booking/newCustomer', ownerDog, {
+        headers: {
+          Authorization: getToken()
+        }
+      }).then(response => {
+        toast.success(`Appointment created`, { position: "top-center", autoClose: 1000, })
+        getBookingFromDate()
+        setLoading(false)
+      }).catch((err: AxiosError) => {
+        console.log(err)
+        const data = err.response?.data as { message: string }
+        toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
+      })
+    } catch (e) {
+      toast.error(`Unidentified error`, { position: "top-center", autoClose: 5000, })
+    }
+  }
+
+  function handleCreateExistedDogAndCustomer(ownerDog: any) {
+    try {
+      setLoading(true)
+      console.log('handleCreateExistedDogAndCustomer')
+      console.log(ownerDog)
+      api.post('booking/existedCustomer', ownerDog, {
+        headers: {
+          Authorization: getToken()
+        }
+      }).then(response => {
+        toast.success(`Appointment created`, { position: "top-center", autoClose: 1000, })
+        getBookingFromDate()
+        setLoading(false)
+      }).catch((err: AxiosError) => {
+        console.log(err)
+        const data = err.response?.data as { message: string }
+        toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
+      })
+    } catch (e) {
+      toast.error(`Unidentified error`, { position: "top-center", autoClose: 5000, })
+    }
+  }
+
+  function handleCreateOfferedCustomer(offeredTime: any) {
+    try {
+      setLoading(true)
+      console.log('handleCreateOfferedCustomer')
+      console.log(offeredTime)
+      api.post('booking/offering', offeredTime, {
+        headers: {
+          Authorization: getToken()
+        }
+      }).then(response => {
+        console.log('response')
+        console.log(response.data)
+        toast.success(`Offered created`, { position: "top-center", autoClose: 1000, })
+        getBookingFromDate()
+        setLoading(false)
+      }).catch((err: AxiosError) => {
+        console.log(err)
+        const data = err.response?.data as { message: string }
+        toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
+      })
+     setLoading(false)
+    } catch (e) {
+      toast.error(`Unidentified error`, { position: "top-center", autoClose: 5000, })
+    }
+  }
+
+  function handleOfferedConfirmedCustomer(confirmedTime: any) {
+    try {
+      setLoading(true)
+      console.log('handleOfferedConfirmedCustomer')
+      console.log(confirmedTime)
+      api.post('booking/confirmedOffer', confirmedTime, {
+        headers: {
+          Authorization: getToken()
+        }
+      }).then(response => {
+        console.log('response')
+        console.log(response.data)
+        toast.success(`Booking created`, { position: "top-center", autoClose: 1000, })
+        getBookingFromDate()
+        setLoading(false)
+      }).catch((err: AxiosError) => {
+        console.log(err)
+        const data = err.response?.data as { message: string }
+        toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
+      })
+     setLoading(false)
+    } catch (e) {
+      toast.error(`Unidentified error`, { position: "top-center", autoClose: 5000, })
+    }
+  }
+
+  function handleFinishRowBooking(finishValues:any) {
+    try{
+      setLoading(true)
+      console.log('handleFinishRowBooking')
+      console.log(finishValues)
+      api.post('booking/finish', finishValues, {
+        headers: {
+          Authorization: getToken()
+        }
+      }).then(response => {
+        console.log('response')
+        console.log(response.data)
+        toast.success(`Booking finished`, { position: "top-center", autoClose: 1000, })
+        getBookingFromDate()
+        setLoading(false)
+      }).catch((err: AxiosError) => {
+        console.log(err)
+        const data = err.response?.data as { message: string }
+        toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
+      })
+     setLoading(false)
+    } catch (e) {
+      toast.error(`Unidentified error`, { position: "top-center", autoClose: 5000, })
+    }
   }
 
 
@@ -180,7 +342,7 @@ export function ListField({ date, setDate, loading, setLoading }: ListFieldProps
     <div className="border-neutral-800 md:p-10 pt-4 h-full flex flex-col items-center">
       <div className="flex flex-col justify-center items-center">
         <h3 className="font-medium text-4xl md:text-5xl lg:text-6xl text-pinkBackground font-borsok md:mr-6 text-center mt-2 md:mt-0">{date.toLocaleString(undefined, { weekday: "long", day: "numeric", month: 'long', year: 'numeric' })}</h3>
-        <FilterDateBooking date={date} setDate={setDate} loading={loading} setLoading={setLoading} onPreviousDate={onPreviousDate} onNextDate={onNextDate} addEventClick={addEventClick} addBookClick={addBookClick} addFillClick={() => setFillSpacesModalOpen(true)} addExistedClick={() => setCreateExistedModalOpen(true)} />
+        <FilterDateBooking date={date} setDate={setDate} loading={loading} setLoading={setLoading} onPreviousDate={onPreviousDate} onNextDate={onNextDate} addEventClick={addEventClick} addBookClick={addBookClick} addFillClick={() => setFillSpacesModalOpen(true)} addExistedClick={() => setCreateExistedModalOpen(true)} addOfferingClick={() => setCreateOfferingModalOpen(true)}/>
       </div>
       <div className="w-full md:px-4 my-4 flex justify-center">
         {loading ? <div className="w-full flex justify-center"><Loading /> </div> :
@@ -233,7 +395,7 @@ export function ListField({ date, setDate, loading, setLoading }: ListFieldProps
               getBookingFromDate()
               setCreateBookModalOpen(false)
             }} 
-            onSubmit={handleCreateNewDogAndCustomer} 
+            onSubmit={(values) => handleCreateNewDogAndCustomer(values)} 
             open={createBookModalOpen} 
             listTimes={emptyBooking}/>: null
         }
@@ -244,9 +406,21 @@ export function ListField({ date, setDate, loading, setLoading }: ListFieldProps
               getBookingFromDate()
               setCreateExistedModalOpen(false)
             }} 
-            onSubmit={handleCreateNewDogAndCustomer} 
+            onSubmit={(values) => handleCreateExistedDogAndCustomer(values)} 
             open={createExistedModalOpen} 
             listTimes={emptyBooking}/>: null
+        }
+        {createOfferingModalOpen ?
+          <CreateNewOffering 
+            key={"OfferingCustomerKey"}
+            onClose={() => {
+              getBookingFromDate()
+              setCreateOfferingModalOpen(false)
+            }} 
+            onSubmit={(values) => handleCreateOfferedCustomer(values)} 
+            open={createOfferingModalOpen} 
+            listTimes={emptyBooking}
+          />: null
         }
       </ThemeProvider>
 

@@ -119,8 +119,23 @@ model Booking {
   dayBooking DayBooking @relation(fields: [day_booking_id], references: [id])
   dog        Dog?       @relation(fields: [dog_id], references: [id])
   extract    Extract?
+  offering   Offering?
 
   @@map("bookings")
+}
+
+model Offering {
+  id      Int     @id @default(autoincrement())
+  owner   String?
+  phone   String?
+  ownerId Int?
+  type    String?
+  notes   String?
+
+  bookingId Int     @unique
+  booking   Booking @relation(fields: [bookingId], references: [id])
+
+  @@map("offering")
 }
 
 model User {

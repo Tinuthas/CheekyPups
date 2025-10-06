@@ -5,6 +5,8 @@ import NextIcon from '@mui/icons-material/SkipNextRounded';
 import PreviousIcon from '@mui/icons-material/SkipPreviousRounded';
 import AddCircleRoundedIcon from '@mui/icons-material/AddCircleRounded';
 import PersonSearchRoundedIcon from '@mui/icons-material/PersonSearchRounded';
+import LocalOfferIcon from '@mui/icons-material/LocalOffer';
+import ManageAccountsRoundedIcon from '@mui/icons-material/ManageAccountsRounded';
 import EditIcon from '@mui/icons-material/Edit';
 import FormatAlignJustifyIcon from '@mui/icons-material/FormatAlignJustify';
 import AccessAlarmRoundedIcon from '@mui/icons-material/AccessAlarmRounded';
@@ -22,9 +24,10 @@ interface FilterDateBookingProps {
   addBookClick: () => void
   addFillClick: () => void
   addExistedClick: () => void
+  addOfferingClick: () => void
 }
 
-export function FilterDateBooking({ date, setDate, loading, setLoading, onPreviousDate, onNextDate, addEventClick, addBookClick, addFillClick, addExistedClick }: FilterDateBookingProps) {
+export function FilterDateBooking({ date, setDate, loading, setLoading, onPreviousDate, onNextDate, addEventClick, addBookClick, addFillClick, addExistedClick, addOfferingClick }: FilterDateBookingProps) {
 
   return (
     <div className="md:flex justify-center items-center md:mt-4">
@@ -44,6 +47,12 @@ export function FilterDateBooking({ date, setDate, loading, setLoading, onPrevio
           </div>
           <div className="mx-3 " onClick={addFillClick}>
             <FormatAlignJustifyIcon sx={iconStyle}/>
+          </div>
+          <div className="mx-3 " onClick={addOfferingClick}>
+            <LocalOfferIcon sx={iconStyle}/>
+          </div>
+          <div className="mx-3 ">
+            <EditIcon sx={iconStyle}/>
           </div>
           <div className="mx-3 " onClick={addBookClick}>
             <AddCircleRoundedIcon sx={iconStyle}/>

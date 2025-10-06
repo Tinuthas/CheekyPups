@@ -4,7 +4,7 @@ import dayjs from "dayjs";
 
 interface CreateNewCustomerProps {
   onClose: () => void;
-  onSubmit: () => void;
+  onSubmit: (values:any) => void;
   open: boolean;
   listTimes: [{}]
 }
@@ -25,7 +25,7 @@ export const CreateNewCustomer = ({
   const [fourthDog, setFourthDog] = useState<{ time: {}|null, name: string, breed: string }>({ time: null, name: "", breed: "" })
   const [fifthDog, setFifthDog] = useState<{ time: {}|null, name: string, breed: string }>({ time: null, name: "", breed: "" })
   const [valueListTimes, setValueListTimes] = useState<[{}]>(listTimes)
-  const [typeOfferedField, setTypeOfferedField] = useState("C")
+  const [typeOfferedField, setTypeOfferedField] = useState("confirmed")
   const [notes, setNotes] = useState("")
 
   function removeItemArrayTimes(key:any, oldKey: any) {
@@ -46,6 +46,7 @@ export const CreateNewCustomer = ({
   return (
     <>
       <CreateNewModal
+        key={"CreatingNewCustomer"}
         columns={[
           {
             accessorKey: 'owner',
@@ -62,6 +63,7 @@ export const CreateNewCustomer = ({
             name: '',
             type: "text",
             value: phoneOwner,
+            required: typeOfferedField.startsWith('c') ? true : false,
             setValue: (value) => setPhoneOwner(value),
             gridXS: 12, gridMS: 6,
           },
@@ -132,8 +134,8 @@ export const CreateNewCustomer = ({
             gridXS: 12, gridMS: 4,
           },
           {
-            accessorKey: 'secondDogBread',
-            label: 'Dog Bread',
+            accessorKey: 'secondDogBreed',
+            label: 'Dog Breed',
             name: '',
             type: "text",
             noShow: !valueCheckbox.second,
@@ -178,8 +180,8 @@ export const CreateNewCustomer = ({
             gridXS: 12, gridMS: 4,
           },
           {
-            accessorKey: 'thirdDogBread',
-            label: 'Dog Bread',
+            accessorKey: 'thirdDogBreed',
+            label: 'Dog Breed',
             name: '',
             type: "text",
             noShow: !valueCheckbox.second || !valueCheckbox.third,
@@ -224,8 +226,8 @@ export const CreateNewCustomer = ({
             gridXS: 12, gridMS: 4,
           },
           {
-            accessorKey: 'fourthDogBread',
-            label: 'Dog Bread',
+            accessorKey: 'fourthDogBreed',
+            label: 'Dog Breed',
             name: '',
             type: "text",
             noShow: !valueCheckbox.second || !valueCheckbox.third || !valueCheckbox.fourth,
@@ -240,10 +242,7 @@ export const CreateNewCustomer = ({
             type: "radio",
             value: typeOfferedField,
             radioListValues: [
-              {key: "confirmed", value: "C", label: "Confirmed"},
-              {key: "offeredFB", value: "OFB", label: "Offered Meta"},
-              {key: "offeredWA", value: "OWA", label: "Offered WA"},
-              {key: "offeredText", value: "OT", label: "Offered Text/Call"}
+              {key: "confirmed", value: "confirmed", label: "Confirmed"},
             ],
             setValue: (value) => setTypeOfferedField(value),
             gridXS: 12, gridMS: 12,
@@ -259,7 +258,7 @@ export const CreateNewCustomer = ({
           }]}
         open={open}
         onClose={() => onClose()}
-        onSubmit={() => onSubmit()}
+        onSubmit={(values) => onSubmit(values)}
         grid={true}
       />
     </>

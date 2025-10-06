@@ -1,7 +1,8 @@
 import dayjs from "dayjs";
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { prisma } from "../../lib/prisma";
-import { $ref, BookingInput, FilterBookingDateInput, DateFillSpacesBodyInput, FilterSearchingInput } from "./Booking.schema";
+import { $ref, BookingInput, FilterBookingDateInput, DateFillSpacesBodyInput, FilterSearchingInput, BookingOfferingInput, BookingConfirmedOfferInput, BookingCreateNewCustomer, BookingCreateExistedCustomer, BookingFinishInput } from "./Booking.schema";
+import { includes } from "lodash";
 
 
 export async function bookingRoutes(app: FastifyInstance) {
@@ -35,6 +36,45 @@ export async function bookingRoutes(app: FastifyInstance) {
     }, getSearchExistedHandle)
 
   app.delete('/', { preHandler: [app.authenticate] }, deleteBookingHandler)
+
+  app.put('/cancel', { preHandler: [app.authenticate] }, cancelBookingHandler)
+
+  app.post('/newCustomer', {
+    schema: {
+      body: $ref('createBookingNewCustomer'),
+    },
+    preHandler: [app.authenticate]
+  }, addBookingNewCustomerHandle)
+
+  app.post('/existedCustomer', {
+    schema: {
+      body: $ref('createBookingExistedCustomer'),
+    },
+    preHandler: [app.authenticate]
+  }, addBookingExistedCustomerHandle)
+
+  app.post('/offering', {
+    schema: {
+      body: $ref('createBookingOffering'),
+    },
+    preHandler: [app.authenticate]
+  }, addBookingOfferingHandle)
+
+  app.post('/confirmedOffer', {
+    schema: {
+      body: $ref('createBookingConfirmedOffer'),
+    },
+    preHandler: [app.authenticate]
+  }, addBookingConfirmedOfferHandle)
+
+  app.post('/finish', {
+    schema: {
+      body: $ref('createBookingFinish'),
+    },
+    preHandler: [app.authenticate]
+  }, addBookingFinishCustomerHandle)
+
+  
 }
 
 async function getBookingByDate(request: FastifyRequest<{ Querystring: FilterBookingDateInput }>, reply: FastifyReply) {
@@ -55,6 +95,32 @@ async function getBookingsDate(input: FilterBookingDateInput) {
     where: {
       dayBooking: {
         date: parsedDate
+      }
+    },
+    select: {
+      id: true,
+      time: true,
+      status: true,
+      dog: {
+        select: {
+          id: true,
+          name: true,
+          breed: true,
+          Owner: {
+            select: {
+              id: true,
+              name: true,
+              phoneOne: true
+            }
+          }
+        }
+      },
+      offering: {
+        select: {
+          ownerId: true,
+          owner: true,
+          phone: true,
+        }
       }
     },
     orderBy: {
@@ -189,13 +255,42 @@ async function deleteBookingHandler(request: FastifyRequest<{ Querystring: { id:
 
 async function deleteBooking(id: number) {
 
-  const deleted = await prisma.booking.delete({
-    where: {
-      id: Number(id)
-    },
+  const booking = await prisma.booking.findUnique({
+    where: {id: Number(id)},
+    include: {
+      offering: true
+    }
   })
+
+  if(booking?.offering != null) {
+    await prisma.offering.delete({where: {id: booking.offering.id}})
+  }
+
+  const deleted = await prisma.booking.delete({where: { id: Number(id) }})
   return deleted
 }
+
+async function cancelBookingHandler(request: FastifyRequest<{ Querystring: { id: number } }>, reply: FastifyReply) {
+  try {
+    return await cancelBooking(request.query.id)
+  } catch (err) {
+    console.log(err)
+    reply.code(400).send('Error in cancel booking')
+  }
+}
+
+async function cancelBooking(id: number) {
+
+  const booking = await prisma.booking.update({
+    where: {id: Number(id)},
+    data: {
+      status: 'cancelled'
+    }
+  })
+
+  return booking
+}
+
 
 async function getSearchExistedHandle(request: FastifyRequest<{Querystring: FilterSearchingInput}>, reply: FastifyReply) {
   try{
@@ -229,6 +324,7 @@ async function getSearchByName(name: string) {
       breed: true,
       Owner: {
         select: {
+          id: true,
           name: true,
           phoneOne: true,
           dogs: true
@@ -241,4 +337,303 @@ async function getSearchByName(name: string) {
   })
   return result
 }
+
+
+async function addBookingOfferingHandle(request: FastifyRequest<{ Body: BookingOfferingInput }>, reply: FastifyReply) {
+  try {
+    return await addBookingOffering(request.body)
+  } catch (err) {
+    console.log(err)
+    reply.code(400).send('Error in add a booking offer')
+  }
+}
+
+async function addBookingOffering(input: BookingOfferingInput) {
+  const { ownerId, owner, phone, typeOffered, notes, firstDogTime, secondDogTime, thirdDogTime, fourthDogTime } = input
+  
+  var offers = []
+  if(firstDogTime != null && firstDogTime != "")
+    offers.push(await creatingOffering(firstDogTime, typeOffered, owner, phone, ownerId, notes, typeOffered))
+  if(secondDogTime != null && secondDogTime != "")
+    offers.push(await creatingOffering(secondDogTime, typeOffered, owner, phone, ownerId, notes, typeOffered))
+  if(thirdDogTime != null && thirdDogTime != "")
+    offers.push(await creatingOffering(thirdDogTime, typeOffered, owner, phone, ownerId, notes, typeOffered))
+  if(fourthDogTime != null && fourthDogTime != "")
+    offers.push(await creatingOffering(fourthDogTime, typeOffered, owner, phone, ownerId, notes, typeOffered))
+  return offers
+}
+
+async function creatingOffering(time: string, status: string, owner: string | null, phone:string | null, ownerId:string | null, notes:string, type:string) {
+
+  let offering = await prisma.booking.update({
+    where: {
+      id: Number(time)
+    },
+    data: {
+      status,
+      offering: {
+        upsert: {
+          create: {
+            owner,
+            phone,
+            ownerId: Number(ownerId),
+            notes,
+            type
+          },
+          update: {
+            owner,
+            phone,
+            ownerId: Number(ownerId),
+            notes,
+            type
+          }
+        }
+      }
+    },
+  })
+  return offering
+}
+
+async function addBookingConfirmedOfferHandle(request: FastifyRequest<{ Body: BookingConfirmedOfferInput }>, reply: FastifyReply) {
+  try {
+    return await addBookingConfirmedOffer(request.body)
+  } catch (err) {
+    console.log(err)
+    reply.code(400).send('Error in confirming offer')
+  }
+}
+
+async function addBookingConfirmedOffer(input: BookingConfirmedOfferInput) {
+  const { bookingId, dogId, owner, phone, notes, firstDogTime, firstDogName, firstDogBreed } = input
+  
+  const bookingOffer = await prisma.booking.findUnique({where: {id: bookingId}, include: { offering: true}})
+
+  const dog = await prisma.dog.findUnique({where: {id: dogId == null || dogId == ""? 0 : Number(dogId)}, include: {Owner: true}})
+
+  const booking = await prisma.booking.update({
+    where: {id: bookingId},
+    data: {
+      status: 'confirmed',
+      dog: {
+        connectOrCreate: {
+          where: {
+            id: dog == null ? 0 : dog.id,
+          },
+          create: {
+            name: firstDogName,
+            breed: firstDogBreed,
+            Owner: {
+              connectOrCreate: {
+                where: {
+                  id: dog == null ? 0 : dog.Owner.id,
+                },
+                create: {
+                  name: owner,
+                  phoneOne: phone,
+                  notes: notes,
+                  type: 'G'
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    include: {
+      dog: {
+        include: 
+        {
+          Owner: true,
+        }
+      }
+    }
+  })
+
+  await prisma.offering.update({
+    where: {id: bookingOffer?.offering?.id},
+    data: {
+      ownerId: booking.dog?.Owner.id
+    }
+  })
+
+  return booking
+}
+
+async function addBookingNewCustomerHandle(request: FastifyRequest<{ Body: BookingCreateNewCustomer }>, reply: FastifyReply) {
+  try {
+    return await addBookingNewCustomer(request.body)
+  } catch (err) {
+    console.log(err)
+    reply.code(400).send('Error in creating new booking and owner')
+  }
+}
+
+async function addBookingNewCustomer(input: BookingCreateNewCustomer) {
+  const {owner, phone, notes, firstDogTime, firstDogName, firstDogBreed, secondDogTime, secondDogName, secondDogBreed, thirdDogTime, thirdDogName, thirdDogBreed, fourthDogTime, fourthDogName, fourthDogBreed } = input
+  var listBooking = []
+  const firstDog:any = await addBookingNewCustomerUpdate(0, owner, phone, notes, firstDogTime, firstDogName, firstDogBreed)
+  listBooking.push(firstDog)
+  if(secondDogTime != null && secondDogTime != "")
+    listBooking.push(await addBookingNewCustomerUpdate(firstDog.dog?.Owner.id, owner, phone, notes, secondDogTime, String(secondDogName), String(secondDogBreed)))
+  if(thirdDogTime != null && thirdDogTime != "")
+    listBooking.push(await addBookingNewCustomerUpdate(firstDog.dog?.Owner.id, owner, phone, notes, thirdDogTime, String(thirdDogName), String(thirdDogBreed)))
+  if(fourthDogTime != null && fourthDogTime != "")
+    listBooking.push(await addBookingNewCustomerUpdate(firstDog.dog?.Owner.id, owner, phone, notes, fourthDogTime, String(fourthDogName), String(fourthDogBreed)))
+
+  return listBooking
+}
+
+async function addBookingNewCustomerUpdate(ownerId: number, owner: string, phone:string, notes:string|null, dogTime:string, dogName:string, dogBreed:string) {
+  
+  const booking = await prisma.booking.update({
+    where: {id: Number(dogTime)},
+    data: {
+      status: 'confirmed',
+      dog: {
+        create: {
+          name: dogName,
+          breed: dogBreed,
+          Owner: {
+            connectOrCreate: {
+              where: {
+                id: ownerId
+              },
+              create: {
+                name: owner,
+                phoneOne: phone, 
+                notes: notes,
+                type: 'G'
+              }
+            }
+          }
+        }
+      }
+    },
+    include: {
+      dog: {
+        include: {
+          Owner: true
+        }
+      }
+    }
+  })
+
+  return booking
+}
+
+async function addBookingExistedCustomerHandle(request: FastifyRequest<{ Body: BookingCreateExistedCustomer }>, reply: FastifyReply) {
+  try {
+    return await addBookingExistedCustomer(request.body)
+  } catch (err) {
+    console.log(err)
+    reply.code(400).send('Error in creating new booking with existed owner')
+  }
+}
+
+async function addBookingExistedCustomer(input: BookingCreateExistedCustomer) {
+  const { notes, firstDogTime, firstDogId, secondDogTime, secondDogId, thirdDogTime, thirdDogId, fourthDogTime, fourthDogId } = input
+
+  var listBooking = []
+  listBooking.push(await addBookingExitedCustomerUpdate(firstDogId, firstDogTime))
+  if(secondDogId!= null && secondDogId!= 0)
+    listBooking.push(await addBookingExitedCustomerUpdate(secondDogId, Number(secondDogTime)))
+  if(thirdDogId!= null && thirdDogId!= 0)
+    listBooking.push(await addBookingExitedCustomerUpdate(thirdDogId, Number(thirdDogTime)))
+  if(fourthDogId!= null && fourthDogId!= 0)
+    listBooking.push(await addBookingExitedCustomerUpdate(fourthDogId, Number(fourthDogTime)))
+
+  await prisma.owner.update({
+    where: {
+      id: listBooking[0].dog?.Owner.id
+    },
+    data: {
+      notes: notes
+    }
+  })
+
+  return listBooking
+}
+
+async function addBookingExitedCustomerUpdate(dogId: number, timeId: number) {
+
+  const booking = await prisma.booking.update({
+    where: {id: timeId},
+    data: {
+      status: 'confirmed',
+      dog: {
+        connect: {
+          id: dogId,
+        },
+      },
+    },
+    include: {
+      dog: {
+        include: {
+          Owner: true
+        }
+      }
+    }
+  })
+
+  return booking
+}
+
+
+async function addBookingFinishCustomerHandle(request: FastifyRequest<{ Body: BookingFinishInput }>, reply: FastifyReply) {
+  try {
+    return await addBookingFinishCustomer(request.body)
+  } catch (err) {
+    console.log(err)
+    reply.code(400).send('Error in finishing booking')
+  }
+}
+
+async function addBookingFinishCustomer(input: BookingFinishInput) {
+  const { bookingId, notes, salesValue, paidValue, typePaid} = input
+
+  const bookingOwner = await prisma.booking.findUnique({
+    where: {
+      id: bookingId,
+    },
+    include: {
+      dog: {
+        include: {
+          Owner: true
+        }
+      }
+    }
+  })
+
+  if(bookingOwner == null) {
+    throw new Error('Owner not found in booking')
+  }
+
+  const booking = await prisma.booking.update({
+    where: {
+      id: bookingId
+    },
+    data: {
+      status: 'done',
+      extract: {
+        create: {
+          value: salesValue,
+          paidValue: paidValue,
+          totalValue: salesValue - paidValue,
+          done: true,
+          type: typePaid,
+          description: notes,
+          date: bookingOwner.time,
+          Owner: {
+            connect: {
+              id: bookingOwner.dog?.Owner.id
+            }
+          }
+        }
+      }
+    }
+  })
+
+  return booking
+}
+
 

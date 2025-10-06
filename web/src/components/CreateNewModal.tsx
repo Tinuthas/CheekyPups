@@ -10,15 +10,15 @@ export interface ColumnHeader {
   accessorKey: string,
   type: string,
   value?: any,
-  setValue?(value:any):void,
+  setValue?(value: any): void,
   required?: boolean,
   noShow?: boolean,
-  noEdit?:boolean,
+  noEdit?: boolean,
   getDataSelect?: (inputValue: string) => Promise<any>,
-  setLocalStatus?(status:boolean):void,
-  radioListValues?:Array<{key:string, value:string, label:string}>
-  gridXS?:number,
-  gridMS?:number,
+  setLocalStatus?(status: boolean): void,
+  radioListValues?: Array<{ key: string, value: string, label: string }>
+  gridXS?: number,
+  gridMS?: number,
 }
 
 interface CreateModalProps {
@@ -40,10 +40,10 @@ export const CreateNewModal = ({
 
 
   const emptyValues = () =>
-  columns.reduce((acc, column) => {
-    acc[column.accessorKey ?? ''] = column.value ?? '';
-    return acc;
-  }, {} as any)
+    columns.reduce((acc, column) => {
+      acc[column.accessorKey ?? ''] = column.value ?? '';
+      return acc;
+    }, {} as any)
 
   /*const initialValues = columns.reduce((acc, column) => {
     acc[column.accessorKey ?? ''] = column.value ?? '';
@@ -51,7 +51,7 @@ export const CreateNewModal = ({
   }, {} as any)*/
 
   const [values, setValues] = useState<any>(emptyValues);
-  
+
   const [selectInput, setSelectInput] = useState<any>({})
 
   const handleClose = () => {
@@ -66,67 +66,72 @@ export const CreateNewModal = ({
     var validationRequired = false
     var validationDate = false
     var validationTime = false
-    console.log(Object.entries(values))
+    console.log('handle submit')
     console.log(columns)
+    var entries = Object.entries(values)
+    console.log(entries)
 
+   
 
-    Object.entries(values).forEach((element:any, index) => {
+    Object.entries(values).forEach((element: any, index) => {
       console.log(element[1])
       console.log(columns[index])
-      if(columns[index] != null){
-        if(columns[index].type.includes('checkbox')){
-          if(values[element[1]] == undefined) 
+      if (columns[index] != null) {
+        if (columns[index].type.includes('checkbox')) {
+          if (values[element[1]] == undefined)
             element[1] = false
         }
-        if(columns[index].type.includes('radio')){
-          if(values[element[1]] == undefined) 
+        if (columns[index].type.includes('radio')) {
+          if (values[element[1]] == undefined)
             element[1] = false
         }
-        if(columns[index].noShow == null || columns[index].noShow != true){
-          if(columns[index].required == true) {
-            if(validateRequired(element[1]) == false)
-              validationRequired = true
-          }
+
+        if (columns[index].type.includes('email')) {
+          if (validateEmail(element[1]) == null)
+            validationEmail = true
         }
-        if(columns[index].type.includes('email')){
-          if(validateEmail(element[1]) == null) 
-          validationEmail = true
-        }
-        if(columns[index].value != undefined) {
+        if (columns[index].value != undefined) {
           values[element[0]] = columns[index].value
         }
-        if(columns[index].type.includes('date')){
-          if(element[1].length == 0) {
+        if (columns[index].type.includes('date')) {
+          if (element[1].length == 0) {
             values[element[0]] = null
-          }else{
+          } else {
             //values[element[0]] = element[1]
             values[element[0]] = dayjs(element[1]).format('DD/MM/YYYY')
           }
         }
-        if(columns[index].type.includes('time')){
+        if (columns[index].type.includes('time')) {
           console.log(element[1])
-          if(element[1].length == 0) {
+          if (element[1].length == 0) {
             values[element[0]] = null
-          }else{
+          } else {
             values[element[0]] = dayjs(element[1]).format('HH:mm')
           }
         }
-        
+
+        if (columns[index].noShow == null || columns[index].noShow != true) {
+          if (columns[index].required == true) {
+            if (validateRequired(element[1]) == false && validateRequired(columns[index].value) == false)
+              validationRequired = true
+          }
+        }
+
       }
     });
-    if(validationRequired) {
-      toast.error(`You need to fill some fields`, {position: 'top-center', autoClose: 2000,});
-      toast.error(`${JSON.stringify(values)}`, {position: 'top-center', autoClose: 10000,});
-    }else if(validationEmail) {
-      toast.error("Incorrect Email Field", {position: 'top-center', autoClose: 2000,});
-    }else if(validationDate) {
-      toast.error("Incorrect Date Field", {position: 'top-center', autoClose: 2000,});
-    }else if(validationTime) {
-      toast.error("Incorrect Time Field", {position: 'top-center', autoClose: 2000,});
-    }else{
+    if (validationRequired) {
+      toast.error(`You need to fill some fields`, { position: 'top-center', autoClose: 2000, });
+      toast.error(`${JSON.stringify(values)}`, { position: 'top-center', autoClose: 10000, });
+    } else if (validationEmail) {
+      toast.error("Incorrect Email Field", { position: 'top-center', autoClose: 2000, });
+    } else if (validationDate) {
+      toast.error("Incorrect Date Field", { position: 'top-center', autoClose: 2000, });
+    } else if (validationTime) {
+      toast.error("Incorrect Time Field", { position: 'top-center', autoClose: 2000, });
+    } else {
 
       const valuesData = { ...values };
-      Object.entries(selectInput).forEach((element:any, index) => {
+      Object.entries(selectInput).forEach((element: any, index) => {
         values[element[0]] = element[1]
       })
       onSubmit(values, valuesData);
@@ -134,9 +139,9 @@ export const CreateNewModal = ({
     }
   };
 
-  function onChangeValuesCheck(key:any, value:any) {
-    console.log({[key]: value})
-    setValues({ ...values, [key]: value})
+  function onChangeValuesCheck(key: any, value: any) {
+    console.log({ [key]: value })
+    setValues({ ...values, [key]: value })
   }
 
   return (
@@ -146,7 +151,7 @@ export const CreateNewModal = ({
           width: "100%",
           margin: "auto",
           //minWidth: {sm: '360px', md: '400px' },
-          maxWidth: {md: '550px', lg: '700px' },  // Set your width here
+          maxWidth: { md: '550px', lg: '700px' },  // Set your width here
           //maxWidth: "500px",  // Set your width here
         },
       },
@@ -155,35 +160,35 @@ export const CreateNewModal = ({
       <DialogContent>
         <form onSubmit={(e) => e.preventDefault()}>
           {grid != null && grid == true ?
-            <Grid 
-              container 
+            <Grid
+              container
               spacing={2}
-              style={{width: '100%'}}
-              sx={{width: '100%', margin: '0px', paddingRight: '16px'}}
-              >
+              style={{ width: '100%' }}
+              sx={{ width: '100%', margin: '0px', paddingRight: '16px' }}
+            >
               {columns.map((column) => (
                 column.noShow ? null :
-                <Grid key={column.accessorKey} item xs={column.gridXS == null ? 12 : column.gridXS} md={column.gridMS == null ? 6 : column.gridMS}>
-                  <InputLabel 
-                    key={column.accessorKey}
-                    onChange={(e) => onChangeValuesCheck(e.target.name, e.target.value) } 
-                    placeholder={column.name} 
-                    type={column.type} 
-                    labelName={column.label} 
-                    accessorKey={column.accessorKey}
-                    onSelect={(key, value) => setSelectInput({ ...selectInput, [key]: value })}
-                    onChangeValue={(key, value) => onChangeValuesCheck(key, value)}
-                    getData={column.getDataSelect}
-                    value={column.value}
-                    setValue={column.setValue}
-                    setLocalStatus={column.setLocalStatus}
-                    radioListValues={column.radioListValues}
-                    noEdit={column.noEdit}
-                  />
-                </Grid>
+                  <Grid key={column.accessorKey} item xs={column.gridXS == null ? 12 : column.gridXS} md={column.gridMS == null ? 6 : column.gridMS}>
+                    <InputLabel
+                      key={column.accessorKey}
+                      onChange={(e) => onChangeValuesCheck(e.target.name, e.target.value)}
+                      placeholder={column.name}
+                      type={column.type}
+                      labelName={column.label}
+                      accessorKey={column.accessorKey}
+                      onSelect={(key, value) => setSelectInput({ ...selectInput, [key]: value })}
+                      onChangeValue={(key, value) => onChangeValuesCheck(key, value)}
+                      getData={column.getDataSelect}
+                      value={column.value}
+                      setValue={column.setValue}
+                      setLocalStatus={column.setLocalStatus}
+                      radioListValues={column.radioListValues}
+                      noEdit={column.noEdit}
+                    />
+                  </Grid>
               ))}
             </Grid>
-          :
+            :
             <Stack
               sx={{
                 width: '100%',
@@ -192,21 +197,21 @@ export const CreateNewModal = ({
               }}>
               {columns.map((column) => (
                 column.noShow ? null :
-                <InputLabel 
-                  key={column.accessorKey}
-                  onChange={(e) => onChangeValuesCheck(e.target.name, e.target.value) } 
-                  placeholder={column.name} 
-                  type={column.type} 
-                  labelName={column.label} 
-                  accessorKey={column.accessorKey}
-                  onSelect={(key, value) => setSelectInput({ ...selectInput, [key]: value })}
-                  onChangeValue={(key, value) => onChangeValuesCheck(key, value)}
-                  getData={column.getDataSelect}
-                  value={column.value}
-                  setValue={column.setValue}
-                  setLocalStatus={column.setLocalStatus}
-                  radioListValues={column.radioListValues}
-                />
+                  <InputLabel
+                    key={column.accessorKey}
+                    onChange={(e) => onChangeValuesCheck(e.target.name, e.target.value)}
+                    placeholder={column.name}
+                    type={column.type}
+                    labelName={column.label}
+                    accessorKey={column.accessorKey}
+                    onSelect={(key, value) => setSelectInput({ ...selectInput, [key]: value })}
+                    onChangeValue={(key, value) => onChangeValuesCheck(key, value)}
+                    getData={column.getDataSelect}
+                    value={column.value}
+                    setValue={column.setValue}
+                    setLocalStatus={column.setLocalStatus}
+                    radioListValues={column.radioListValues}
+                  />
               ))}
             </Stack>
           }
@@ -222,7 +227,7 @@ export const CreateNewModal = ({
   );
 };
 
-const validateRequired = (value: string) =>  {
+const validateRequired = (value: string) => {
   return !!value.length
 }
 const validateEmail = (email: string) =>
