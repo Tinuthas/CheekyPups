@@ -104,13 +104,22 @@ async function getSearchByName(name:string) {
     where: {
       OR: [
         { name: { contains: name} },
-        { nickname: { contains: name } }
+        { nickname: { contains: name } },
+        { Owner: {
+          name: { contains: name}
+        }}
       ]
     },
     select: {
       id: true,
       name: true,
-      nickname: true
+      nickname: true,
+      Owner: {
+        select: {
+          name: true,
+          dogs: true
+        },
+      }
     },
     orderBy: {
       id: "desc",

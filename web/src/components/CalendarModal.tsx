@@ -122,7 +122,7 @@ export const CalendarModal = ({
                   label="Date Start"
                   value={startDate}
                   onChange={(newValue) => {
-                    setStartDate(newValue || new Date());
+                    setStartDate(dayjs(newValue).toDate() || new Date());
                   }}
                   inputFormat="DD/MM/YYYY"
                   renderInput={(params) => <TextField {...params}
@@ -135,7 +135,7 @@ export const CalendarModal = ({
                   label="Date End"
                   value={endDate}
                   onChange={(newValue) => {
-                    setEndDate(newValue || new Date());
+                    setEndDate(dayjs(newValue).toDate() || new Date());
                   }}
                   inputFormat="DD/MM/YYYY"
                   renderInput={(params) => <TextField {...params} />}

@@ -33,7 +33,6 @@ export function SelectInput({getData, onChangeSelect}:SelectInputProps) {
   });
 
 
-
   return(
     <AsyncSelect 
       cacheOptions 
@@ -41,7 +40,9 @@ export function SelectInput({getData, onChangeSelect}:SelectInputProps) {
       loadOptions={promiseOptions}
       onChange={handleChange}
       onBlur={handleBlue}
-      classNames={{ control: (state) => "block w-full h-10 mt-1 transition-all focus:outline-none",}}
+      styles={{ menuPortal: base => ({ ...base, color: '#525252' , zIndex: 9999 }) }}
+              menuPortalTarget={document.body} 
+      classNames={{ control: (state) => "flex w-full h-10 mt-1 transition-all focus:outline-none overflow-auto",}}
       theme={(theme) => ({
         ...theme,
         borderRadius: 4,

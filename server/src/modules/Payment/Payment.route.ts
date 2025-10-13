@@ -2,7 +2,7 @@ import { Decimal } from "@prisma/client/runtime";
 import dayjs from "dayjs";
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { prisma } from "../../lib/prisma";
-import { $ref, PaidOwnerInput, PayOwnerInput, TotalOwnerInput, UpdatePaymentInput } from "./Payment.schema";
+import { $ref, CreateNewTillInput, CreatePaymentOwnerAllInput, PaidOwnerInput, PayOwnerInput, TotalOwnerInput, UpdatePaymentInput } from "./Payment.schema";
 
 export async function paymentRoutes(app: FastifyInstance) {
 
@@ -63,6 +63,24 @@ export async function paymentRoutes(app: FastifyInstance) {
     }
   }, deletePaymentHandle)
 
+  app.post('/owner', {
+    schema: {
+      body: $ref('createPaymentOwnerAll'),
+    },
+    preHandler: [app.authenticate]
+  }, ownerPayingAllHandle)
+
+  app.get('/till', {
+    preHandler: [app.authenticate]
+  }, getLastTillChangesHandle)
+
+  app.post('/till', {
+    schema: {
+      body: $ref('createTillNewDate'),
+    },
+    preHandler: [app.authenticate]
+  }, creatingNewTillChangeHandle)
+
 }
 
 async function getAllPayments(request: FastifyRequest<{ Querystring: { all: boolean, done: boolean, startDate: string, endDate: string } }>, reply: FastifyReply) {
@@ -70,11 +88,11 @@ async function getAllPayments(request: FastifyRequest<{ Querystring: { all: bool
     const { all, done, startDate, endDate } = request.query
     const parsedDateStart = dayjs(startDate).toISOString()
     const parsedDateEnd = dayjs(endDate).toISOString()
-    if (all ) {
+    if (all) {
       return await getAllExtractsRole(parsedDateStart, parsedDateEnd)
-    } else if(done) {
+    } else if (done) {
       return await getAllExtractsByDoneDate(done, parsedDateStart, parsedDateEnd)
-    }else {
+    } else {
       return await getAllExtractsByDone(done)
     }
   } catch (err) {
@@ -189,9 +207,9 @@ async function getAllExtractByOwner(request: FastifyRequest<{ Querystring: { id:
     const parsedDateEnd = dayjs(endDate).toISOString()
     if (all) {
       return await getAllExtractByOwnerAll(id, parsedDateStart, parsedDateEnd)
-    } else if(done){
+    } else if (done) {
       return await getAllExtractByOwnerDoneDate(done, id, parsedDateStart, parsedDateEnd)
-    }else {
+    } else {
       return await getAllExtractByOwnerDone(done, id)
     }
 
@@ -218,49 +236,49 @@ async function getAllExtractByOwnerAll(id: number, startDate: string, endDate: s
 
 async function getAllExtractByOwnerDone(done: boolean, id: number) {
   const extracts = await prisma.extract.findMany({
-      where: {
-        ownerId: Number(id),
-        done,
-      },
-      orderBy: {
-        id: 'desc'
-      }
-    })
-    return await filterAllExtractByOwner(extracts)
+    where: {
+      ownerId: Number(id),
+      done,
+    },
+    orderBy: {
+      id: 'desc'
+    }
+  })
+  return await filterAllExtractByOwner(extracts)
 }
 
 async function getAllExtractByOwnerDoneDate(done: boolean, id: number, startDate: string, endDate: string) {
   const extracts = await prisma.extract.findMany({
-      where: {
-        ownerId: Number(id),
-        done,
-        date: {
-          lte: endDate,
-          gte: startDate
-        }
-      },
-      orderBy: {
-        id: 'desc'
+    where: {
+      ownerId: Number(id),
+      done,
+      date: {
+        lte: endDate,
+        gte: startDate
       }
-    })
-    console.log('extract')
-   
+    },
+    orderBy: {
+      id: 'desc'
+    }
+  })
+  console.log('extract')
+
   return await filterAllExtractByOwner(extracts)
 }
 
 async function filterAllExtractByOwner(extracts: any[]) {
   const filterExtracts = extracts.map(({ id, description, value, date, attendanceId, paidValue, totalValue, done, type }) => ({
-      id,
-      description,
-      value,
-      date: dayjs(date).format('DD/MM/YYYY HH:mm'),
-      attendanceId,
-      paidValue,
-      totalValue,
-      done,
-      type
-    }));
-    return filterExtracts
+    id,
+    description,
+    value,
+    date: dayjs(date).format('DD/MM/YYYY HH:mm'),
+    attendanceId,
+    paidValue,
+    totalValue,
+    done,
+    type
+  }));
+  return filterExtracts
 }
 
 async function getTotalHandle(request: FastifyRequest<{ Querystring: TotalOwnerInput }>, reply: FastifyReply) {
@@ -349,7 +367,11 @@ async function addValueExtract(input: PayOwnerInput) {
 }
 
 async function addValuePaidExtract(input: PaidOwnerInput, id: number) {
-  const { value, description, paidValue, done } = input
+  const { value, description, paidValue, done, typePaid } = input
+
+  if(paidValue < value) {
+    return new Error('Paid value needs to be bigger than the sales value')
+  }
 
   var date = dayjs().toISOString()
   const totalValue = value - paidValue;
@@ -364,9 +386,12 @@ async function addValuePaidExtract(input: PaidOwnerInput, id: number) {
       date,
       paidValue,
       totalValue,
-      done
+      done,
+      type: typePaid
     }
   })
+
+  await updateTillHandle('D', typePaid, value, paidValue)
   return extract
 }
 
@@ -395,4 +420,223 @@ async function deletePayment(id: number) {
     },
   })
   return deletePayment
+
+}
+
+
+async function ownerPayingAllHandle(request: FastifyRequest<{ Body: CreatePaymentOwnerAllInput }>, reply: FastifyReply) {
+  try {
+    return await ownerPayingAll(request.body)
+  } catch (err) {
+    console.log(err)
+    reply.code(400).send('Error in payment')
+  }
+}
+
+async function ownerPayingAll(input: CreatePaymentOwnerAllInput) {
+  const { ownerId, salesValue, paidValue, typePaid } = input
+
+  if(paidValue < salesValue) {
+    return new Error('Paid value needs to be bigger than the sales value')
+  }
+
+  const extracts = await prisma.extract.findMany({
+    where: {
+      ownerId: Number(ownerId),
+      done: false,
+    },
+    orderBy: {
+      id: 'asc'
+    }
+  })
+  var date = dayjs().toISOString()
+  var paidValues = paidValue
+  for (let index = 0; index < extracts.length; index++) {
+    if (Number(extracts[index].value) <= paidValues) {
+      if (extracts[index].attendanceId != null) {
+        await prisma.extract.update({
+          where: { id: extracts[index].id },
+          data: {
+            paidValue: extracts[index].value,
+            totalValue: 0,
+            done: true,
+            date,
+            type: typePaid,
+            attendance: {
+              connect: {
+                id: Number(extracts[index].attendanceId)
+              },
+              update: {
+                paid: true
+              }
+            },
+          }
+        })
+      } else if (extracts[index].bookingId != null) {
+        await prisma.extract.update({
+          where: { id: extracts[index].id },
+          data: {
+            paidValue: extracts[index].value,
+            totalValue: 0,
+            done: true,
+            date,
+            type: typePaid,
+            booking: {
+              connect: {
+                id: Number(extracts[index].bookingId)
+              },
+              update: {
+                status: 'done'
+              }
+            }
+          }
+        })
+      } else {
+        await prisma.extract.update({
+          where: { id: extracts[index].id },
+          data: {
+            paidValue: extracts[index].value,
+            totalValue: 0,
+            done: true,
+            date,
+            type: typePaid,
+          }
+        })
+      }
+      paidValues = paidValues - Number(extracts[index].value)
+    }
+  }
+  await updateTillHandle('D',typePaid, salesValue, paidValue)
+
+}
+
+
+async function getLastTillChangesHandle(request: FastifyRequest, reply: FastifyReply) {
+  try {
+    return await getLastTillChanges()
+  } catch (err) {
+    console.log(err)
+    reply.code(400).send('Error in getting last changes till')
+  }
+}
+
+async function getLastTillChanges() {
+  var lastDaycareChanges = await prisma.till.findMany({
+    where: {
+      type: 'D'
+    },
+    orderBy: {
+      id: 'desc',
+    },
+    take: 3,
+  })
+
+  var lastGroomingChanges = await prisma.till.findMany({
+    where: {
+      type: 'G'
+    },
+    orderBy: {
+      id: 'desc',
+    },
+    take: 3,
+  })
+
+  var lastAllChanges = await prisma.till.findMany({
+    orderBy: {
+      id: 'desc',
+    },
+    take: 100,
+  })
+
+  return {daycare: lastDaycareChanges, grooming: lastGroomingChanges, all: lastAllChanges}
+}
+
+async function creatingNewTillChangeHandle(request: FastifyRequest<{Body: CreateNewTillInput}>, reply: FastifyReply) {
+  try {
+    return await creatingNewTillChanges(request.body)
+  } catch (err) {
+    console.log(err)
+    reply.code(400).send('Error in creating new till change')
+  }
+}
+
+async function creatingNewTillChanges(input: CreateNewTillInput) {
+
+  const {newValue, description, type} = input
+  const tillChange = await prisma.till.create({
+    data: {
+      date: dayjs(new Date()).toISOString(),
+      value: newValue,
+      valueStarted: newValue,
+      valueCard: 0,
+      valueOther: 0,
+      description: description,
+      type: type
+    }
+  })
+
+  await prisma.till.findFirst({
+    orderBy: {
+      id: 'desc',
+    },
+  })
+
+  return tillChange
+}
+
+export async function updateTillHandle(typeTill:string, type:string, value:number, valuePaid:number) {
+  try{
+    /*if(type != 'CASH') {
+      if(valuePaid != value) {
+        throw new Error('Value Paid must be the same than the sales')
+      }
+    }*/
+
+      console.log('updating till')
+
+    const till = await prisma.till.findFirst({
+      where: {
+        type: typeTill,
+      },
+      orderBy: {
+        id: 'desc'
+      }
+    })
+
+    if(type == 'REV') {
+      await prisma.till.update({
+        where: {
+          id: till?.id
+        },
+        data: {
+          valueOther: (Number(till?.valueOther) + (valuePaid))
+        }
+      })
+    }
+
+    if(type == 'CARD') {
+      await prisma.till.update({
+        where: {
+          id: till?.id
+        },
+        data: {
+          valueCard: (Number(till?.valueCard) + (valuePaid))
+        }
+      })
+    }
+
+    if(type == 'CASH') {
+      await prisma.till.update({
+        where: {
+          id: till?.id
+        },
+        data: {
+          value: (Number(till?.value)+(valuePaid))  + ((value) - (valuePaid))
+        }
+      })
+    }
+
+  }catch(e) {
+    throw new Error('Error in updating till')
+  }
 }

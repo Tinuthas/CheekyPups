@@ -51,9 +51,11 @@ interface DataTableProps {
   deleteRow?:(id:number) => Promise<any>,
   searchCalendar?:(data:Array<any>) => Promise<any>,
   calendarData?:Array<any>,
+  disableActions?:boolean,
+  titleCreate:string,
 }
 
-const DataTableCustom = ({headers, data, setData, createData, title, updateRow, createRow, deleteRow, hideColumns, searchCalendar, calendarData}: DataTableProps) => {
+const DataTableCustom = ({headers, data, setData, createData, title, updateRow, createRow, deleteRow, hideColumns, searchCalendar, calendarData, disableActions, titleCreate}: DataTableProps) => {
 
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [calendarModalOpen, setCalendarModalOpen] = useState(false);
@@ -121,7 +123,7 @@ const DataTableCustom = ({headers, data, setData, createData, title, updateRow, 
         columns={headers as MRT_ColumnDef<(typeof data)[0]>[]}
         data={data}
         enableColumnResizing
-        enableEditing
+        enableEditing={disableActions == undefined ? true : !disableActions}
         enableColumnActions={false}
         onEditingRowSave={handleSaveRowEdits}
         onEditingRowCancel={handleCancelRowEdits}
@@ -190,6 +192,7 @@ const DataTableCustom = ({headers, data, setData, createData, title, updateRow, 
           open={createModalOpen}
           onClose={() => setCreateModalOpen(false)}
           onSubmit={handleCreateNewRow}
+          title={titleCreate}
         /> : null
       }
       {calendarModalOpen ? 

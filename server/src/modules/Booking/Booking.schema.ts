@@ -76,6 +76,7 @@ const createBookingFinish = z.object({
   notes: z.string(),
   typePaid: z.string(),
   salesValue: z.number(),
+  paid: z.boolean(),
   paidValue: z.number(),
 })
 

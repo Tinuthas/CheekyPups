@@ -14,6 +14,8 @@ import { Payments } from './pages/Payments'
 import { Booking } from './pages/Booking'
 import dayjs from 'dayjs';
 import { Users } from './pages/Users';
+import { DaycareSummary } from './pages/DaycareSummary';
+import { TillMoney } from './pages/TillMoney';
 
 function App() {
 
@@ -29,6 +31,8 @@ function App() {
           <Route path="payments" element={<Payments/>}/>
           <Route path="booking" element={<Booking/>}/>
           <Route path="users" element={<Users/>}/>
+          <Route path='DaycareSummary' element={<DaycareSummary />} />
+          <Route path='TillMoney' element={<TillMoney />} />
         </Route>
         <Route path='app/login' element={<Login/>} />
         

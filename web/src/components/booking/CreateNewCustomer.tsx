@@ -33,7 +33,7 @@ export const CreateNewCustomer = ({
       if(oldKey != null) {
         newList.push(oldKey)
       }
-      var index: number = newList.findIndex((i:any) => i.id === key.id);
+      var index: number = newList.findIndex((i:any) => i.value === key.value);
       console.log('index')
       console.log(index)
       if (index > -1) {
@@ -47,6 +47,7 @@ export const CreateNewCustomer = ({
     <>
       <CreateNewModal
         key={"CreatingNewCustomer"}
+        title="Booking New Customer"
         columns={[
           {
             accessorKey: 'owner',

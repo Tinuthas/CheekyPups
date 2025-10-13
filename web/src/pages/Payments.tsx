@@ -8,6 +8,9 @@ import { api, getToken } from "../lib/axios"
 import { Loading } from "../components/Loading";
 import { ButtonGroupList } from "../components/ButtonGroupList"
 import dayjs from "dayjs"
+import PaidIcon from '@mui/icons-material/Paid';
+import { theme, iconStyle, iconSmallStyle } from "../lib/theme";
+import { PaymentAllModal } from "../components/payment/PaymentAllModal"
 
 const selectPromise = (inputValue: string) => new Promise<any[]>((resolve, reject) => {
   console.log('call select list')
@@ -33,13 +36,14 @@ export function Payments() {
   const [extracts, setExtracts] = useState([{}])
   const [openIndex, setOpenIndex] = useState(-1)
   const [openListModal, setOpenListModal] = useState(false)
+  const [openPayingModal, setOpenPayingModal] = useState(false)
   const [loading, setLoading] = useState(false)
   const [loadingModal, setLoadingModal] = useState(false)
   const [searchButton, setSearchButton] = useState('O')
   const [endDate, setEndDate] = useState<Date>(dayjs().toDate());
   const [startDate, setStartDate] = useState<Date>(dayjs().subtract(1, 'month').toDate());
   const [selectDateType, setSelectDateType] = useState<string>('T')
-  
+
 
   useEffect(() => {
     handlePayments(searchButton)
@@ -56,10 +60,10 @@ export function Payments() {
     console.log(endDateParsed)
     api.get('payment', {
       params: {
-          all,
-          done,
-          startDate: startDateParsed,
-          endDate: endDateParsed
+        all,
+        done,
+        startDate: startDateParsed,
+        endDate: endDateParsed
       },
       headers: {
         Authorization: getToken()
@@ -160,8 +164,8 @@ export function Payments() {
     console.log('change calendar dates')
     console.log(data)
     const promise = new Promise((resolve, reject) => {
-        handlePayments(searchButton)
-        resolve("");
+      handlePayments(searchButton)
+      resolve("");
     });
     return promise
   }
@@ -216,7 +220,7 @@ export function Payments() {
       accessorKey: 'done',
       header: 'Done',
       size: 100,
-       Cell: ({ renderedCellValue, row }) => (
+      Cell: ({ renderedCellValue, row }) => (
         <>
           <span className="text-neutral-600 font-bold">{renderedCellValue ? 'X' : ''}</span>
         </>
@@ -237,11 +241,11 @@ export function Payments() {
     const endDateParsed = dayjs(endDate).toISOString()
     api.get('payment/extracts', {
       params: {
-          id,
-          all,
-          done,
-          startDate: startDateParsed,
-          endDate: endDateParsed
+        id,
+        all,
+        done,
+        startDate: startDateParsed,
+        endDate: endDateParsed
       },
       headers: {
         Authorization: getToken()
@@ -351,7 +355,31 @@ export function Payments() {
           }
         </div>
       )
-    },
+    }, {
+      accessorKey: 'action',
+      header: 'Actions',
+      size: 80,
+      Cell: ({ renderedCellValue, row }) => (
+        <>
+          <div className="w-full cursor-pointer text-center" onClick={() => {
+            console.log('clicked')
+            setOpenPayingModal(true)
+            setOpenIndex(row.original.id)
+          }}>
+            <PaidIcon sx={iconSmallStyle} />
+          </div>
+          {row.original.id == openIndex && openPayingModal ?
+            <PaymentAllModal
+              open={openPayingModal}
+              onClose={() => setOpenPayingModal(false)}
+              onSubmit={(values) => handlePayingAllRow(values)}
+              ownerDog={{ owner: row.original.name, dogs: row.original.dogsName, id: row.original.id, sales: row.original.totalValue }}
+            //name={row.original.name}
+            />
+            : null}
+        </>
+      )
+    }
   ]
 
   const columnHeadersPayment = [
@@ -366,7 +394,7 @@ export function Payments() {
     {
       accessorKey: 'value',
       label: 'Value',
-      name: 'Ex: 12.5',
+      name: '',
       type: "number",
       required: true,
     },
@@ -378,11 +406,33 @@ export function Payments() {
     },
   ]
 
-  
 
   function selectOrders(value: any) {
     setSearchButton(value)
     handlePayments(value)
+  }
+
+  function handlePayingAllRow(values: any) {
+    try {
+      setLoading(true)
+      api.post('payment/owner', values, {
+        headers: {
+          Authorization: getToken()
+        }
+      }).then(response => {
+        toast.success(`Payments done`, { position: "top-center", autoClose: 1000, })
+        handlePayments('O')
+        setLoading(false)
+      }).catch((err: AxiosError) => {
+        const data = err.response?.data as { message: string }
+        toast.error(`Unidentified error: ${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
+        setLoading(false)
+      })
+
+    } catch (e) {
+      toast.error(`Unidentified error`, { position: "top-center", autoClose: 5000, })
+    }
+
   }
 
   return (
@@ -400,9 +450,12 @@ export function Payments() {
               setData={(data) => setPayments(data)}
               title="Payments"
               createData={columnHeadersPayment}
+              hideColumns={searchButton != 'O' ? {action: false} : null}
               createRow={(data) => createNewRow(data)}
               searchCalendar={(data) => changeCalendarDates(data)}
               calendarData={[startDate, endDate, selectDateType]}
+              disableActions={true}
+              titleCreate="Add New Payment"
             />
           </div>
         </>

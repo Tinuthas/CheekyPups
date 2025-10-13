@@ -355,6 +355,7 @@ export function Dogs() {
           <div className="md:flex bg-white w-full mt-4 rounded">
             <DataTableCustom
               title='Dogs'
+              titleCreate='Add New Dog'
               data={dogs}
               headers={headers}
               createData={columnHeaders}

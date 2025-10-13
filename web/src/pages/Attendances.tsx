@@ -89,7 +89,7 @@ export function Attendances(){
             listDates['total'] = 0
             listDates['paid'] = 0 
             for (let i = 0; i < item.dates.length; i++) {
-              listDates[item.dates[i]] = item.paids[i] ? (item.typeDays[i] != 'HD' ? 'DP' : '½DP') : item.typeDays[i] != 'HD' ? 'D' : '½D'
+              listDates[item.dates[i]] = item.paids[i] ? (item.typeDays[i] != 'HD' ? 'DP' : 'D½P') : item.typeDays[i] != 'HD' ? 'D' : 'D½'
               dates.add(item.dates[i])
               listDates['total'] = listDates['total'] + 1
               listDates['paid'] = item.paids[i]? listDates['paid'] + 1 : listDates['paid']
@@ -110,17 +110,22 @@ export function Attendances(){
                 <>
                   {row?.original?.['dates'].length >= 5 ?
                     <div className="flex flex-row justify-center align-baseline">
-                      <div className="w-[5px] h-[20px] bg-purple-600 mr-2 rounded"></div>
-                      <span className="font-medium">{renderedCellValue }</span>
+                      <div className=" bg-purple-300 rounded-full py-1 px-3">
+                        <span className="font-medium">{renderedCellValue }</span>
+                      </div>
                     </div>
                   :row?.original?.['owner_dogs'] >= 2 ? 
                     <div className="flex flex-row justify-center align-baseline">
-                      <div className="w-[5px] h-[20px] bg-lime-500 mr-2 rounded"></div>
-                      <span className="font-medium">{renderedCellValue }</span>
+                      
+                      <div className=" bg-lime-300 rounded-full py-1 px-3">
+                        <span className="font-medium">{renderedCellValue }</span>
+                      </div>
                     </div>
                   : 
-                    <div>
-                      <span className="font-medium">{renderedCellValue }</span>
+                    <div className="flex flex-row justify-center align-baseline">
+                      <div className=" bg-stone-200 rounded-full py-1 px-3">
+                        <span className="font-medium">{renderedCellValue }</span>
+                      </div>
                     </div>
                   }
                 </>
@@ -156,7 +161,7 @@ export function Attendances(){
     console.log(values)
     console.log('paid')
     console.log(values.paid)
-    var newValues = {
+    /*var newValues = {
       dog_id: Number(values.dogId), 
       date: values.date, 
       typeDay: values.typeDay?.toUpperCase?.(), 
@@ -164,13 +169,33 @@ export function Attendances(){
       value: values.value, 
       typePaid: values.typePaid?.toUpperCase?.(),
       descriptionValue: values.descriptionValue
-    }
-    api.post('attendance', newValues, {
+    }*/
+    api.post('attendance', values, {
       headers: {
         Authorization: getToken()
       }
     }).then(response => {
-      toast.success(`Attedanted: ${values.dog}`, { position: "top-center", autoClose: 1000, })
+      toast.success(`Added!`, { position: "top-center", autoClose: 1000, })
+      clickSearchByDates()
+    }).catch((err: AxiosError) => {
+      console.log(err)
+      const data = err.response?.data as {message: string}
+      toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
+      throw new Error(`Unidentified error: ${data.message || err.response?.data || err.message}`);
+      setLoading(false)
+    })
+  };
+
+
+  const handleCreateNewWeekRow = (values: any) => {
+    setLoading(true)
+   
+    api.post('attendance/week', values, {
+      headers: {
+        Authorization: getToken()
+      }
+    }).then(response => {
+      toast.success(`Added!`, { position: "top-center", autoClose: 1000, })
       clickSearchByDates()
     }).catch((err: AxiosError) => {
       console.log(err)
@@ -202,6 +227,7 @@ export function Attendances(){
         columns={columns}
         marginTable={marginTable}
         handleCreateNewRow={handleCreateNewRow}
+        handleCreateNewWeekRow={handleCreateNewWeekRow}
         loading={loading}
       />
 

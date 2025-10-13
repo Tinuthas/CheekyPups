@@ -50,6 +50,7 @@ export const CreateNewOffering = ({
     <>
       <CreateNewModal
         key={"OfferingCreateModal"}
+        title="Add Offer Time"
         columns={[
           {
             accessorKey: 'searchBooking',

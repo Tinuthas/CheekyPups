@@ -37,7 +37,7 @@ export const CreateExistedCustomer = ({
     if (oldKey != null) {
       newList.push(oldKey)
     }
-    var index: number = newList.findIndex((i: any) => i.id === key.id);
+    var index: number = newList.findIndex((i: any) => i.value === key.value);
     console.log('index')
     console.log(index)
     if (index > -1) {
@@ -47,11 +47,8 @@ export const CreateExistedCustomer = ({
     setValueListTimes(newList)
   }
 
-  function removeItemArrayDogs(key: any) {
-    var newList = valueListDogs
+  function removeItemArrayDogs(newList:any, key: any) {
     console.log('remove item')
-    console.log(newList)
-    console.log(key)
     var index: number = newList.findIndex((i: any) => i.element.id === key.id);
     console.log('index')
     console.log(index)
@@ -65,6 +62,7 @@ export const CreateExistedCustomer = ({
     <>
       <CreateNewModal
         key={"ExistedCustomerKey"}
+        title="Booking Search Customer"
         columns={[
           {
             accessorKey: 'searchBooking',
@@ -93,11 +91,11 @@ export const CreateExistedCustomer = ({
               setPhoneOwner(value.element.Owner.phoneOne)
               setFirstDog({time: firstDog.time, name: value.element.name, breed: value.element.breed, dogId: value.element.id})
               var dogs = value.element.Owner.dogs
-              console.log(dogs)
+              var listDogs: { value: any; label: string; element: any; }[] = []
               dogs.forEach((dog:any) => {
-                valueListDogs.push({value: dog.id, label: `${dog.name} - ${dog.breed}`, element: dog})
+                listDogs.push({value: dog.id, label: `${dog.name} - ${dog.breed}`, element: dog})
               });
-              removeItemArrayDogs(value.element)
+              removeItemArrayDogs(listDogs, value.element)
             },
             gridXS: 12, gridMS: 12,
           },
@@ -187,7 +185,7 @@ export const CreateExistedCustomer = ({
             }),
             setValue: (value) => {
               setSecondDog({time: secondDog.time, name: value.element.name, breed: value.element.breed, dogId: value.element.id})
-              removeItemArrayDogs(value.element)
+              removeItemArrayDogs(valueListDogs, value.element)
             },
             gridXS: 12, gridMS: 12,
           },
@@ -260,7 +258,7 @@ export const CreateExistedCustomer = ({
             }),
             setValue: (value) => {
               setThirdDog({time: thirdDog.time, name: value.element.name, breed: value.element.breed, dogId: value.element.id})
-              removeItemArrayDogs(value.element)
+              removeItemArrayDogs(valueListDogs, value.element)
             },
             gridXS: 12, gridMS: 12,
           },
@@ -333,7 +331,7 @@ export const CreateExistedCustomer = ({
             }),
             setValue: (value) => {
               setFourthDog({time: fourthDog.time, name: value.element.name, breed: value.element.breed, dogId: value.element.id})
-              removeItemArrayDogs(value.element)
+              removeItemArrayDogs(valueListDogs, value.element)
             },
             gridXS: 12, gridMS: 12,
           },

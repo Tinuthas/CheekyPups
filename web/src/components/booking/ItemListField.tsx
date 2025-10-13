@@ -26,6 +26,7 @@ export interface ItemListFieldProps {
   dogBread?: string
   loadingMenuItem: number
   listTimes: [{}]
+  date:string
   deleteRow: (id: number) => void
   cancelBookingRow: (id: number) => void
   createRowOffered: (values: any) => void
@@ -33,7 +34,7 @@ export interface ItemListFieldProps {
   setLoadingMenuItem: (loading: number) => void
 }
 
-export function ItemListField({ id, time, status, ownerName, phone, dogName, dogBread, loadingMenuItem, listTimes, createRowOffered, setLoadingMenuItem, deleteRow, cancelBookingRow, finishRowBooking }: ItemListFieldProps) {
+export function ItemListField({ id, time, status, ownerName, phone, dogName, dogBread, loadingMenuItem, listTimes, createRowOffered, setLoadingMenuItem, deleteRow, cancelBookingRow, finishRowBooking, date }: ItemListFieldProps) {
 
   const [openDelete, setOpenDelete] = React.useState(false);
   const [createOfferedModalOpen, setCreateOfferedModalOpen] = React.useState(false);
@@ -75,7 +76,7 @@ export function ItemListField({ id, time, status, ownerName, phone, dogName, dog
                 : status.includes('offered') ?
                   <div className="bg-yellow-500 w-full h-full rounded-bl-xl rounded-tl-xl" />
                   : status.includes('done') ?
-                    <div className="bg-indigo-500 w-full h-full rounded-bl-xl rounded-tl-xl" />
+                    <div className="bg-cyan-500 w-full h-full rounded-bl-xl rounded-tl-xl" />
                     : null
           }
         </span>
@@ -177,6 +178,7 @@ export function ItemListField({ id, time, status, ownerName, phone, dogName, dog
                     id: id,
                     dogName: dogName != null && dogName != "" ? dogName : "",
                     breed: dogBread != null && dogBread != "" ? dogBread : "",
+                    date: date,
                   }} /> : null
               }
             </ThemeProvider>

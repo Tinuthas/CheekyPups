@@ -46,6 +46,7 @@ export const CreateConfirmedOffering = ({
   return (
     <>
       <CreateNewModal
+        title="Confirming Offer"
         key={"OfferingCreateModal"}
         columns={[
           {

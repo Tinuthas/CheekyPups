@@ -298,7 +298,7 @@ function ReturnMenuItemCustom({ renderedCellValue, row, item, onSubmit }: Return
         }]}
     >
       {renderedCellValue?.toString().toUpperCase().includes('P') ?
-        <span className="font-black text-green-600">{renderedCellValue.toString().toUpperCase().replace('P', '')}</span>
+        <span className="font-black  text-white bg-green-500 px-3 rounded-full ">{renderedCellValue.toString().toUpperCase().replace('P', '')}</span>
         : <span className="font-black text-stone-500">{renderedCellValue}</span>
       }
     </MenuItemCustom>

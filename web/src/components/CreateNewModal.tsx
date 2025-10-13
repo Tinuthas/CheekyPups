@@ -19,6 +19,7 @@ export interface ColumnHeader {
   radioListValues?: Array<{ key: string, value: string, label: string }>
   gridXS?: number,
   gridMS?: number,
+  marginGridTop?:string,
 }
 
 interface CreateModalProps {
@@ -26,6 +27,7 @@ interface CreateModalProps {
   onClose: () => void;
   onSubmit: (values: any, valuesData: any) => void;
   open: boolean;
+  title: string;
   grid?: boolean;
 }
 
@@ -36,6 +38,7 @@ export const CreateNewModal = ({
   onClose,
   onSubmit,
   grid,
+  title,
 }: CreateModalProps) => {
 
 
@@ -112,7 +115,7 @@ export const CreateNewModal = ({
 
         if (columns[index].noShow == null || columns[index].noShow != true) {
           if (columns[index].required == true) {
-            if (validateRequired(element[1]) == false && validateRequired(columns[index].value) == false)
+            if (validateRequired(element[1]) == false && (columns[index].value != undefined ? validateRequired(columns[index].value) == false : true))
               validationRequired = true
           }
         }
@@ -145,7 +148,7 @@ export const CreateNewModal = ({
   }
 
   return (
-    <Dialog open={open} sx={{
+    <Dialog open={open} scroll="paper" sx={{
       "& .MuiDialog-container": {
         "& .MuiPaper-root": {
           width: "100%",
@@ -156,7 +159,7 @@ export const CreateNewModal = ({
         },
       },
     }}>
-      <DialogTitle textAlign="center">Add</DialogTitle>
+      <DialogTitle textAlign="center">{title}</DialogTitle>
       <DialogContent>
         <form onSubmit={(e) => e.preventDefault()}>
           {grid != null && grid == true ?
@@ -168,7 +171,7 @@ export const CreateNewModal = ({
             >
               {columns.map((column) => (
                 column.noShow ? null :
-                  <Grid key={column.accessorKey} item xs={column.gridXS == null ? 12 : column.gridXS} md={column.gridMS == null ? 6 : column.gridMS}>
+                  <Grid key={column.accessorKey} item xs={column.gridXS == null ? 12 : column.gridXS} md={column.gridMS == null ? 6 : column.gridMS} sx={{'marginTop': {md: (column.marginGridTop == undefined  ? '0px' : column.marginGridTop)}}}>
                     <InputLabel
                       key={column.accessorKey}
                       onChange={(e) => onChangeValuesCheck(e.target.name, e.target.value)}
@@ -187,6 +190,8 @@ export const CreateNewModal = ({
                     />
                   </Grid>
               ))}
+              <Grid item xs={12} md={12}></Grid>
+              <Grid item xs={12} md={12}></Grid>
             </Grid>
             :
             <Stack

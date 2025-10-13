@@ -156,3 +156,16 @@ model Preferences {
 
   @@map("preferences")
 }
+
+model Till {
+  id           Int      @id @default(autoincrement())
+  date         DateTime
+  valueStarted Decimal
+  value        Decimal
+  valueCard    Decimal
+  valueOther   Decimal
+  description  String
+  type         String
+
+  @@map("till")
+}

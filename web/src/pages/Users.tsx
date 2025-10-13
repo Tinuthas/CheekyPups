@@ -269,6 +269,7 @@ export function Users() {
         <div className="md:flex bg-white w-full mt-4 rounded">
           <DataTableCustom 
             headers={headers} 
+            titleCreate="Add New User"
             data={users} 
             setData={(data) => setUsers(data)} 
             title="Users" 
@@ -280,6 +281,7 @@ export function Users() {
         </div>
           <div className="md:flex bg-white w-full mt-4 rounded">
             <DataTableCustom 
+              titleCreate="Add New Setting"
               headers={headersSettings} 
               data={settings} 
               setData={(data) => setSettings(data)} 

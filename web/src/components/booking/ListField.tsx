@@ -106,6 +106,7 @@ export function ListField({ date, setDate, loading, setLoading }: ListFieldProps
       phone={booking.status.includes('offered') ? Object(booking.offering)['phone'] : (booking.dog == null ? "" : booking.dog.Owner.phoneOne)} 
       dogName={booking.dog == null ? "" : booking.dog.name} 
       dogBread={booking.dog == null ? "" : booking.dog.breed} 
+      date={booking.time}
       loadingMenuItem={loadingMenuItem} 
       setLoadingMenuItem={(value) => setLoadingMenuItem(value)} 
       deleteRow={(id)=>handleDelete(id) } 
@@ -377,6 +378,7 @@ export function ListField({ date, setDate, loading, setLoading }: ListFieldProps
             open={createEventModalOpen}
             onClose={() => setCreateEventModalOpen(false)}
             onSubmit={handleCreateNewBooking}
+            title="Add New Time Space"
           /> : null
         }
         {

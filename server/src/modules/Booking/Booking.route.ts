@@ -3,6 +3,7 @@ import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { prisma } from "../../lib/prisma";
 import { $ref, BookingInput, FilterBookingDateInput, DateFillSpacesBodyInput, FilterSearchingInput, BookingOfferingInput, BookingConfirmedOfferInput, BookingCreateNewCustomer, BookingCreateExistedCustomer, BookingFinishInput } from "./Booking.schema";
 import { includes } from "lodash";
+import { updateTillHandle } from "../Payment/Payment.route";
 
 
 export async function bookingRoutes(app: FastifyInstance) {
@@ -589,7 +590,7 @@ async function addBookingFinishCustomerHandle(request: FastifyRequest<{ Body: Bo
 }
 
 async function addBookingFinishCustomer(input: BookingFinishInput) {
-  const { bookingId, notes, salesValue, paidValue, typePaid} = input
+  const { bookingId, notes, salesValue, paidValue, typePaid, paid} = input
 
   const bookingOwner = await prisma.booking.findUnique({
     where: {
@@ -607,7 +608,13 @@ async function addBookingFinishCustomer(input: BookingFinishInput) {
   if(bookingOwner == null) {
     throw new Error('Owner not found in booking')
   }
+  var date = dayjs().toISOString()
 
+  if(paid && Number(paidValue) < Number(salesValue)) {
+    return new Error('Paid value needs to be bigger than the sales value')
+  }
+  var valuePaid = paid ? paidValue : 0
+  var totalValue = salesValue - valuePaid
   const booking = await prisma.booking.update({
     where: {
       id: bookingId
@@ -617,12 +624,12 @@ async function addBookingFinishCustomer(input: BookingFinishInput) {
       extract: {
         create: {
           value: salesValue,
-          paidValue: paidValue,
-          totalValue: salesValue - paidValue,
-          done: true,
+          paidValue: valuePaid,
+          totalValue: totalValue < 0 ? 0 : totalValue,
+          done: paid,
           type: typePaid,
           description: notes,
-          date: bookingOwner.time,
+          date: date,
           Owner: {
             connect: {
               id: bookingOwner.dog?.Owner.id
@@ -632,6 +639,10 @@ async function addBookingFinishCustomer(input: BookingFinishInput) {
       }
     }
   })
+
+  if(paid ) {
+    await updateTillHandle('G', typePaid, salesValue, valuePaid)
+  }
 
   return booking
 }
