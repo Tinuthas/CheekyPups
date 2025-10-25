@@ -8,7 +8,10 @@ const payBody = {
 
 const createPayBody = z.object({
   owner_id: z.number(),
-  ...payBody
+  ...payBody,
+  paid: z.boolean(),
+  paidValue: z.number().nullable(),
+  typePaid: z.string().nullable()
 })
 
 const createPayPaidBody = z.object({

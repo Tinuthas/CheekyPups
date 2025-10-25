@@ -127,7 +127,7 @@ const DataTableCustom = ({headers, data, setData, createData, title, updateRow, 
         enableColumnActions={false}
         onEditingRowSave={handleSaveRowEdits}
         onEditingRowCancel={handleCancelRowEdits}
-        initialState={{ columnVisibility: hideColumns,  pagination: { pageSize: 50, pageIndex: 0 }}}
+        initialState={{ columnVisibility: hideColumns,  pagination: { pageSize: 10, pageIndex: 0 }}}
         positionActionsColumn="last"
         displayColumnDefOptions={{
           'mrt-row-actions': {

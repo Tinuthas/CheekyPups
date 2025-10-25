@@ -17,6 +17,7 @@ interface FilterDateBookingProps {
   date: Date
   setDate: (value: Date) => void
   loading: boolean
+  calendar: Array<any>
   setLoading: (value: boolean) => void,
   onPreviousDate: () => void
   onNextDate: () => void
@@ -27,7 +28,7 @@ interface FilterDateBookingProps {
   addOfferingClick: () => void
 }
 
-export function FilterDateBooking({ date, setDate, loading, setLoading, onPreviousDate, onNextDate, addEventClick, addBookClick, addFillClick, addExistedClick, addOfferingClick }: FilterDateBookingProps) {
+export function FilterDateBooking({ date, setDate, calendar, loading, setLoading, onPreviousDate, onNextDate, addEventClick, addBookClick, addFillClick, addExistedClick, addOfferingClick }: FilterDateBookingProps) {
 
   return (
     <div className="md:flex justify-center items-center md:mt-4">
@@ -36,7 +37,7 @@ export function FilterDateBooking({ date, setDate, loading, setLoading, onPrevio
           <div className="border-2 rounded-full border-neutral-500 mx-3 hover:border-pinkBackground" onClick={onPreviousDate}>
             <PreviousIcon sx={iconStyle} />
           </div>
-          <ChooseDateButton label={"Choose Date"} date={date} setDate={date => setDate(new Date(date))} />
+          <ChooseDateButton label={"Choose Date"} date={date} setDate={date => setDate(new Date(date))} calendar={calendar}/>
           <div className="border-2 rounded-full border-neutral-500 mx-3 hover:border-pinkBackground" onClick={onNextDate}>
             <NextIcon sx={iconStyle} />
           </div>
@@ -51,9 +52,9 @@ export function FilterDateBooking({ date, setDate, loading, setLoading, onPrevio
           <div className="mx-3 " onClick={addOfferingClick}>
             <LocalOfferIcon sx={iconStyle}/>
           </div>
-          <div className="mx-3 ">
+          {/*<div className="mx-3 ">
             <EditIcon sx={iconStyle}/>
-          </div>
+          </div>*/}
           <div className="mx-3 " onClick={addBookClick}>
             <AddCircleRoundedIcon sx={iconStyle}/>
           </div>

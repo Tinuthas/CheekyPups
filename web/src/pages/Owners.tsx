@@ -8,8 +8,7 @@ import { toast } from "react-toastify";
 import { Loading } from "../components/Loading";
 import { ButtonGroupList } from "../components/ButtonGroupList";
 import { MRT_ColumnDef } from "material-react-table";
-import { DialogListModal } from "../components/DialogListModal";
-
+import { PaysInfoListModal } from "../components/payment/PaysInfoListModal";
 
 
 export function Owners() {
@@ -19,8 +18,6 @@ export function Owners() {
   const [openIndex, setOpenIndex] = useState(-1)
   const [openListModal, setOpenListModal] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [loadingModal, setLoadingModal] = useState(false)
-  const [ownerDogInfos, setOwnerDogInfos] = useState([{}])
   const [ownerType, setOwnerType] = useState('D')
 
 
@@ -101,19 +98,10 @@ export function Owners() {
             <span>{renderedCellValue}</span>
           </div>
           {row.original.id == openIndex && openListModal ?
-            <DialogListModal
+            <PaysInfoListModal
               open={openListModal}
               onClose={() => setOpenListModal(false)}
-              onSubmit={() => console.log('submit')}
-              name={row.original.name}
-              callInit={() => callListOwnerDog(row.original.id)}
-              data={ownerDogInfos}
-              setData={setOwnerDogInfos}
-              headers={headersOwnerDog}
-              loading={loadingModal}
-              deleteRow={(id) => deleteDataRow(id)}
-              updateRow={(data) => updateDataRow(data)}
-              infoData={{ owner: row.original.name, dogs: "" }}
+              infoData={{ownerId:row.original.id}}
             />
             : null}
         </>
@@ -303,26 +291,6 @@ export function Owners() {
     getAllOwnersFilter(value)
   }
 
-  function callListOwnerDog(id: any): any {
-    setLoadingModal(true)
-    api.get('payment/extracts', {
-      params: {
-        id,
-      },
-      headers: {
-        Authorization: getToken()
-      }
-    }).then(response => {
-      console.log('return call list extracts')
-      setOwnerDogInfos(JSON.parse(JSON.stringify(response.data)))
-      setLoadingModal(false)
-    }).catch((err: AxiosError) => {
-      const data = err.response?.data as { message: string }
-      toast.error(`Unidentified error: ${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
-      setLoadingModal(false)
-    })
-  }
-
   return (
     <div className="md:p-10 pt-4 h-full flex flex-col items-center">
       <h3 className="font-medium text-3xl md:text-5xl text-pinkBackground font-borsok">Owners</h3>
@@ -337,6 +305,7 @@ export function Owners() {
               headers={headers}
               data={owners}
               setData={(data) => setOwners(data)}
+              titleCreate="Add New Owner"
               title="Owners"
               updateRow={(data) => updateDataRow(data)}
               createData={columnHeaders}

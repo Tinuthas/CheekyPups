@@ -13,6 +13,8 @@ import { DeleteModal } from "../DeleteModal";
 import { CancelModal } from "../CancelModal";
 import { CreateConfirmedOffering } from "./CreateConfirmedOffering";
 import { CreateFinish } from "./CreateFinish";
+import { PaysInfoListModal } from "../payment/PaysInfoListModal";
+import InfoItemButton from "../attendance/InfoItemButton";
 
 
 
@@ -20,6 +22,7 @@ export interface ItemListFieldProps {
   id: number
   time: string
   status: string
+  ownerId?: number
   ownerName?: string
   phone?: string
   dogName?: string
@@ -34,12 +37,15 @@ export interface ItemListFieldProps {
   setLoadingMenuItem: (loading: number) => void
 }
 
-export function ItemListField({ id, time, status, ownerName, phone, dogName, dogBread, loadingMenuItem, listTimes, createRowOffered, setLoadingMenuItem, deleteRow, cancelBookingRow, finishRowBooking, date }: ItemListFieldProps) {
+export function ItemListField({ id, time, status, ownerId, ownerName, phone, dogName, dogBread, loadingMenuItem, listTimes, createRowOffered, setLoadingMenuItem, deleteRow, cancelBookingRow, finishRowBooking, date }: ItemListFieldProps) {
 
   const [openDelete, setOpenDelete] = React.useState(false);
   const [createOfferedModalOpen, setCreateOfferedModalOpen] = React.useState(false);
   const [cancelModalOpen, setCancelModalOpen] = React.useState(false);
   const [finishModalOpen, setFinishModalOpen] = React.useState(false);
+
+  const [openIndex, setOpenIndex] = React.useState(-1)
+  const [openListModal, setOpenListModal] = React.useState(false)
 
 
   const handleDeleteClose = (event: Event | React.SyntheticEvent) => {
@@ -76,7 +82,7 @@ export function ItemListField({ id, time, status, ownerName, phone, dogName, dog
                 : status.includes('offered') ?
                   <div className="bg-yellow-500 w-full h-full rounded-bl-xl rounded-tl-xl" />
                   : status.includes('done') ?
-                    <div className="bg-cyan-500 w-full h-full rounded-bl-xl rounded-tl-xl" />
+                    <div className="bg-blue w-full h-full rounded-bl-xl rounded-tl-xl" />
                     : null
           }
         </span>
@@ -85,7 +91,10 @@ export function ItemListField({ id, time, status, ownerName, phone, dogName, dog
             <h5>{time}</h5>
           </div>
           <div className="w-[120px] ml-2 md:ml-6 self-center text-center">
-            <h5>{ownerName}</h5>
+            {ownerId!= null && ownerId != 0 ? 
+              <InfoItemButton children={<h5>{ownerName}</h5>} id={Number(ownerId)} />
+            : <h5>{ownerName}</h5>}
+            
           </div>
           <div className="w-[120px] ml-2 md:ml-6 self-center text-center">
             <h5>{phone}</h5>

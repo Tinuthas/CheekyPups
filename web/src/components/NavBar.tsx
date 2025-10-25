@@ -21,8 +21,9 @@ export function NavBar() {
           name: "List", path: "Attendances",
         },
         {
-          name: "Summary", path: "DaycareSummary",
-        }
+          name: "Calendar", path: "Calendar",
+        },
+        
       ]},
     { name: "Grooming", 
       links: [
@@ -34,9 +35,13 @@ export function NavBar() {
       links: [
         {
           name: "Orders", path: "Payments",
-        },{
+        },
+        {
           name: "Till Money", path: "TillMoney",
         },
+        {
+          name: "Summary", path: "Summary",
+        }
       ]},
     { name: "Manager", 
       links: [

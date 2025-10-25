@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react"
-import {api, getToken} from "../lib/axios";
+import { api, getToken } from "../lib/axios";
 import dayjs from "dayjs";
 import isoWeek from 'dayjs/plugin/isoWeek'
-dayjs.extend(isoWeek) 
+dayjs.extend(isoWeek)
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import MaterialReactTable, { MRT_ColumnDef } from "material-react-table";
@@ -12,9 +12,11 @@ import { AvatarModal } from "../components/AvatarProfile";
 import { FilterDays } from "../components/FilterDays";
 import { DataTableAttendance } from "../components/attendance/DataTableAttendance";
 import { cellComponent } from "../components/attendance/CellAttendanceDate";
+import { PaysInfoListModal } from "../components/payment/PaysInfoListModal";
+import InfoItemButton from "../components/attendance/InfoItemButton";
 
 type Attendances = Array<{
-  id:string;
+  id: string;
   attendanceIds: string[];
   dog_id: string,
   name: string
@@ -23,7 +25,7 @@ type Attendances = Array<{
   paids: boolean[];
 }>
 
-export function Attendances(){
+export function Attendances() {
 
   const [attendances, setAttendances] = useState<any>([])
   const [columns, setColumns] = useState<any>([])
@@ -35,11 +37,14 @@ export function Attendances(){
   const [openAvatar, setOpenAvatar] = useState(false)
   const [loading, setLoading] = useState(false)
 
+  const [openIndex, setOpenIndex] = useState(-1)
+  const [openListModal, setOpenListModal] = useState(false)
+
   useEffect(() => {
     clickSearchByDates()
   }, [dateStart, dateEnd])
 
-  function onSubmitUpdatePage(){
+  function onSubmitUpdatePage() {
     clickSearchByDates()
     return new Promise<boolean>((resolve, reject) => {
       resolve(true)
@@ -55,104 +60,108 @@ export function Attendances(){
     clickSearchByDates(newDateStart, newDateEnd)
   }
 
-  function setDates(newDateStart:Date, newDateEnd:Date) {
+  function setDates(newDateStart: Date, newDateEnd: Date) {
     setDateStart(newDateStart)
     setDateEnd(newDateEnd)
-    console.log(dateStart + " " +dateEnd )
+    console.log(dateStart + " " + dateEnd)
   }
 
-  function handleOpenAvatar(row:any) {
+  function handleOpenAvatar(row: any) {
     setOpenAvatar(true)
     setOpenNameAvatar(row?.original?.name)
     setOpenUrlAvatar(row?.original?.avatarUrl)
   }
 
-  function clickSearchByDates(dateStartField?:Date, dateEndField?:Date){
+  function clickSearchByDates(dateStartField?: Date, dateEndField?: Date) {
     setLoading(true)
-    if(dateStartField == null) dateStartField = dateStart
-    if(dateEndField == null) dateEndField = dateEnd
+    if (dateStartField == null) dateStartField = dateStart
+    if (dateEndField == null) dateEndField = dateEnd
     api.get<Attendances>('attendance', {
       params: {
-        dateStart: dayjs(dateStartField).toISOString(), 
+        dateStart: dayjs(dateStartField).toISOString(),
         dateEnd: dayjs(dateEndField).toISOString()
       }, headers: {
         Authorization: getToken()
-      }}).then(response => {
-        setDates(dateStartField, dateEndField)
-        var att = response.data
-        if(att.length != 0) {
-          var rows: any[] = []
-          const dates = new Set<string>();
-          var marginDates = 0
-          att.map((item, index) => {
-            var listDates:any = {}
-            listDates['total'] = 0
-            listDates['paid'] = 0 
-            for (let i = 0; i < item.dates.length; i++) {
-              listDates[item.dates[i]] = item.paids[i] ? (item.typeDays[i] != 'HD' ? 'DP' : 'D½P') : item.typeDays[i] != 'HD' ? 'D' : 'D½'
-              dates.add(item.dates[i])
-              listDates['total'] = listDates['total'] + 1
-              listDates['paid'] = item.paids[i]? listDates['paid'] + 1 : listDates['paid']
-            }
-            marginDates = listDates['total'] > marginDates ? listDates['total'] : marginDates
-            
-            var obj = Object.assign({}, item, listDates);
-            rows.push(obj)
-          })
-          setMarginTable(marginDates)
-          setAttendances(rows)
-          if(rows.length != 0 ) {
-            var base:MRT_ColumnDef<any>[] = [{ 
-              accessorKey:'name', 
-              header: 'Dog Name',
-              size: 180,
-              Cell: ({ renderedCellValue, row }) => (
-                <>
-                  {row?.original?.['dates'].length >= 5 ?
-                    <div className="flex flex-row justify-center align-baseline">
-                      <div className=" bg-purple-300 rounded-full py-1 px-3">
-                        <span className="font-medium">{renderedCellValue }</span>
-                      </div>
-                    </div>
-                  :row?.original?.['owner_dogs'] >= 2 ? 
-                    <div className="flex flex-row justify-center align-baseline">
-                      
-                      <div className=" bg-lime-300 rounded-full py-1 px-3">
-                        <span className="font-medium">{renderedCellValue }</span>
-                      </div>
-                    </div>
-                  : 
-                    <div className="flex flex-row justify-center align-baseline">
-                      <div className=" bg-stone-200 rounded-full py-1 px-3">
-                        <span className="font-medium">{renderedCellValue }</span>
-                      </div>
-                    </div>
-                  }
-                </>
-              ), 
-              Footer: ({  }) => <div className="">Total: </div> 
-            }]
-            for (const item of Array.from(dates)) {
-              var totalSumDays = 0
-              rows.map((row) => {
-                item in row ? totalSumDays++ : null
-              })
-              
-              base.push(cellComponent(item, () => onSubmitUpdatePage(), totalSumDays))
-            }
-            //console.log(base)
-            setColumns(base)
+      }
+    }).then(response => {
+      setDates(dateStartField, dateEndField)
+      var att = response.data
+      if (att.length != 0) {
+        var rows: any[] = []
+        const dates = new Set<string>();
+        var marginDates = 0
+        att.map((item, index) => {
+          var listDates: any = {}
+          listDates['total'] = 0
+          listDates['paid'] = 0
+          for (let i = 0; i < item.dates.length; i++) {
+            listDates[item.dates[i]] = item.paids[i] ? (item.typeDays[i] != 'HD' ? 'DP' : 'D½P') : item.typeDays[i] != 'HD' ? 'D' : 'D½'
+            dates.add(item.dates[i])
+            listDates['total'] = listDates['total'] + 1
+            listDates['paid'] = item.paids[i] ? listDates['paid'] + 1 : listDates['paid']
           }
-        }else{
-          setAttendances([])
-          setMarginTable(0)
-          setColumns([])
+          marginDates = listDates['total'] > marginDates ? listDates['total'] : marginDates
+
+          var obj = Object.assign({}, item, listDates);
+          rows.push(obj)
+        })
+        setMarginTable(marginDates)
+        setAttendances(rows)
+        if (rows.length != 0) {
+          var base: MRT_ColumnDef<any>[] = [{
+            accessorKey: 'name',
+            header: 'Dog Name',
+            size: 180,
+            Cell: ({ renderedCellValue, row }) => (
+              <>
+                <InfoItemButton children={
+                   <div className="flex flex-row justify-center align-baseline cursor-pointer" onClick={() => {
+                    setOpenListModal(true)
+                    setOpenIndex(row.original.owner_id)
+                    console.log(row.original.owner_id)
+                  }}>
+                    {row?.original?.['dates'].length >= 5 ?
+                      <div className=" bg-purple-300 rounded-full py-1 px-3">
+                        <span className="font-medium">{renderedCellValue}</span>
+                      </div>
+                      : row?.original?.['owner_dogs'] >= 2 ?
+                        <div className=" bg-lime-300 rounded-full py-1 px-3">
+                          <span className="font-medium">{renderedCellValue}</span>
+                        </div>
+                        :
+                        <div className=" bg-stone-200 rounded-full py-1 px-3">
+                          <span className="font-medium">{renderedCellValue}</span>
+                        </div>
+
+                    }
+                  </div>
+                } id={row.original.owner_id}>
+                </InfoItemButton>
+              </>
+            ),
+            Footer: ({ }) => <div className="">Total: </div>
+          }]
+          for (const item of Array.from(dates)) {
+            var totalSumDays = 0
+            rows.map((row) => {
+              item in row ? totalSumDays++ : null
+            })
+
+            base.push(cellComponent(item, () => onSubmitUpdatePage(), totalSumDays))
+          }
+          //console.log(base)
+          setColumns(base)
         }
-        setLoading(false)
-      }).catch(err => {
-        console.log(err)
-        setLoading(false)
-      })
+      } else {
+        setAttendances([])
+        setMarginTable(0)
+        setColumns([])
+      }
+      setLoading(false)
+    }).catch(err => {
+      console.log(err)
+      setLoading(false)
+    })
   }
 
 
@@ -179,7 +188,7 @@ export function Attendances(){
       clickSearchByDates()
     }).catch((err: AxiosError) => {
       console.log(err)
-      const data = err.response?.data as {message: string}
+      const data = err.response?.data as { message: string }
       toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
       throw new Error(`Unidentified error: ${data.message || err.response?.data || err.message}`);
       setLoading(false)
@@ -189,7 +198,7 @@ export function Attendances(){
 
   const handleCreateNewWeekRow = (values: any) => {
     setLoading(true)
-   
+
     api.post('attendance/week', values, {
       headers: {
         Authorization: getToken()
@@ -199,7 +208,7 @@ export function Attendances(){
       clickSearchByDates()
     }).catch((err: AxiosError) => {
       console.log(err)
-      const data = err.response?.data as {message: string}
+      const data = err.response?.data as { message: string }
       toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
       throw new Error(`Unidentified error: ${data.message || err.response?.data || err.message}`);
       setLoading(false)
@@ -209,20 +218,20 @@ export function Attendances(){
   return (
     <div className="md:p-10 pt-4 h-full flex flex-col items-center">
       <h3 className="font-medium text-3xl md:text-4xl lg:text-5xl text-pinkBackground font-borsok">Daycare</h3>
-      <h3 className="text-white font-borsok text-lg md:text-2xl lg:text-4xl">{dateStart.toLocaleString(undefined,{weekday: "short", day: "numeric", month:'short', year:'numeric'})} - {dateEnd.toLocaleString(undefined,{weekday: "short", day: "numeric", month:'short', year:'numeric'})}</h3>
-      <FilterDays 
+      <h3 className="text-white font-borsok text-lg md:text-2xl lg:text-4xl">{dateStart.toLocaleString(undefined, { weekday: "short", day: "numeric", month: 'short', year: 'numeric' })} - {dateEnd.toLocaleString(undefined, { weekday: "short", day: "numeric", month: 'short', year: 'numeric' })}</h3>
+      <FilterDays
         dateStart={dateStart}
         dateEnd={dateEnd}
         setDateStart={(date) => setDateStart(date)}
         setDateEnd={(date) => setDateEnd(date)}
-        onSubmit={() => clickSearchByDates()} 
+        onSubmit={() => clickSearchByDates()}
         loading={loading}
         onPreviousWeek={() => onNextPreviousWeek(-7)}
         onNextWeek={() => onNextPreviousWeek(+7)}
-        />
-        
-      <DataTableAttendance 
-        title={"" + dateStart.toLocaleString(undefined, {weekday: "short"}) + " " + dayjs(dateStart).format('DD/MM/YYYY') + " - " +dateEnd.toLocaleString(undefined, {weekday: "short"}) + " " + dayjs(dateEnd).format('DD/MM/YYYY')}
+      />
+
+      <DataTableAttendance
+        title={"" + dateStart.toLocaleString(undefined, { weekday: "short" }) + " " + dayjs(dateStart).format('DD/MM/YYYY') + " - " + dateEnd.toLocaleString(undefined, { weekday: "short" }) + " " + dayjs(dateEnd).format('DD/MM/YYYY')}
         attendances={attendances}
         columns={columns}
         marginTable={marginTable}
@@ -231,16 +240,16 @@ export function Attendances(){
         loading={loading}
       />
 
-      {openAvatar ? 
-        <AvatarModal 
+      {openAvatar ?
+        <AvatarModal
           open={openAvatar}
           onClose={() => setOpenAvatar(false)}
           avatarUrl={openUrlAvatar}
           name={openNameAvatar}
         />
-      : null }
-      
-     
+        : null}
+
+
     </div>
   )
 }

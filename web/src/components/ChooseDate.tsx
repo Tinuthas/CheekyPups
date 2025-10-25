@@ -10,9 +10,10 @@ interface ChooseDateButtonProps {
   label: String;
   date: Date;
   setDate: (date: Date) => void;
+  calendar?: Array<any>
 }
 
-export function ChooseDateButton({ label, date, setDate }: ChooseDateButtonProps) {
+export function ChooseDateButton({ label, date, setDate, calendar }: ChooseDateButtonProps) {
 
   return (
     <div className="h-10 my-2 ">

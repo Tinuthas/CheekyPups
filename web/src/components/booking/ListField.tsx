@@ -35,6 +35,7 @@ export function ListField({ date, setDate, loading, setLoading }: ListFieldProps
   const [createOfferingModalOpen, setCreateOfferingModalOpen] = useState(false);
   const [fillSpacesModalOpen, setFillSpacesModalOpen] = useState(false);
   const [bookings, setBookings] = useState<any>([])
+  const [calendar, setCalendar] = useState<any>([])
   const [emptyBooking, setEmptyBooking] = useState<any>([])
   const [loadingMenuItem, setLoadingMenuItem] = useState(-1);
 
@@ -56,9 +57,11 @@ export function ListField({ date, setDate, loading, setLoading }: ListFieldProps
       var data = response.data
       var listData = JSON.parse(JSON.stringify(data));
       console.log(listData)
-      setBookings(listData)
+      setBookings(listData.bookings)
+      console.log(listData.calendar)
+      setCalendar(listData.calendar)
       var emptyBooking:Array<{}> = new Array()
-      listData.forEach((time: any) => {
+      listData.bookings.forEach((time: any) => {
         if((time.status as string).includes('empty')){
           emptyBooking.push({value: time.id, label: dayjs(time.time).format('hh:mm A')})
         }
@@ -102,6 +105,7 @@ export function ListField({ date, setDate, loading, setLoading }: ListFieldProps
       id={booking.id} 
       time={dayjs(booking.time).format('hh:mm A')} 
       status={booking.status} 
+      ownerId={booking.status.includes('offered') ? Object(booking.offering)['ownerId']: (booking.dog == null ? null : booking.dog.Owner.id)}
       ownerName={booking.status.includes('offered') ? Object(booking.offering)['owner']: (booking.dog == null ? "" : booking.dog.Owner.name)} 
       phone={booking.status.includes('offered') ? Object(booking.offering)['phone'] : (booking.dog == null ? "" : booking.dog.Owner.phoneOne)} 
       dogName={booking.dog == null ? "" : booking.dog.name} 
@@ -315,8 +319,6 @@ export function ListField({ date, setDate, loading, setLoading }: ListFieldProps
   function handleFinishRowBooking(finishValues:any) {
     try{
       setLoading(true)
-      console.log('handleFinishRowBooking')
-      console.log(finishValues)
       api.post('booking/finish', finishValues, {
         headers: {
           Authorization: getToken()
@@ -343,7 +345,7 @@ export function ListField({ date, setDate, loading, setLoading }: ListFieldProps
     <div className="border-neutral-800 md:p-10 pt-4 h-full flex flex-col items-center">
       <div className="flex flex-col justify-center items-center">
         <h3 className="font-medium text-4xl md:text-5xl lg:text-6xl text-pinkBackground font-borsok md:mr-6 text-center mt-2 md:mt-0">{date.toLocaleString(undefined, { weekday: "long", day: "numeric", month: 'long', year: 'numeric' })}</h3>
-        <FilterDateBooking date={date} setDate={setDate} loading={loading} setLoading={setLoading} onPreviousDate={onPreviousDate} onNextDate={onNextDate} addEventClick={addEventClick} addBookClick={addBookClick} addFillClick={() => setFillSpacesModalOpen(true)} addExistedClick={() => setCreateExistedModalOpen(true)} addOfferingClick={() => setCreateOfferingModalOpen(true)}/>
+        <FilterDateBooking date={date} setDate={setDate} calendar={calendar} loading={loading} setLoading={setLoading} onPreviousDate={onPreviousDate} onNextDate={onNextDate} addEventClick={addEventClick} addBookClick={addBookClick} addFillClick={() => setFillSpacesModalOpen(true)} addExistedClick={() => setCreateExistedModalOpen(true)} addOfferingClick={() => setCreateOfferingModalOpen(true)}/>
       </div>
       <div className="w-full md:px-4 my-4 flex justify-center">
         {loading ? <div className="w-full flex justify-center"><Loading /> </div> :

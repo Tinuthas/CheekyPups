@@ -26,75 +26,108 @@ export const FilterDatesRange = ({
   const [selectDateType, setSelectDateType] = useState<string>(data[2])
 
   function selectMonthDate() {
-    setStartDate(dayjs().startOf('month').toDate())
-    setEndDate(dayjs().endOf('month').toDate())
+    const d1 = dayjs().startOf('month').toDate()
+    const d2 = dayjs().endOf('month').toDate()
+    setStartDate(d1)
+    setEndDate(d2)
     setSelectDateType('M')
-    onSubmit(startDate, endDate)
+    onSubmit(d1, d2)
   }
 
   function selectThreeMonthDate() {
-    setStartDate(dayjs().startOf('month').subtract(3, 'month').toDate())
-    setEndDate(dayjs().endOf('month').toDate())
+    const d1 = dayjs().startOf('month').subtract(3, 'month').toDate()
+    const d2 = dayjs().endOf('month').toDate()
+    setStartDate(d1)
+    setEndDate(d2)
     setSelectDateType('T')
-    onSubmit(startDate, endDate)
+    onSubmit(d1, d2)
   }
 
   function selectWeekDate() {
-    setStartDate(dayjs().startOf('isoWeek').toDate())
-    setEndDate(dayjs().endOf('isoWeek').toDate())
+    const d1 = dayjs().startOf('isoWeek').toDate()
+    const d2 = dayjs().endOf('isoWeek').toDate()
+    setStartDate(d1)
+    setEndDate(d2)
     setSelectDateType('W')
-    onSubmit(startDate, endDate)
+    onSubmit(d1, d2)
+  }
+
+  function selectDayDate() {
+    const d1 = dayjs().startOf('day').subtract(1, 'day').toDate()
+    const d2 = dayjs().endOf('day').toDate()
+    setStartDate(d1)
+    setEndDate(d2)
+    setSelectDateType('D')
+    onSubmit(d1, d2)
   }
 
   function selectYearDate() {
-    setStartDate(dayjs().startOf('year').toDate())
-    setEndDate(dayjs().endOf('year').toDate())
+    const d1 = dayjs().startOf('year').toDate()
+    const d2 = dayjs().endOf('year').toDate()
+    setStartDate(d1)
+    setEndDate(d2)
     setSelectDateType('Y')
-    onSubmit(startDate, endDate)
+    onSubmit(d1, d2)
   }
 
   function onPrevious() {
+    var d1 = startDate
+    var d2 = endDate
     switch (selectDateType) {
+      case 'D':
+        d1 = dayjs(startDate).subtract(1, 'day').toDate()
+        d2 = dayjs(endDate).subtract(1, 'day').toDate()
+        break;
       case 'W':
-        setStartDate(dayjs(startDate).subtract(1, 'week').toDate())
-        setEndDate(dayjs(endDate).subtract(1, 'week').toDate())
+        d1 = dayjs(startDate).subtract(1, 'week').toDate()
+        d2 = dayjs(endDate).subtract(1, 'week').toDate()
         break;
       case 'T':
-        setStartDate(dayjs(startDate).subtract(3, 'month').toDate())
-        setEndDate(dayjs(endDate).subtract(3, 'month').toDate())
+        d1 = dayjs(startDate).subtract(3, 'month').toDate() 
+        d2 = dayjs(endDate).subtract(3, 'month').toDate()
         break;
       case 'M':
-        setStartDate(dayjs(startDate).subtract(1, 'month').toDate())
-        setEndDate(dayjs(endDate).subtract(1, 'month').toDate())
+        d1 = dayjs(startDate).subtract(1, 'month').toDate()
+        d2 = dayjs(endDate).subtract(1, 'month').toDate()
         break;
       case 'Y':
-        setStartDate(dayjs(startDate).subtract(1, 'year').toDate())
-        setEndDate(dayjs(endDate).subtract(1, 'year').toDate())
+        d1 = dayjs(startDate).subtract(1, 'year').toDate()
+        d2 = dayjs(endDate).subtract(1, 'year').toDate()
         break;
     }
-    onSubmit(startDate, endDate)
+    setStartDate(d1)
+    setEndDate(d2)
+    onSubmit(d1, d2)
   }
 
   function onNext() {
+    var d1 = startDate
+    var d2 = endDate
     switch (selectDateType) {
+      case 'D':
+        d1 = dayjs(startDate).add(1, 'day').toDate()
+        d2 = dayjs(endDate).add(1, 'day').toDate()
+        break;
       case 'W':
-        setStartDate(dayjs(startDate).add(1, 'week').toDate())
-        setEndDate(dayjs(endDate).add(1, 'week').toDate())
+        d1 = dayjs(startDate).add(1, 'week').toDate()
+        d2 = dayjs(endDate).add(1, 'week').toDate()
         break;
       case 'M':
-        setStartDate(dayjs(startDate).add(1, 'month').toDate())
-        setEndDate(dayjs(endDate).add(1, 'month').toDate())
+        d1 = dayjs(startDate).add(1, 'month').toDate()
+        d2 = dayjs(endDate).add(1, 'month').toDate()
         break;
       case 'T':
-        setStartDate(dayjs(startDate).add(3, 'month').toDate())
-        setEndDate(dayjs(endDate).add(3, 'month').toDate())
+        d1 = dayjs(startDate).add(3, 'month').toDate()
+        d2 = dayjs(endDate).add(3, 'month').toDate()
         break;
       case 'Y':
-        setStartDate(dayjs(startDate).add(1, 'year').toDate())
-        setEndDate(dayjs(endDate).add(1, 'year').toDate())
+        d1 = dayjs(startDate).add(1, 'year').toDate()
+        d2 = dayjs(endDate).add(1, 'year').toDate()
         break;
     }
-    onSubmit(startDate, endDate)
+    setStartDate(d1)
+    setEndDate(d2)
+    onSubmit(d1, d2)
   }
 
   return (
@@ -141,10 +174,11 @@ export const FilterDatesRange = ({
         </ThemeProvider>
       </div>
       <div className="flex flex-row justify-evenly m-6">
-        <button onClick={() => selectWeekDate()} className={`rounded w-[90px] h-[35px] border border-pinkBackground ${selectDateType == 'W' ? 'bg-white  text-pinkBackground hover:bg-pinkBackground hover:text-white' : 'bg-pinkBackground  text-white hover:bg-white hover:text-pinkBackground'}`}>WEEK</button>
-        <button onClick={() => selectMonthDate()} className={`rounded w-[90px] h-[35px] border border-pinkBackground ${selectDateType == 'M' ? 'bg-white  text-pinkBackground hover:bg-pinkBackground hover:text-white' : 'bg-pinkBackground  text-white hover:bg-white hover:text-pinkBackground'}`}>1 MONTH</button>
-        <button onClick={() => selectThreeMonthDate()} className={`rounded w-[90px] h-[35px] border border-pinkBackground ${selectDateType == 'T' ? 'bg-white  text-pinkBackground hover:bg-pinkBackground hover:text-white' : 'bg-pinkBackground  text-white hover:bg-white hover:text-pinkBackground'}`}> 3 MONTH</button>
-        <button onClick={() => selectYearDate()} className={`rounded w-[90px] h-[35px] border border-pinkBackground ${selectDateType == 'Y' ? 'bg-white  text-pinkBackground hover:bg-pinkBackground hover:text-white' : 'bg-pinkBackground  text-white hover:bg-white hover:text-pinkBackground'}`}>YEAR</button>
+        <button onClick={() => selectDayDate()} className={`rounded w-[50px] h-[35px] border border-pinkBackground ${selectDateType == 'D' ? 'bg-white  text-pinkBackground hover:bg-pinkBackground hover:text-white' : 'bg-pinkBackground  text-white hover:bg-white hover:text-pinkBackground'}`}>Day</button>
+        <button onClick={() => selectWeekDate()} className={`rounded w-[50px] h-[35px] border border-pinkBackground ${selectDateType == 'W' ? 'bg-white  text-pinkBackground hover:bg-pinkBackground hover:text-white' : 'bg-pinkBackground  text-white hover:bg-white hover:text-pinkBackground'}`}>Week</button>
+        <button onClick={() => selectMonthDate()} className={`rounded w-[50px] h-[35px] border border-pinkBackground ${selectDateType == 'M' ? 'bg-white  text-pinkBackground hover:bg-pinkBackground hover:text-white' : 'bg-pinkBackground  text-white hover:bg-white hover:text-pinkBackground'}`}>1Mon</button>
+        <button onClick={() => selectThreeMonthDate()} className={`rounded w-[50px] h-[35px] border border-pinkBackground ${selectDateType == 'T' ? 'bg-white  text-pinkBackground hover:bg-pinkBackground hover:text-white' : 'bg-pinkBackground  text-white hover:bg-white hover:text-pinkBackground'}`}> 3Mon</button>
+        <button onClick={() => selectYearDate()} className={`rounded w-[50px] h-[35px] border border-pinkBackground ${selectDateType == 'Y' ? 'bg-white  text-pinkBackground hover:bg-pinkBackground hover:text-white' : 'bg-pinkBackground  text-white hover:bg-white hover:text-pinkBackground'}`}>Year</button>
         {/**<button className={`rounded w-[75px] h-[35px] border border-pinkBackground ${selectDateType == 'A' ? 'bg-white  text-pinkBackground hover:bg-pinkBackground hover:text-white' : 'bg-pinkBackground  text-white hover:bg-white hover:text-pinkBackground'}`}>ALL</button>*/}
       </div>
     </>

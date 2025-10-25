@@ -231,7 +231,7 @@ async function getAllExtractByOwnerAll(id: number, startDate: string, endDate: s
       id: 'desc'
     }
   })
-  return await filterAllExtractByOwner(extracts)
+  return await filterAllExtractByOwner(extracts, Number(id))
 }
 
 async function getAllExtractByOwnerDone(done: boolean, id: number) {
@@ -244,7 +244,7 @@ async function getAllExtractByOwnerDone(done: boolean, id: number) {
       id: 'desc'
     }
   })
-  return await filterAllExtractByOwner(extracts)
+  return await filterAllExtractByOwner(extracts, Number(id))
 }
 
 async function getAllExtractByOwnerDoneDate(done: boolean, id: number, startDate: string, endDate: string) {
@@ -263,10 +263,10 @@ async function getAllExtractByOwnerDoneDate(done: boolean, id: number, startDate
   })
   console.log('extract')
 
-  return await filterAllExtractByOwner(extracts)
+  return await filterAllExtractByOwner(extracts, Number(id))
 }
 
-async function filterAllExtractByOwner(extracts: any[]) {
+async function filterAllExtractByOwner(extracts: any[], ownerId: number) {
   const filterExtracts = extracts.map(({ id, description, value, date, attendanceId, paidValue, totalValue, done, type }) => ({
     id,
     description,
@@ -278,7 +278,41 @@ async function filterAllExtractByOwner(extracts: any[]) {
     done,
     type
   }));
-  return filterExtracts
+
+  const ownerInfo = await prisma.owner.findUnique({
+    where: {id: ownerId},
+    include: {
+      dogs: true
+    }
+  })
+
+  const bookings = await prisma.booking.findMany({
+    where: {
+      dog: {
+        ownerId: ownerId
+      }
+    },
+    orderBy: {
+      dayBooking: {
+        date: 'desc'
+      }
+    },
+    include: {
+      dayBooking: true,
+      dog: true,
+      extract: true
+    }
+  })
+
+  const filterBookings = bookings.map(({ id, time, status, dog, extract}) => ({
+    id,
+    date: dayjs(time).format('DD/MM/YYYY HH:mm'),
+    dogName: dog!= null ? dog.name : "",
+    status: status
+  }));
+
+
+  return {extracts: filterExtracts, owner: ownerInfo, bookings: filterBookings}
 }
 
 async function getTotalHandle(request: FastifyRequest<{ Querystring: TotalOwnerInput }>, reply: FastifyReply) {
@@ -345,9 +379,11 @@ async function getTotalOwner(input: TotalOwnerInput) {
 }
 
 async function addValueExtract(input: PayOwnerInput) {
-  const { owner_id, value, description } = input
+  const { owner_id, value, description, paid, paidValue, typePaid } = input
 
   var date = dayjs().toISOString()
+
+  const totalValue = value - (paid ? Number(paidValue) : 0);
 
   let extract = await prisma.extract.create({
     data: {
@@ -357,12 +393,18 @@ async function addValueExtract(input: PayOwnerInput) {
         }
       },
       value,
-      totalValue: value,
-      done: false,
+      totalValue: totalValue,
+      done: paid,
+      paidValue: paid ? paidValue : 0,
+      type: paid ? typePaid : null,
       description,
       date
     }
   })
+  if(paid) {
+    await updateTillHandle('D', String(typePaid), value, Number(paidValue))
+  }
+  
   return extract
 }
 

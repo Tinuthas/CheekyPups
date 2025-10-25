@@ -9,7 +9,7 @@ import DataTableCustom from '../components/DataTableCustom';
 import { Loading } from '../components/Loading';
 import { api, getToken } from '../lib/axios';
 import { ButtonGroupList } from '../components/ButtonGroupList';
-import { DialogListModal } from '../components/DialogListModal';
+import { PaysInfoListModal } from '../components/payment/PaysInfoListModal';
 
 const hideColumns = { owner: true }
 
@@ -18,7 +18,7 @@ const selectPromise = (inputValue: string) => new Promise<any[]>((resolve, rejec
     var data = response.data
     var listData: any[] = []
     data.forEach((element: any) => {
-      listData.push({ value: element.id, label: element.name })
+      listData.push({ value: element.id, label: `${element.name} - ${element.phoneOne}` })
     });
     resolve(listData)
   }).catch((err: AxiosError) => {
@@ -38,8 +38,6 @@ export function Dogs() {
   const [dateBirthdayField, setDateBirthdayField] = useState(new Date())
   const [openIndex, setOpenIndex] = useState(-1)
   const [openListModal, setOpenListModal] = useState(false)
-  const [ownerDogInfos, setOwnerDogInfos] = useState([{}])
-  const [loadingModal, setLoadingModal] = useState(false)
 
   useEffect(() => {
     getAllDogs()
@@ -106,7 +104,7 @@ export function Dogs() {
       var data = response.data
       var listData = JSON.parse(JSON.stringify(data));
       for (const i in listData) {
-        listData[i].birthdayDate = dayjs(listData[i].birthdayDate).format('DD/MM/YYYY')
+        listData[i].birthdayDate =  listData[i].birthdayDate != null ? dayjs(listData[i].birthdayDate).format('DD/MM/YYYY') : ""
         delete listData[i].ownerId;
       }
       setDogs(listData)
@@ -131,7 +129,7 @@ export function Dogs() {
       var data = response.data
       var listData = JSON.parse(JSON.stringify(data));
       for (const i in listData) {
-        listData[i].birthdayDate = dayjs(listData[i].birthdayDate).format('DD/MM/YYYY')
+        listData[i].birthdayDate = listData[i].birthdayDate != null ? dayjs(listData[i].birthdayDate).format('DD/MM/YYYY') : ""
         delete listData[i].ownerId;
       }
       setDogs(listData)
@@ -140,26 +138,6 @@ export function Dogs() {
       const data = err.response?.data as { message: string }
       toast.error(`Unidentified error: ${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
       setLoading(false)
-    })
-  }
-
-  function callListOwnerDog(id: any): any {
-    setLoadingModal(true)
-    api.get('payment/extracts', {
-      params: {
-        id,
-      },
-      headers: {
-        Authorization: getToken()
-      }
-    }).then(response => {
-      console.log('return call list extracts')
-      setOwnerDogInfos(JSON.parse(JSON.stringify(response.data)))
-      setLoadingModal(false)
-    }).catch((err: AxiosError) => {
-      const data = err.response?.data as { message: string }
-      toast.error(`Unidentified error: ${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
-      setLoadingModal(false)
     })
   }
 
@@ -177,19 +155,10 @@ export function Dogs() {
             <span>{renderedCellValue}</span>
           </div>
           {row.original.id == openIndex && openListModal ?
-            <DialogListModal
+            <PaysInfoListModal
               open={openListModal}
               onClose={() => setOpenListModal(false)}
-              onSubmit={() => console.log('submit')}
-              name={row.original.name}
-              callInit={() => callListOwnerDog(row.original.id)}
-              data={ownerDogInfos}
-              setData={setOwnerDogInfos}
-              headers={headersOwnerDog}
-              loading={loadingModal}
-              deleteRow={(id) => deleteDataRow(id)}
-              updateRow={(data) => updateDataRow(data)}
-              infoData={{ owner: row.original.name, dogs: "" }}
+              infoData={{ownerId:row.original.id}}
             />
             : null}
         </>

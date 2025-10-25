@@ -82,7 +82,7 @@ async function getBookingByDate(request: FastifyRequest<{ Querystring: FilterBoo
   try {
     return await getBookingsDate(request.query)
   } catch (err) {
-    reply.code(400).send('Error in get attendances by filter')
+    reply.code(400).send('Error in get bookings appointments')
   }
 }
 
@@ -129,7 +129,37 @@ async function getBookingsDate(input: FilterBookingDateInput) {
     }
   })
 
-  return bookings
+  const parsedDateStart = dayjs(date).subtract(1, 'month').toISOString()
+  const parsedDateEnd = dayjs(date).add(2, 'month').toISOString()
+  console.log('calendar')
+  
+  const calendar = await prisma.dayBooking.findMany({
+    
+    where: {
+        date: {
+          lte: parsedDateEnd,
+          gte: parsedDateStart
+        },
+        daysBooking: {
+          some: {
+            status: 'empty'
+          },
+        }
+    },
+    select: {
+      date:true,
+      _count: {
+        select: {
+          daysBooking: true
+        }
+      }
+    }
+    
+  })
+
+
+
+  return {bookings: bookings, calendar: calendar}
 }
 
 async function addBookingSpaceHandle(request: FastifyRequest<{ Body: BookingInput }>, reply: FastifyReply) {

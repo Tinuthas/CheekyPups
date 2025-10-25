@@ -101,13 +101,16 @@ async function getSearchByName(name:string) {
   const result = await prisma.owner.findMany({
     take: 5,
     where: {
-      name: {
-        contains: name
-      }
+       OR: [
+        {name: { contains: name }},
+        {phoneOne: { contains: name }}
+       ]
+     
     },
     select: {
       id: true,
       name: true,
+      phoneOne: true
     },
     orderBy: {
       id: "desc",

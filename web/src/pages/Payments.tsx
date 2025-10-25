@@ -3,7 +3,7 @@ import { MRT_ColumnDef } from "material-react-table"
 import { useEffect, useState } from "react"
 import { toast } from "react-toastify"
 import DataTableCustom from "../components/DataTableCustom"
-import { DialogListModal } from "../components/DialogListModal"
+import { DialogListModal } from "../components/payment/PaymentsListModal"
 import { api, getToken } from "../lib/axios"
 import { Loading } from "../components/Loading";
 import { ButtonGroupList } from "../components/ButtonGroupList"
@@ -11,6 +11,7 @@ import dayjs from "dayjs"
 import PaidIcon from '@mui/icons-material/Paid';
 import { theme, iconStyle, iconSmallStyle } from "../lib/theme";
 import { PaymentAllModal } from "../components/payment/PaymentAllModal"
+import { PaysInfoListModal } from "../components/payment/PaysInfoListModal"
 
 const selectPromise = (inputValue: string) => new Promise<any[]>((resolve, reject) => {
   console.log('call select list')
@@ -34,6 +35,7 @@ export function Payments() {
 
   const [payments, setPayments] = useState([{}])
   const [extracts, setExtracts] = useState([{}])
+  const [ownerExtract, setOwnerExtract] = useState<any>({})
   const [openIndex, setOpenIndex] = useState(-1)
   const [openListModal, setOpenListModal] = useState(false)
   const [openPayingModal, setOpenPayingModal] = useState(false)
@@ -43,6 +45,10 @@ export function Payments() {
   const [endDate, setEndDate] = useState<Date>(dayjs().toDate());
   const [startDate, setStartDate] = useState<Date>(dayjs().subtract(1, 'month').toDate());
   const [selectDateType, setSelectDateType] = useState<string>('T')
+
+  const [salesField, setSalesField] = useState("")
+  const [paidField, setPaidField] = useState(false)
+  const [valuePaidField, setValuePaidField] = useState("")
 
 
   useEffect(() => {
@@ -135,8 +141,7 @@ export function Payments() {
 
   function createNewRow(data: any) {
     setLoading(true)
-    var newData = { owner_id: Number(data['owner']), value: Number(data.value), description: data.description };
-    console.log('craeted')
+    var newData = { owner_id: Number(data['owner']), value: Number(data.value), description: data.description, paidValue: Number(data.paidValue), typePaid: data.typePaid, paid: data.paid};
     const promise = new Promise((resolve, reject) => {
       api.post('payment', newData, {
         headers: {
@@ -144,13 +149,13 @@ export function Payments() {
         }
       }).then(response => {
         toast.success(`Created payment: ${response.data?.id}`, { position: "top-center", autoClose: 1000, })
-        setLoading(false)
         handlePayments(searchButton)
         resolve(`Created payment: ${response.data?.id}`);
       }).catch((err: AxiosError) => {
         const data = err.response?.data as { message: string }
         toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
         setLoading(false)
+        handlePayments(searchButton)
         throw new Error(`Unidentified error: ${data.message || err.response?.data || err.message}`);
       })
     });
@@ -253,9 +258,9 @@ export function Payments() {
     }).then(response => {
       console.log('return call list extracts')
       var listResponde = JSON.parse(JSON.stringify(response.data))
-      var listExtract = []
       console.log(listResponde)
-      setExtracts(listResponde)
+      setExtracts(listResponde.extracts)
+      setOwnerExtract(listResponde.owner)
       setLoadingModal(false)
     }).catch((err: AxiosError) => {
       const data = err.response?.data as { message: string }
@@ -269,11 +274,30 @@ export function Payments() {
       accessorKey: 'name',
       header: 'Name',
       size: 180,
+      Cell: ({ renderedCellValue, row }) => (
+      <>
+        <div className="w-full cursor-pointer" onClick={() => {
+          setOpenListModal(true)
+          setOpenIndex(row.original.id)
+        }}>
+          <span className="font-base">{renderedCellValue}</span>
+        </div>
+        </>
+      )
     },
     {
       accessorKey: 'dogsName',
       header: 'Dogs',
-      size: 180,
+      size: 180,Cell: ({ renderedCellValue, row }) => (
+      <>
+        <div className="w-full cursor-pointer" onClick={() => {
+          setOpenListModal(true)
+          setOpenIndex(row.original.id)
+        }}>
+          <span className="font-base">{renderedCellValue}</span>
+        </div>
+        </>
+      )
     },
     {
       accessorKey: 'extracts',
@@ -288,19 +312,10 @@ export function Payments() {
             <span className="font-semibold">{renderedCellValue}</span>
           </div>
           {row.original.id == openIndex && openListModal ?
-            <DialogListModal
+            <PaysInfoListModal
               open={openListModal}
               onClose={() => setOpenListModal(false)}
-              onSubmit={() => console.log('submit')}
-              name={row.original.name}
-              callInit={() => callListExtracts(row.original.id)}
-              data={extracts}
-              setData={setExtracts}
-              headers={headersExtracts}
-              loading={loadingModal}
-              deleteRow={(id) => deleteDataRow(id)}
-              updateRow={(data) => updateDataRow(data)}
-              infoData={{ owner: row.original.name, dogs: row.original.dogsName }}
+              infoData={{ownerId:row.original.id, dateStart: startDate.toISOString(), dateEnd: endDate.toISOString(), all: searchButton === 'A', done: searchButton === 'C'}}
             />
             : null}
         </>
@@ -393,10 +408,49 @@ export function Payments() {
     },
     {
       accessorKey: 'value',
-      label: 'Value',
+      label: 'Sales',
       name: '',
       type: "number",
+      value: salesField,
+      setValue: (value:any) =>  {
+        setSalesField(value)
+        setValuePaidField(value)
+      },
       required: true,
+    },
+    {
+      accessorKey: 'paid',
+      label: 'Paid',
+      name: 'Paid',
+      type: "checkbox",
+      value: paidField,
+      setValue: (value:any) => setPaidField(value),
+      gridXS: 12, gridMS: 4,
+      marginGridTop: '16px'
+    },
+    {
+      accessorKey: 'typePaid',
+      label: 'Payment',
+      name: 'Choose Payment Type',
+      type: "select",
+      noShow: !paidField,
+      required: true,
+      getDataSelect: (inputValue: string) => new Promise<any[]>((resolve, reject) => {
+        var listData: any[] = [{ value: 'CASH', label: 'Cash' }, { value: 'CARD', label: 'Card' }, { value: 'REV', label: 'Revolut' }]
+        resolve(listData)
+      }),
+      gridXS: 12, gridMS: 4,
+    },
+
+    {
+      accessorKey: 'paidValue',
+      label: 'Value Paid',
+      name: '',
+      type: "number",
+      value: valuePaidField,
+      noShow: !paidField,
+      setValue: (value:any) => setValuePaidField(value),
+      gridXS: 12, gridMS: 4
     },
     {
       accessorKey: 'description',
