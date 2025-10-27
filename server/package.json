@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "build": "tsup src",
-    "start": "node dist/src/server.ts"
+    "start": "node dist/server.js"
   },
   "keywords": [],
   "author": "",
