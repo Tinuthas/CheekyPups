@@ -57,13 +57,10 @@ const headersInfo = [
 
 export function TillMoney() {
 
-  const [info, setInfo] = useState([{}])
   const [loading, setLoading] = useState(false)
-  const [loadingModal, setLoadingModal] = useState(false)
   const [searchButton, setSearchButton] = useState('W')
   const [endDate, setEndDate] = useState<Date>(dayjs().toDate());
   const [startDate, setStartDate] = useState<Date>(dayjs().subtract(1, 'month').toDate());
-  const [selectDateType, setSelectDateType] = useState<string>('T')
   const [openNewChangeModal, setNewChangeModal] = useState(false)
   const [newValue, setNewValue] = useState("")
   const [description, setDescription] = useState("")
@@ -72,59 +69,9 @@ export function TillMoney() {
   const [grooming, setGrooming] = useState([])
   const [allInfo, setAllInfo] = useState([])
 
-
   useEffect(() => {
-    handleInfo(searchButton)
     getAllTillInfo()
   }, [searchButton, startDate, endDate])
-
-  function handleInfo(status: string) {
-    setLoading(true)
-    const all = status === 'A';
-    const done = status === 'C';
-    const startDateParsed = dayjs(startDate).toISOString()
-    const endDateParsed = dayjs(endDate).toISOString()
-    setLoading(false)
-    /*api.get('payment', {
-      params: {
-        all,
-        done,
-        startDate: startDateParsed,
-        endDate: endDateParsed
-      },
-      headers: {
-        Authorization: getToken()
-      }
-    }).then(response => {
-      var listResponde = JSON.parse(JSON.stringify(response.data))
-      console.log(listResponde)
-      setPayments(listResponde)
-      setLoading(false)
-    }).catch((err: AxiosError) => {
-      const data = err.response?.data as { message: string }
-      toast.error(`Unidentified error: ${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
-      setLoading(false)
-    })*/
-  }
-
-  function changeCalendarDates(data: any[]) {
-    setStartDate(data[0])
-    setEndDate(data[1])
-    setSelectDateType(data[2])
-    console.log('change calendar dates')
-    console.log(data)
-    const promise = new Promise((resolve, reject) => {
-      handleInfo(searchButton)
-      resolve("");
-    });
-    return promise
-  }
-
-
-  function selectOrders(value: any) {
-    setSearchButton(value)
-    handleInfo(value)
-  }
 
   function addingNewChange() {
     var values = {
@@ -157,23 +104,35 @@ export function TillMoney() {
 
 
   function getAllTillInfo() {
-    setLoading(true)
-    api.get('payment/till', {
-      headers: {
-        Authorization: getToken()
-      }
-    }).then(response => {
-      var data = response.data
-      var listData = JSON.parse(JSON.stringify(data));
-      setDaycare(listData.daycare)
-      setGrooming(listData.grooming)
-      setAllInfo(listData.all)
-      setLoading(false)
-    }).catch((err: AxiosError) => {
-      const data = err.response?.data as { message: string }
-      toast.error(`Unidentified error: ${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
-      setLoading(false)
-    })
+    try {
+      setLoading(true)
+      api.get('payment/till', {
+        headers: {
+          Authorization: getToken()
+        }
+      }).then(response => {
+        var data = response.data
+        var listData = JSON.parse(JSON.stringify(data));
+        setDaycare(listData.daycare)
+        setGrooming(listData.grooming)
+        let listInfo = listData.all
+        console.log(listData.all)
+        listInfo.forEach((info: any) => {
+          info.date = dayjs(info.date).format('DD/MM/YYYY HH:mm')
+        });
+        console.log(listData.all)
+        setAllInfo(listInfo)
+        setLoading(false)
+      }).catch((err: AxiosError) => {
+        const data = err.response?.data as { message: string }
+        toast.error(`Unidentified error: ${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
+        setLoading(false)
+      })
+    } catch (e) {
+      toast.error(`Unidentified error`, { position: "top-center", autoClose: 5000, })
+
+    }
+
   }
 
   const listDaycareItems = daycare.map((till: any) =>
@@ -186,7 +145,7 @@ export function TillMoney() {
     </div>
   )
 
-   const listGroomingItems = grooming.map((till: any) =>
+  const listGroomingItems = grooming.map((till: any) =>
     <div className="flex flex-row justify-around mt-2 text-center" key={till.id}>
       <p className="w-[120px] ">{dayjs(till.date).format('DD/MM/YYYY HH:mm')}</p>
       <p className="w-[100px] ">{`€ ${till.valueStarted}`}</p>
@@ -254,17 +213,17 @@ export function TillMoney() {
                 </div>
               </div>
             </div>
-            
-            
+
+
           </div>
 
-           <div className="md:flex bg-white w-full mt-10 rounded">
-            <DataTableCustom 
+          <div className="md:flex bg-white w-full mt-10 rounded">
+            <DataTableCustom
               titleCreate="Add New Till Change"
-              headers={headersInfo} 
-              data={allInfo} 
+              headers={headersInfo}
+              data={allInfo}
               disableActions={true}
-              title="Last Till Changes" 
+              title="Last Till Changes"
             />
           </div>
         </>
@@ -284,7 +243,7 @@ export function TillMoney() {
                   type: "select",
                   required: true,
                   getDataSelect: (inputValue: string) => new Promise<any[]>((resolve, reject) => {
-                    resolve([{ label: "Adjustment", value: "Adjustment" },{ label: "Transfering Bank", value: "Transfering Bank" }, { label: "Removing Money", value: "Removing Money" }, { label: "Adding Money", value: "Adding Money" }, { label: "Other", value: "Other" }])
+                    resolve([{ label: "Adjustment", value: "Adjustment" }, { label: "Transfering Bank", value: "Transfering Bank" }, { label: "Removing Money", value: "Removing Money" }, { label: "Adding Money", value: "Adding Money" }, { label: "Other", value: "Other" }])
                   }),
                   setValue: (value) => {
                     setDescription(value.value)

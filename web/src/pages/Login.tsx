@@ -3,7 +3,7 @@ import { FormEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import logoImage from '../assets/roundedlogo.png'
 import z, { ZodError } from 'zod'
-import {api, updateToken} from '../lib/axios';
+import { api, updateToken } from '../lib/axios';
 import { Loading } from '../components/Loading';
 
 interface Token {
@@ -23,7 +23,7 @@ const loginSchema = z.object({
 
 type LoginInput = z.infer<typeof loginSchema>
 
-export function Login(){
+export function Login() {
 
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
@@ -39,34 +39,34 @@ export function Login(){
 
     setErrorMessage("")
 
-    if(email == '' || password == '') {
+    if (email == '' || password == '') {
       setErrorMessage("You need to fill in the email and password fields")
       return
     }
 
-    try{
-      login(loginSchema.parse({parsedEmail: email, parsedPassword: password}))
-    }catch(err: any) {
-      const validation:ZodError = err
+    try {
+      login(loginSchema.parse({ parsedEmail: email, parsedPassword: password }))
+    } catch (err: any) {
+      const validation: ZodError = err
       var listMessage = ""
       validation.errors.map(error => {
         console.log(error.message)
-        if(listMessage != "")
+        if (listMessage != "")
           listMessage = listMessage + " - "
         listMessage = listMessage + error.message
       })
       setErrorMessage(listMessage)
     }
-   
-    
+
+
   }
 
-  function login(input: LoginInput){
+  function login(input: LoginInput) {
     setLoading(true)
-    const {parsedEmail, parsedPassword} = input
-    api.post<Token>('users/login', {email: parsedEmail, password: parsedPassword}, {
+    const { parsedEmail, parsedPassword } = input
+    api.post<Token>('users/login', { email: parsedEmail, password: parsedPassword }, {
       headers: { 'Content-Type': 'application/json' }
-    }).then( response =>{
+    }).then(response => {
       var accessToken = response.data.accessToken
       setLoading(false)
       if (accessToken != "") {
@@ -74,76 +74,76 @@ export function Login(){
         updateToken()
         navigate("/app");
       }
-      
+
     }).catch((err: AxiosError) => {
       setLoading(false)
-      if(err.response?.status == 401) {
+      if (err.response?.status == 401) {
         setErrorMessage("Invalid email or password")
         return
-      }else{
+      } else {
         setErrorMessage("Unidentified error")
         console.log(err.message)
         console.log(err.response?.data)
-        return 
+        return
       }
     })
   }
 
   return (
     <div className="relative flex flex-col justify-center min-h-screen overflow-hidden">
-        <div className="w-full p-6 m-auto bg-white rounded-md shadow-md lg:max-w-xl">
-            <div className='flex justify-center m-6'>
-              <img src={logoImage} alt="Cheeky Pubs Logo" className='h-[100px] md:h-[150px]'/>
-            </div>
-            <h1 className="text-3xl font-semibold text-center text-pinkBackground font-borsok">
-               Sign in
-            </h1>
-            <form className="mt-6" onSubmit={handleSubmit}>
-                <div className="mb-2">
-                    <label
-                        htmlFor="email"
-                        className="block text-sm font-semibold text-neutral-800"
-                    >
-                        Email
-                    </label>
-                    <input
-                        onChange={event => setEmail(event.target.value)}
-                        autoFocus
-                        type="email"
-                        className="block w-full px-4 py-2 mt-2 text-neutral-600 bg-white border rounded-md focus:border-pinkBackground focus:outline-none"
-                    />
-                </div>
-                <div className="mb-2">
-                    <label
-                        htmlFor="password"
-                        className="block text-sm font-semibold text-neutral-800"
-                    >
-                        Password
-                    </label>
-                    <input
-                        onChange={event => setPassword(event.target.value)}
-                        type="password"
-                        className="block w-full px-4 py-2 mt-2 text-neutral-600 bg-white border rounded-md focus:border-pinkBackground focus:outline-none "
-                    />
-                </div>
-
-                <div className={`mt-6 ${errorMessage !== "" ? 'opacity-100':'hidden opacity-0'}`}>
-                  <span className='text-red-500 font-semibold text-base'>{errorMessage}</span>
-                </div>
-                
-                <div className="mt-6">
-                  { loading ? <div className="w-full flex justify-center"><Loading pink={true} /> </div> :
-                    <button className="w-full px-4 py-2 font-bold tracking-wide text-white transition-colors duration-200 transform bg-pinkBackground rounded-md hover:bg-pink-600 focus:outline-none focus:bg-bg-pink-600">
-                        Login
-                    </button>
-                  }
-                </div>
-            </form>
-
-           
+      <div className="w-full p-6 m-auto bg-white rounded-3xl shadow-md lg:max-w-xl">
+        <div className='flex justify-center m-6'>
+          <img src={logoImage} alt="Cheeky Pubs Logo" className='h-[100px] md:h-[150px]' />
         </div>
+        <h3 className="text-4xl md:text-5xl font-semibold text-center text-pinkBackground font-borsok">
+          Sign in
+        </h3>
+        <form className="mt-6" onSubmit={handleSubmit}>
+          <div className="mb-2">
+            <label
+              htmlFor="email"
+              className="block text-sm font-semibold text-neutral-800"
+            >
+              Email
+            </label>
+            <input
+              onChange={event => setEmail(event.target.value)}
+              autoFocus
+              type="email"
+              className="block w-full px-4 py-2 mt-2 text-neutral-600 bg-white border rounded-md focus:border-pinkBackground focus:outline-none"
+            />
+          </div>
+          <div className="mb-2">
+            <label
+              htmlFor="password"
+              className="block text-sm font-semibold text-neutral-800"
+            >
+              Password
+            </label>
+            <input
+              onChange={event => setPassword(event.target.value)}
+              type="password"
+              className="block w-full px-4 py-2 mt-2 text-neutral-600 bg-white border rounded-md focus:border-pinkBackground focus:outline-none "
+            />
+          </div>
+
+          <div className={`mt-6 ${errorMessage !== "" ? 'opacity-100' : 'hidden opacity-0'}`}>
+            <span className='text-red-500 font-semibold text-base'>{errorMessage}</span>
+          </div>
+
+          <div className="mt-6">
+            {loading ? <div className="w-full flex justify-center"><Loading pink={true} /> </div> :
+              <button className="w-full px-4 py-2 font-bold tracking-wide text-white transition-colors duration-200 transform bg-pinkBackground rounded-md hover:bg-pink-600 focus:outline-none focus:bg-bg-pink-600">
+                Login
+              </button>
+            }
+          </div>
+        </form>
+
+
+      </div>
     </div>
-);
+  );
 }
 
 /*

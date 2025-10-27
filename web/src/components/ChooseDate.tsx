@@ -1,20 +1,35 @@
 
-import { TextField, ThemeProvider } from "@mui/material";
+import { Badge, styled, TextField, ThemeProvider } from "@mui/material";
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { theme } from "../lib/theme";
 import dayjs from "dayjs";
+import { PickersDay } from "@mui/x-date-pickers";
+import { useState } from "react";
 
 interface ChooseDateButtonProps {
   label: String;
   date: Date;
   setDate: (date: Date) => void;
-  calendar?: Array<any>
+  calendar: Array<{dayBooking: {date: string, daysBooking: []}}>
 }
+
+import updateLocale from "dayjs/plugin/updateLocale";
+
+dayjs.extend(updateLocale);
+
+dayjs.updateLocale("en", {
+  weekStart: 1
+});
 
 export function ChooseDateButton({ label, date, setDate, calendar }: ChooseDateButtonProps) {
 
+
+  const [highlightedDays, setHighlitedDays] = useState(calendar != undefined ? calendar : []);
+  console.log(calendar)
+
+  
   return (
     <div className="h-10 my-2 ">
       <ThemeProvider theme={theme}>
@@ -22,7 +37,35 @@ export function ChooseDateButton({ label, date, setDate, calendar }: ChooseDateB
           <DatePicker
             className=" transition-all"
             value={date}
+            renderDay={(day, _value, DayComponentProps) => {
+              let selectDay:any|null = null
+              calendar.map((hightlighed) => {
+                if(hightlighed.dayBooking.date.includes(dayjs(day).toISOString())){
+                  selectDay = hightlighed
+                  //return hightlighed
+                }
+              })
 
+              return (
+                <Badge
+                  key={day.toString()}
+                  overlap="circular"
+                  badgeContent={selectDay!=null ? selectDay.dayBooking.daysBooking.length : undefined}
+                  color="success"
+                  sx={{
+                    "& .MuiBadge-badge": {
+                      color: "#FFFFFF",
+                      fontWeight: 900,
+                    }
+                  }}
+                >
+                  <PickersDay {...DayComponentProps} />
+                </Badge>
+              );
+              
+            }}
+            views={['year', 'month', 'day']}
+            
             //label={label}
             /*PopperProps={{
               //desktopPaper: { // Or 'mobilePaper' for the mobile variant
@@ -38,6 +81,7 @@ export function ChooseDateButton({ label, date, setDate, calendar }: ChooseDateB
               //},
             }}*/
             PopperProps={{
+              
               sx: {
                 '& .MuiPaper-root': { // Targets the paper container of the popper
                   minWidth: '400px', // Sets a minimum width for the popup

@@ -38,7 +38,7 @@ export function LandingPage() {
             <table className="table-auto border-collapse border border-zinc-400  hover:border-zinc-600 w-full justify-center align-middle mt-5 mb-5 text-center bolder text-sm md:text-base">
               <thead>
                 <tr>
-                  <th className="border border-zinc-300 bg-zinc-200 h-11">Description</th>
+                  <th className="border border-zinc-300 bg-zinc-200 h-11">Day</th>
                   <th className="border border-zinc-300 bg-zinc-200 h-11">Price</th>
                 </tr>
               </thead>
@@ -72,19 +72,20 @@ export function LandingPage() {
               {url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2Fdaycare32024.jpg?alt=media&token=f2aba298-a163-4e3c-9bb1-101731ff6b70'},
               {url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2Fdaycare62024.jpg?alt=media&token=879eae2a-fa28-48a8-9d4a-beef51747d85'},
               {url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2Fdaycare42024.jpg?alt=media&token=d8fb97c1-b517-4a19-9f07-395e2a2bbd29'},
-              {url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2Fdaycare6.jpeg?alt=media&token=738302e5-3122-46a0-bbaf-cc3aa27de906'},
-              {url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2Fdaycare8.jpeg?alt=media&token=48f9aaff-7514-43f5-add4-cf3c8647e336'},
-              {url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2Fdaycare7.jpeg?alt=media&token=84a0a838-754a-405c-b2fd-245f3d2f51fe'},
-              {url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2Fdaycare3.jpeg?alt=media&token=a5aa94fa-b26b-4b01-b08d-18e158eff878'},
-              {url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2Fdaycare4.jpeg?alt=media&token=1ac626f4-8019-41f0-9421-8ec8c4bbc6d7'},
-              {url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2Fdaycare5.jpeg?alt=media&token=e6094769-47f4-4f1a-907f-6e1dadfed67b'}, 
-              {url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2Fdaycare9.jpeg?alt=media&token=b458e12d-0ca0-4a65-a52c-ca7b9e4e4a99'}, 
-              {url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2Fdaycare10.jpeg?alt=media&token=c843e1cb-db70-42a7-8043-cb4a7dd58446'}, 
-              {url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2Fdaycare11.jpeg?alt=media&token=663dd446-e65a-4d5b-bac4-3d3d6ff52b7f'},
-              {url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2Fdaycare12.jpeg?alt=media&token=7721914d-9b3c-4a3e-999b-1a0462254027'},
-              {url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2Fdaycare13.jpeg?alt=media&token=24658036-d912-4d6f-9ef7-a930250c42b8'},
-              {url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2Fdaycare14.jpeg?alt=media&token=5d062ada-1464-46d6-8a52-76ca1d99f1c8'},
-              {url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2Fdaycare15.jpeg?alt=media&token=8c3d4a87-1f38-4761-a6bc-82c4e5c974e0'}]} />
+              //{url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2Fdaycare6.jpeg?alt=media&token=738302e5-3122-46a0-bbaf-cc3aa27de906'},
+              //{url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2Fdaycare8.jpeg?alt=media&token=48f9aaff-7514-43f5-add4-cf3c8647e336'},
+              //{url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2Fdaycare7.jpeg?alt=media&token=84a0a838-754a-405c-b2fd-245f3d2f51fe'},
+              //{url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2Fdaycare3.jpeg?alt=media&token=a5aa94fa-b26b-4b01-b08d-18e158eff878'},
+              //{url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2Fdaycare4.jpeg?alt=media&token=1ac626f4-8019-41f0-9421-8ec8c4bbc6d7'},
+              //{url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2Fdaycare5.jpeg?alt=media&token=e6094769-47f4-4f1a-907f-6e1dadfed67b'}, 
+              //{url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2Fdaycare9.jpeg?alt=media&token=b458e12d-0ca0-4a65-a52c-ca7b9e4e4a99'}, 
+              //{url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2Fdaycare10.jpeg?alt=media&token=c843e1cb-db70-42a7-8043-cb4a7dd58446'}, 
+              //{url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2Fdaycare11.jpeg?alt=media&token=663dd446-e65a-4d5b-bac4-3d3d6ff52b7f'},
+              //{url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2Fdaycare12.jpeg?alt=media&token=7721914d-9b3c-4a3e-999b-1a0462254027'},
+              //{url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2Fdaycare13.jpeg?alt=media&token=24658036-d912-4d6f-9ef7-a930250c42b8'},
+              //{url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2Fdaycare14.jpeg?alt=media&token=5d062ada-1464-46d6-8a52-76ca1d99f1c8'},
+              //{url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2Fdaycare15.jpeg?alt=media&token=8c3d4a87-1f38-4761-a6bc-82c4e5c974e0'}
+              ]} />
           </div>
           {/*
           <div className="m-5 bg-white p-7 md:rounded">
@@ -103,11 +104,11 @@ export function LandingPage() {
               {url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2FGrooming1.jpg?alt=media&token=23c46778-5023-42a3-a5ed-38d7e1f506bd'}, 
               {url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2FGrooming2.jpg?alt=media&token=f46b095f-341f-4f62-b06c-964c2da19e7b'}, 
               {url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2FGrooming3.jpg?alt=media&token=98daeeae-8f66-4131-bee6-c3de0891bf45'}, 
-              {url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2FGrooming4.jpg?alt=media&token=477a5ba4-ed7b-4d73-801d-c433b06a6846'}, 
+              //{url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2FGrooming4.jpg?alt=media&token=477a5ba4-ed7b-4d73-801d-c433b06a6846'}, 
               {url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2FGrooming5.jpg?alt=media&token=c4aa962f-d476-4464-8c05-6e6c2c8140db'}, 
               {url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2FGrooming6.jpg?alt=media&token=e546f632-6031-4b5b-ba06-a785c1f3599b'}, 
-              {url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2FGrooming7.jpg?alt=media&token=4b3fd8e8-bdf2-4398-a2fc-08cb09b6f5b7'}, 
-              {url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2FGrooming8.jpg?alt=media&token=30cf8ebc-e4ff-4cdb-a3ea-4c0106a46781'}, 
+              //{url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2FGrooming7.jpg?alt=media&token=4b3fd8e8-bdf2-4398-a2fc-08cb09b6f5b7'}, 
+              //{url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2FGrooming8.jpg?alt=media&token=30cf8ebc-e4ff-4cdb-a3ea-4c0106a46781'}, 
               {url: 'https://firebasestorage.googleapis.com/v0/b/cheekypups-42685.appspot.com/o/website%2FGrooming9.jpg?alt=media&token=7aee5960-7adc-4045-89eb-b0c219bfb1bd'}]} />
           </div>
 
@@ -125,7 +126,7 @@ export function LandingPage() {
             <p className="mt-5 text-center">
               Green Gate Business Centre, Gould St, The Lough, Cork - <strong>T12 Y65D</strong>
             </p>
-            {/*<Map googleMapsApiKey={API_MAPS} lat={51.890693} lng={-8.482955} zoom={15}/>*/}
+            {<Map googleMapsApiKey={API_MAPS} lat={51.890693} lng={-8.482955} zoom={15}/>}
           </div>
         </div>
       </main>

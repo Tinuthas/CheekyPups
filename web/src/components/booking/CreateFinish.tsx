@@ -9,7 +9,7 @@ interface CreateFinishProps {
   onClose: () => void;
   onSubmit: (values: any) => void;
   open: boolean;
-  ownerDog: { owner: string, phone: string, time: string, id: number, dogName: string, breed: string, date:string },
+  ownerDog: { owner: string, phone: string, time: string, id: number, dogName: string, breed: string, date:string, notes: string },
 
 }
 
@@ -24,7 +24,8 @@ export const CreateFinish = ({
   const [phoneOwner, setPhoneOwner] = useState(ownerDog.phone)
   const [dog, setDog] = useState<{ time: {} | null, bookingId: number, dogName: string, breed: string }>({ time: ownerDog.time, bookingId: ownerDog.id, dogName: ownerDog.dogName, breed: ownerDog.breed })
 
-  const [notes, setNotes] = useState("")
+  const [notes, setNotes] = useState(ownerDog.notes)
+  const [description, setDescription] = useState("GROOMING "+dayjs(ownerDog.date).format('DD/MM/YYYY hh:mm A'))
   const [sales, setSales] = useState("")
   const [valuePaid, setValuePaid] = useState("")
   const [paidField, setPaidField] = useState(false)
@@ -114,7 +115,7 @@ export const CreateFinish = ({
             type: "checkbox",
             value: paidField,
             setValue: (value) => setPaidField(value),
-            gridXS: 12, gridMS: 2,
+            gridXS: 12, gridMS: !paidField ? 9 : 2,
             marginGridTop: '20px'
           },
           {
@@ -141,24 +142,23 @@ export const CreateFinish = ({
             gridXS: 12, gridMS: 3
           },
           {
-            accessorKey: 'notesDescription',
+            accessorKey: 'notes',
             label: 'Notes',
             name: '',
             type: "text",
             value: notes,
             setValue: (value) => setNotes(value),
-            gridXS: 12, gridMS: 12,
+            gridXS: 12, gridMS: 6,
           },
           {
-            accessorKey: 'notes',
-            label: '',
+            accessorKey: 'description',
+            label: 'Description',
             name: '',
             type: "text",
-            noShow:true,
-            value: ("GROOMING "+dayjs(ownerDog.date).format('DD/MM/YYYY hh:mm A')+" " +notes).trim(),
-            setValue: (value) => setNotes(value),
-            gridXS: 12, gridMS: 12,
-          }]}
+            value: description,
+            setValue: (value) => setDescription(value),
+            gridXS: 12, gridMS: 6,
+          },]}
         open={open}
         onClose={() => onClose()}
         onSubmit={(values) => onSubmit(values)}

@@ -9,10 +9,9 @@ import MaterialReactTable, { MRT_ColumnDef } from "material-react-table";
 import { AxiosError } from "axios";
 import { toast } from "react-toastify";
 import { AvatarModal } from "../components/AvatarProfile";
-import { FilterDays } from "../components/FilterDays";
+import { FilterDays } from "../components/attendance/FilterDays";
 import { DataTableAttendance } from "../components/attendance/DataTableAttendance";
 import { cellComponent } from "../components/attendance/CellAttendanceDate";
-import { PaysInfoListModal } from "../components/payment/PaysInfoListModal";
 import InfoItemButton from "../components/attendance/InfoItemButton";
 
 type Attendances = Array<{
@@ -111,11 +110,11 @@ export function Attendances() {
           var base: MRT_ColumnDef<any>[] = [{
             accessorKey: 'name',
             header: 'Dog Name',
-            size: 180,
+            size: 220,
             Cell: ({ renderedCellValue, row }) => (
               <>
                 <InfoItemButton children={
-                   <div className="flex flex-row justify-center align-baseline cursor-pointer" onClick={() => {
+                  <div className="flex flex-row justify-center align-baseline cursor-pointer" onClick={() => {
                     setOpenListModal(true)
                     setOpenIndex(row.original.owner_id)
                     console.log(row.original.owner_id)
@@ -135,7 +134,7 @@ export function Attendances() {
 
                     }
                   </div>
-                } id={row.original.owner_id}>
+                } id={row.original.owner_id} onClose={() => clickSearchByDates()}>
                 </InfoItemButton>
               </>
             ),
@@ -167,18 +166,7 @@ export function Attendances() {
 
   const handleCreateNewRow = (values: any) => {
     setLoading(true)
-    console.log(values)
-    console.log('paid')
-    console.log(values.paid)
-    /*var newValues = {
-      dog_id: Number(values.dogId), 
-      date: values.date, 
-      typeDay: values.typeDay?.toUpperCase?.(), 
-      paid: values.paid,  
-      value: values.value, 
-      typePaid: values.typePaid?.toUpperCase?.(),
-      descriptionValue: values.descriptionValue
-    }*/
+   
     api.post('attendance', values, {
       headers: {
         Authorization: getToken()
@@ -189,8 +177,7 @@ export function Attendances() {
     }).catch((err: AxiosError) => {
       console.log(err)
       const data = err.response?.data as { message: string }
-      toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
-      throw new Error(`Unidentified error: ${data.message || err.response?.data || err.message}`);
+      toast.error(`${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
       setLoading(false)
     })
   };
@@ -198,6 +185,7 @@ export function Attendances() {
 
   const handleCreateNewWeekRow = (values: any) => {
     setLoading(true)
+
 
     api.post('attendance/week', values, {
       headers: {
@@ -215,6 +203,35 @@ export function Attendances() {
     })
   };
 
+  const handleCreateNewOwnerDog = (values: any) => {
+    try {
+      setLoading(true)
+      console.log(values)
+      values.birthdayDate = dayjs(values.birthdayDate, 'DD/MM/YYYY').toISOString()
+      if (values.secondDog)
+        values.secondBirthdayDate = dayjs(values.secondBirthdayDate, 'DD/MM/YYYY').toISOString()
+
+      api.post('owners/dogs', values, {
+        headers: {
+          Authorization: getToken()
+        }
+      }).then(response => {
+        toast.success(`Created Owner and Dogs!`, { position: "top-center", autoClose: 1000, })
+        clickSearchByDates()
+      }).catch((err: AxiosError) => {
+        console.log(err)
+        const data = err.response?.data as { message: string }
+        toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
+        setLoading(false)
+        throw new Error(`Unidentified error: ${data.message || err.response?.data || err.message}`);
+
+      })
+    } catch (e) {
+      toast.error(`Unidentified error`, { position: "top-center", autoClose: 5000, })
+    }
+
+  };
+
   return (
     <div className="md:p-10 pt-4 h-full flex flex-col items-center">
       <h3 className="font-medium text-3xl md:text-4xl lg:text-5xl text-pinkBackground font-borsok">Daycare</h3>
@@ -224,10 +241,13 @@ export function Attendances() {
         dateEnd={dateEnd}
         setDateStart={(date) => setDateStart(date)}
         setDateEnd={(date) => setDateEnd(date)}
-        onSubmit={() => clickSearchByDates()}
+        onSubmitSearch={() => clickSearchByDates()}
         loading={loading}
         onPreviousWeek={() => onNextPreviousWeek(-7)}
         onNextWeek={() => onNextPreviousWeek(+7)}
+        onSubmitNewRow={(values) => handleCreateNewRow(values)}
+        onSubmitNewWeek={(values) => handleCreateNewWeekRow(values)}
+        onSubmitOwnerDog={(values => handleCreateNewOwnerDog(values))}
       />
 
       <DataTableAttendance

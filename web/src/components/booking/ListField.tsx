@@ -58,6 +58,7 @@ export function ListField({ date, setDate, loading, setLoading }: ListFieldProps
       var listData = JSON.parse(JSON.stringify(data));
       console.log(listData)
       setBookings(listData.bookings)
+      console.log('calendar')
       console.log(listData.calendar)
       setCalendar(listData.calendar)
       var emptyBooking:Array<{}> = new Array()
@@ -108,8 +109,10 @@ export function ListField({ date, setDate, loading, setLoading }: ListFieldProps
       ownerId={booking.status.includes('offered') ? Object(booking.offering)['ownerId']: (booking.dog == null ? null : booking.dog.Owner.id)}
       ownerName={booking.status.includes('offered') ? Object(booking.offering)['owner']: (booking.dog == null ? "" : booking.dog.Owner.name)} 
       phone={booking.status.includes('offered') ? Object(booking.offering)['phone'] : (booking.dog == null ? "" : booking.dog.Owner.phoneOne)} 
+      dogId={booking.dog == null ? "" : booking.dog.id}
       dogName={booking.dog == null ? "" : booking.dog.name} 
       dogBread={booking.dog == null ? "" : booking.dog.breed} 
+      notes={booking.status.includes('offered') ? Object(booking.offering)['notes']: (booking.notes == null ? null : booking.notes)}
       date={booking.time}
       loadingMenuItem={loadingMenuItem} 
       setLoadingMenuItem={(value) => setLoadingMenuItem(value)} 
@@ -117,6 +120,7 @@ export function ListField({ date, setDate, loading, setLoading }: ListFieldProps
       listTimes={emptyBooking}
       createRowOffered={(values) => handleOfferedConfirmedCustomer(values)}
       finishRowBooking={(values) => handleFinishRowBooking(values)}
+      editNotesBooking={(values) => handleEditNotesBooking(values)}
       cancelBookingRow={(id) => handleCancel(id)}
       />
   )
@@ -327,6 +331,30 @@ export function ListField({ date, setDate, loading, setLoading }: ListFieldProps
         console.log('response')
         console.log(response.data)
         toast.success(`Booking finished`, { position: "top-center", autoClose: 1000, })
+        getBookingFromDate()
+        setLoading(false)
+      }).catch((err: AxiosError) => {
+        console.log(err)
+        const data = err.response?.data as { message: string }
+        toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
+      })
+     setLoading(false)
+    } catch (e) {
+      toast.error(`Unidentified error`, { position: "top-center", autoClose: 5000, })
+    }
+  }
+  
+  function handleEditNotesBooking(values:any) {
+    try{
+      setLoading(true)
+      api.post('booking/edit', values, {
+        headers: {
+          Authorization: getToken()
+        }
+      }).then(response => {
+        console.log('response')
+        console.log(response.data)
+        toast.success(`Booking edit`, { position: "top-center", autoClose: 1000, })
         getBookingFromDate()
         setLoading(false)
       }).catch((err: AxiosError) => {

@@ -7,8 +7,11 @@ const payBody = {
 }
 
 const createPayBody = z.object({
-  owner_id: z.number(),
+  owner_id: z.number().nullable(),
   ...payBody,
+  newCustomer: z.boolean(),
+  customerName: z.string().nullable(),
+  customerPhone: z.string().nullable(),
   paid: z.boolean(),
   paidValue: z.number().nullable(),
   typePaid: z.string().nullable()
@@ -35,7 +38,11 @@ const totalOwnerResponse = z.object({
 })
 
 const updatePaymentBody = z.object({
-  ...payBody,
+  sales: z.string(),
+  paid: z.boolean(),
+  typePaid: z.string().nullable(),
+  paidValue: z.string().nullable(),
+  description: z.string()
 })
 
 const updatePaymentId = z.object({

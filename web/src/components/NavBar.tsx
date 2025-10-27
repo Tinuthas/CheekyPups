@@ -15,22 +15,25 @@ export function NavBar() {
   );
 
   let Links = [
-    { name: "Daycare", 
+    { name: "Services", 
       links: [
         {
-          name: "List", path: "Attendances",
+          name: "Daycare", path: "Attendances",
+        },
+        {
+          name: "Booking", path: "Booking",
         },
         {
           name: "Calendar", path: "Calendar",
         },
         
       ]},
-    { name: "Grooming", 
+    /*{ name: "Grooming", 
       links: [
         {
           name: "Booking", path: "Booking",
         },
-      ]},
+      ]},*/
     { name: "Payments", 
       links: [
         {

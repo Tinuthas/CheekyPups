@@ -68,8 +68,8 @@ export async function attendanceRoutes(app: FastifyInstance) {
   async function addAttendanceHandle(request: FastifyRequest<{ Body: AttendanceInput }>, reply: FastifyReply) {
     try {
       return await addAttendance(request.body)
-    } catch (err) {
-      reply.code(400).send('Error in add dog attendance')
+    } catch (err: any) {
+      reply.code(400).send('Error in adding dog daycare - ' + String(err.message))
     }
   }
 
@@ -92,7 +92,7 @@ export async function attendanceRoutes(app: FastifyInstance) {
 
     var restPaidValue = null
     var booleanPaid = paid
-    if (paidValue != null && Number(paidValue) != 0) {
+    if (paidValue != null && Number(paidValue) >= 0) {
       restPaidValue = Number(paidValue)
       booleanPaid = paid
 
@@ -142,9 +142,10 @@ export async function attendanceRoutes(app: FastifyInstance) {
         }
       }
     })
+    console.log(checkedAttendance)
 
     if (checkedAttendance != undefined && checkedAttendance.id != null) {
-      return checkedAttendance
+      throw new Error('Dog already in the day')
     }
 
     console.log('creating attendance')
@@ -492,8 +493,8 @@ export async function attendanceRoutes(app: FastifyInstance) {
   async function addAttendanceWeekHandle(request: FastifyRequest<{ Body: AttendanceWeekInput }>, reply: FastifyReply) {
     try {
       return await addAttendanceWeek(request.body)
-    } catch (err) {
-      reply.code(400).send('Error in add dog attendance')
+    } catch (err:any) {
+      reply.code(400).send('Error in adding dog daycare - ' + String(err.message))
     }
   }
 
@@ -513,7 +514,7 @@ export async function attendanceRoutes(app: FastifyInstance) {
     var restPaidValue = null
     var booleanPaid = paid
 
-    if (paidValue != null && Number(paidValue) != 0) {
+    if (paidValue != null && Number(paidValue) >= 0) {
       restPaidValue = Number(paidValue)
       booleanPaid = paid
 
@@ -550,7 +551,7 @@ export async function attendanceRoutes(app: FastifyInstance) {
   async function checkPaidAttendance(date: string, dogId: number, typeDay: string, paid: boolean, paidValue: number | null, typePaid: string, value: number, descriptionValue: string) {
 
     var att = null
-    if (value != null && value != 0 && dogId != 0)
+    if (value != null && value >= 0 && dogId != 0)
       att = await addingAttendanceDog(date, dogId, typeDay, paid, paidValue, String(typePaid), value, descriptionValue)
 
     if (paidValue != null && value != null) {

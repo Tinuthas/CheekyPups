@@ -68,7 +68,7 @@ const createBookingConfirmedOffer = z.object({
   notes: z.string(),
   firstDogTime: z.string(),
   firstDogName: z.string(),
-  firstDogBreed: z.string()
+  firstDogBreed: z.string(),
 })
 
 const createBookingFinish = z.object({
@@ -78,6 +78,19 @@ const createBookingFinish = z.object({
   salesValue: z.number(),
   paid: z.boolean(),
   paidValue: z.number(),
+  description: z.string()
+})
+
+const createEditOwner = z.object({
+  dogId: z.number(),
+  owner: z.string(),
+  phone: z.string(),
+  notes: z.string(),
+  dogName: z.string(),
+  dogBreed: z.string(),
+  second: z.boolean(),
+  secondOwner: z.string().nullable(),
+  secondPhone: z.string().nullable()
 })
 
 export type BookingInput = z.infer<typeof createBookingBody>
@@ -89,6 +102,7 @@ export type BookingCreateExistedCustomer = z.infer<typeof createBookingExistedCu
 export type BookingOfferingInput = z.infer<typeof createBookingOffering>
 export type BookingConfirmedOfferInput = z.infer<typeof createBookingConfirmedOffer>
 export type BookingFinishInput = z.infer<typeof createBookingFinish>
+export type BookingEditInput = z.infer<typeof createEditOwner>
 
 export const {schemas: bookingSchemas, $ref} = buildJsonSchemas({
   createBookingBody,
@@ -99,5 +113,6 @@ export const {schemas: bookingSchemas, $ref} = buildJsonSchemas({
   createBookingOffering,
   createBookingConfirmedOffer,
   createBookingExistedCustomer,
-  createBookingFinish
+  createBookingFinish,
+  createEditOwner
 }, { $id: "BookingSchemas" })

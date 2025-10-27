@@ -229,6 +229,35 @@ async function getAllExtractByOwnerAll(id: number, startDate: string, endDate: s
     },
     orderBy: {
       id: 'desc'
+    },
+    select: {
+      id: true,
+      description: true,
+      value: true,
+      date: true,
+      attendanceId: true,
+      paidValue: true,
+      totalValue: true,
+      done: true,
+      type: true,
+      attendance: {
+        select: {
+          dog: {
+            select: {
+              name: true,
+            }
+          }
+        }
+      },
+      booking: {
+        select: {
+          dog: {
+            select: {
+              name: true,
+            }
+          }
+        }
+      }
     }
   })
   return await filterAllExtractByOwner(extracts, Number(id))
@@ -242,6 +271,35 @@ async function getAllExtractByOwnerDone(done: boolean, id: number) {
     },
     orderBy: {
       id: 'desc'
+    },
+    select: {
+      id: true,
+      description: true,
+      value: true,
+      date: true,
+      attendanceId: true,
+      paidValue: true,
+      totalValue: true,
+      done: true,
+      type: true,
+      attendance: {
+        select: {
+          dog: {
+            select: {
+              name: true,
+            }
+          }
+        }
+      },
+      booking: {
+        select: {
+          dog: {
+            select: {
+              name: true,
+            }
+          }
+        }
+      }
     }
   })
   return await filterAllExtractByOwner(extracts, Number(id))
@@ -259,15 +317,44 @@ async function getAllExtractByOwnerDoneDate(done: boolean, id: number, startDate
     },
     orderBy: {
       id: 'desc'
+    },
+    select: {
+      id: true,
+      description: true,
+      value: true,
+      date: true,
+      attendanceId: true,
+      paidValue: true,
+      totalValue: true,
+      done: true,
+      type: true,
+      attendance: {
+        select: {
+          dog: {
+            select: {
+              name: true,
+            }
+          }
+        }
+      },
+      booking: {
+        select: {
+          dog: {
+            select: {
+              name: true,
+            }
+          }
+        }
+      }
     }
   })
-  console.log('extract')
 
   return await filterAllExtractByOwner(extracts, Number(id))
 }
 
 async function filterAllExtractByOwner(extracts: any[], ownerId: number) {
-  const filterExtracts = extracts.map(({ id, description, value, date, attendanceId, paidValue, totalValue, done, type }) => ({
+  console.log(extracts)
+  const filterExtracts = extracts.map(({ id, description, value, date, attendanceId, paidValue, totalValue, done, type, attendance, booking, }) => ({
     id,
     description,
     value,
@@ -276,11 +363,12 @@ async function filterAllExtractByOwner(extracts: any[], ownerId: number) {
     paidValue,
     totalValue,
     done,
-    type
+    type,
+    dogName: attendance != null ? attendance.dog.name : booking != null ? booking.dog.name : ""
   }));
 
   const ownerInfo = await prisma.owner.findUnique({
-    where: {id: ownerId},
+    where: { id: ownerId },
     include: {
       dogs: true
     }
@@ -297,22 +385,62 @@ async function filterAllExtractByOwner(extracts: any[], ownerId: number) {
         date: 'desc'
       }
     },
-    include: {
-      dayBooking: true,
-      dog: true,
-      extract: true
-    }
+    select: {
+      id: true,
+      time: true,
+      status: true,
+      notes: true,
+      dog: {
+        select: {
+          name: true,
+        }
+      },
+      extract: {
+        select: {
+          value: true,
+        }
+      }
+    },
   })
 
-  const filterBookings = bookings.map(({ id, time, status, dog, extract}) => ({
+  const filterBookings = bookings.map(({ id, time, status, dog, notes, extract }) => ({
     id,
     date: dayjs(time).format('DD/MM/YYYY HH:mm'),
-    dogName: dog!= null ? dog.name : "",
-    status: status
+    dogName: dog != null ? dog.name : "",
+    status: status,
+    notes: notes,
+    sales: extract != null ? extract.value : ""
   }));
 
+  const pays = await prisma.extract.groupBy({
+    by: ['ownerId'],
+    where: {
+      ownerId: ownerId,
+      done: false,
+    },
+    _count: {
+      id: true,
+    },
+    _sum: {
+      value: true,
+      paidValue: true,
+      totalValue: true
+    },
+  })
 
-  return {extracts: filterExtracts, owner: ownerInfo, bookings: filterBookings}
+  var totalPays: { id: number; extracts: number; value: Decimal | null; paidValue: Decimal | null; totalValue: Decimal | null; }[] = []
+  pays.forEach((element, index) => {
+    totalPays.push({
+      id: element.ownerId,
+      extracts: pays[index]._count.id,
+      value: pays[index]._sum.value,
+      paidValue: pays[index]._sum.paidValue,
+      totalValue: pays[index]._sum.totalValue,
+    })
+  })
+
+
+  return { extracts: filterExtracts, owner: ownerInfo, bookings: filterBookings, totalPays: totalPays }
 }
 
 async function getTotalHandle(request: FastifyRequest<{ Querystring: TotalOwnerInput }>, reply: FastifyReply) {
@@ -326,8 +454,8 @@ async function getTotalHandle(request: FastifyRequest<{ Querystring: TotalOwnerI
 async function ownerPayHandle(request: FastifyRequest<{ Body: PayOwnerInput }>, reply: FastifyReply) {
   try {
     const { value } = request.body
-    if (value === 0) {
-      return reply.code(400).send('Value needs to be different')
+    if (value <= 0) {
+      return reply.code(400).send('Value needs to be bigger than 0')
     }
     return await addValueExtract(request.body)
   } catch (err) {
@@ -379,39 +507,71 @@ async function getTotalOwner(input: TotalOwnerInput) {
 }
 
 async function addValueExtract(input: PayOwnerInput) {
-  const { owner_id, value, description, paid, paidValue, typePaid } = input
+  const { owner_id, value, description, newCustomer, customerName, customerPhone, paid, paidValue, typePaid } = input
 
   var date = dayjs().toISOString()
 
   const totalValue = value - (paid ? Number(paidValue) : 0);
+  let extract = null
 
-  let extract = await prisma.extract.create({
-    data: {
-      Owner: {
-        connect: {
-          id: owner_id
-        }
+  if (newCustomer) {
+    extract = await prisma.extract.create({
+      data: {
+        Owner: {
+          create: {
+            name: String(customerName),
+            phoneOne: String(customerPhone),
+            type: 'D'
+          }
+        },
+        value,
+        totalValue: totalValue,
+        done: paid,
+        paidValue: paid ? paidValue : 0,
+        type: paid ? typePaid : null,
+        description,
+        date
       },
-      value,
-      totalValue: totalValue,
-      done: paid,
-      paidValue: paid ? paidValue : 0,
-      type: paid ? typePaid : null,
-      description,
-      date
-    }
-  })
-  if(paid) {
-    await updateTillHandle('D', String(typePaid), value, Number(paidValue))
+      include: {
+        Owner: true
+      }
+    })
+  } else {
+    if (owner_id == null || owner_id == 0)
+      throw new Error('Owner was not selected')
+
+    extract = await prisma.extract.create({
+      data: {
+        Owner: {
+          connect: {
+            id: owner_id
+          }
+        },
+        value,
+        totalValue: totalValue,
+        done: paid,
+        paidValue: paid ? paidValue : 0,
+        type: paid ? typePaid : null,
+        description,
+        date
+      },
+      include: {
+        Owner: true
+      }
+    })
   }
-  
+
+  if (paid) {
+    await updateTillHandle(extract.Owner.type == null ? 'D' : extract.Owner.type, String(typePaid), value, Number(paidValue))
+  }
+
   return extract
 }
 
 async function addValuePaidExtract(input: PaidOwnerInput, id: number) {
   const { value, description, paidValue, done, typePaid } = input
 
-  if(paidValue < value) {
+  if (paidValue < value) {
     return new Error('Paid value needs to be bigger than the sales value')
   }
 
@@ -439,8 +599,12 @@ async function addValuePaidExtract(input: PaidOwnerInput, id: number) {
 
 async function updatePayment(input: UpdatePaymentInput, id: number) {
 
-  const { description, value } = input
+  const { description, sales, paid, typePaid, paidValue } = input
   var date = dayjs().toISOString()
+
+  const totalValue = Number(sales) - (paid ? Number(paidValue) : 0);
+
+  const type = typePaid != null ? (typePaid.toUpperCase().includes('REV') ? 'REV' : typePaid.toUpperCase()): typePaid
 
   const extract = await prisma.extract.update({
     where: {
@@ -448,7 +612,11 @@ async function updatePayment(input: UpdatePaymentInput, id: number) {
     },
     data: {
       description,
-      value,
+      value: sales,
+      totalValue: totalValue,
+      done: paid,
+      paidValue: paid ? paidValue : 0,
+      type: paid ? type : null,
       date
     }
   })
@@ -478,7 +646,7 @@ async function ownerPayingAllHandle(request: FastifyRequest<{ Body: CreatePaymen
 async function ownerPayingAll(input: CreatePaymentOwnerAllInput) {
   const { ownerId, salesValue, paidValue, typePaid } = input
 
-  if(paidValue < salesValue) {
+  if (paidValue < salesValue) {
     return new Error('Paid value needs to be bigger than the sales value')
   }
 
@@ -548,7 +716,7 @@ async function ownerPayingAll(input: CreatePaymentOwnerAllInput) {
       paidValues = paidValues - Number(extracts[index].value)
     }
   }
-  await updateTillHandle('D',typePaid, salesValue, paidValue)
+  await updateTillHandle('D', typePaid, salesValue, paidValue)
 
 }
 
@@ -590,10 +758,10 @@ async function getLastTillChanges() {
     take: 100,
   })
 
-  return {daycare: lastDaycareChanges, grooming: lastGroomingChanges, all: lastAllChanges}
+  return { daycare: lastDaycareChanges, grooming: lastGroomingChanges, all: lastAllChanges }
 }
 
-async function creatingNewTillChangeHandle(request: FastifyRequest<{Body: CreateNewTillInput}>, reply: FastifyReply) {
+async function creatingNewTillChangeHandle(request: FastifyRequest<{ Body: CreateNewTillInput }>, reply: FastifyReply) {
   try {
     return await creatingNewTillChanges(request.body)
   } catch (err) {
@@ -604,7 +772,7 @@ async function creatingNewTillChangeHandle(request: FastifyRequest<{Body: Create
 
 async function creatingNewTillChanges(input: CreateNewTillInput) {
 
-  const {newValue, description, type} = input
+  const { newValue, description, type } = input
   const tillChange = await prisma.till.create({
     data: {
       date: dayjs(new Date()).toISOString(),
@@ -626,15 +794,15 @@ async function creatingNewTillChanges(input: CreateNewTillInput) {
   return tillChange
 }
 
-export async function updateTillHandle(typeTill:string, type:string, value:number, valuePaid:number) {
-  try{
+export async function updateTillHandle(typeTill: string, type: string, value: number, valuePaid: number) {
+  try {
     /*if(type != 'CASH') {
       if(valuePaid != value) {
         throw new Error('Value Paid must be the same than the sales')
       }
     }*/
 
-      console.log('updating till')
+    console.log('updating till')
 
     const till = await prisma.till.findFirst({
       where: {
@@ -645,7 +813,7 @@ export async function updateTillHandle(typeTill:string, type:string, value:numbe
       }
     })
 
-    if(type == 'REV') {
+    if (type == 'REV') {
       await prisma.till.update({
         where: {
           id: till?.id
@@ -656,7 +824,7 @@ export async function updateTillHandle(typeTill:string, type:string, value:numbe
       })
     }
 
-    if(type == 'CARD') {
+    if (type == 'CARD') {
       await prisma.till.update({
         where: {
           id: till?.id
@@ -667,18 +835,18 @@ export async function updateTillHandle(typeTill:string, type:string, value:numbe
       })
     }
 
-    if(type == 'CASH') {
+    if (type == 'CASH') {
       await prisma.till.update({
         where: {
           id: till?.id
         },
         data: {
-          value: (Number(till?.value)+(valuePaid))  + ((value) - (valuePaid))
+          value: (Number(till?.value) + (valuePaid)) + ((value) - (valuePaid))
         }
       })
     }
 
-  }catch(e) {
+  } catch (e) {
     throw new Error('Error in updating till')
   }
 }

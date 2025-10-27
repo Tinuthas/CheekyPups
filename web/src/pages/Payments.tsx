@@ -48,6 +48,9 @@ export function Payments() {
 
   const [salesField, setSalesField] = useState("")
   const [paidField, setPaidField] = useState(false)
+  const [newCustomerField, setNewCustomerField] = useState(false)
+  const [customerName, setCustomerName] = useState("")
+  const [customerPhone, setCustomerPhone] = useState("")
   const [valuePaidField, setValuePaidField] = useState("")
 
 
@@ -86,69 +89,16 @@ export function Payments() {
     })
   }
 
-  function updateDataRow(data: any) {
-    setLoading(true)
-    const cloneData = JSON.parse(JSON.stringify(data))
-    delete cloneData.id;
-    delete cloneData.date;
-    console.log('update payment')
-    const promise = new Promise((resolve, reject) => {
-      api.put('payment', cloneData, {
-        params: {
-          id: (data as any).id
-        },
-        headers: {
-          Authorization: getToken()
-        }
-      }).then(response => {
-        toast.success(`Updated payment: ${response.data?.id}`, { position: "top-center", autoClose: 1000, })
-        resolve(`Updated payment: ${response.data?.id}`);
-        setLoading(false)
-      }).catch((err: AxiosError) => {
-        const data = err.response?.data as { message: string }
-        toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
-        setLoading(false)
-        throw new Error(`Unidentified error: ${data.message || err.response?.data || err.message}`);
-      })
-    })
-    return promise
-  }
-
-  function deleteDataRow(id: number) {
-    setLoading(true)
-    console.log('delete')
-    const promise = new Promise((resolve, reject) => {
-      api.delete('payment', {
-        params: {
-          id,
-        },
-        headers: {
-          Authorization: getToken()
-        }
-      }).then(response => {
-        toast.success(`Deleted payment: ${response.data?.id}`, { position: "top-center", autoClose: 1000, })
-        resolve(`Deleted payment: ${response.data?.id}`);
-        setLoading(false)
-      }).catch((err: AxiosError) => {
-        const data = err.response?.data as { message: string }
-        toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
-        setLoading(false)
-        throw new Error(`Unidentified error: ${data.message || err.response?.data || err.message}`);
-      })
-    });
-    return promise
-  }
-
   function createNewRow(data: any) {
     setLoading(true)
-    var newData = { owner_id: Number(data['owner']), value: Number(data.value), description: data.description, paidValue: Number(data.paidValue), typePaid: data.typePaid, paid: data.paid};
+    var newData = { owner_id: Number(data['owner']), value: Number(data.value), description: data.description, paidValue: Number(data.paidValue), typePaid: data.typePaid, paid: data.paid, newCustomer: data.newCustomer, customerName: data.customerName, customerPhone: data.customerPhone};
     const promise = new Promise((resolve, reject) => {
       api.post('payment', newData, {
         headers: {
           Authorization: getToken()
         }
       }).then(response => {
-        toast.success(`Created payment: ${response.data?.id}`, { position: "top-center", autoClose: 1000, })
+        toast.success(`Created payment: ${response.data?.Owner.name} Number: ${response.data?.id}`, { position: "top-center", autoClose: 1000, })
         handlePayments(searchButton)
         resolve(`Created payment: ${response.data?.id}`);
       }).catch((err: AxiosError) => {
@@ -175,99 +125,6 @@ export function Payments() {
     return promise
   }
 
-  const headersExtracts: MRT_ColumnDef<any>[] = [
-    {
-      accessorKey: 'date',
-      header: 'Date',
-      size: 130,
-      enableEditing: false,
-    },
-    {
-      accessorKey: 'value',
-      header: 'Sales',
-      size: 100,
-      Cell: ({ renderedCellValue, row }) => (
-        <>
-          <span className="font-semibold">{'€ '}</span>
-          <span className="text-green-600 font-semibold">{renderedCellValue}</span>
-        </>
-      )
-    },
-    {
-      accessorKey: 'paidValue',
-      header: 'Paid',
-      size: 100,
-      Cell: ({ renderedCellValue, row }) => (
-        (renderedCellValue == null) ? null :
-          <>
-            <span className="font-semibold">{'€ '}</span>
-            <span className="text-green-600 font-semibold">{renderedCellValue}</span>
-          </>
-      )
-    },
-
-    {
-      accessorKey: 'totalValue',
-      header: 'Owned',
-      size: 100,
-      Cell: ({ renderedCellValue, row }) => (
-        <>
-          <span className="font-semibold">{'€ '}</span>
-          {Number(renderedCellValue) > 0 ?
-            <span className="text-red-600 font-semibold">{renderedCellValue}</span>
-            :
-            <span className="text-green-600 font-semibold">{renderedCellValue}</span>
-          }
-        </>
-      )
-    },
-    {
-      accessorKey: 'done',
-      header: 'Done',
-      size: 100,
-      Cell: ({ renderedCellValue, row }) => (
-        <>
-          <span className="text-neutral-600 font-bold">{renderedCellValue ? 'X' : ''}</span>
-        </>
-      )
-    },
-    {
-      accessorKey: 'description',
-      header: 'Description',
-      size: 300,
-    }
-  ]
-
-  function callListExtracts(id: number) {
-    setLoadingModal(true)
-    const all = searchButton === 'A';
-    const done = searchButton === 'C';
-    const startDateParsed = dayjs(startDate).toISOString()
-    const endDateParsed = dayjs(endDate).toISOString()
-    api.get('payment/extracts', {
-      params: {
-        id,
-        all,
-        done,
-        startDate: startDateParsed,
-        endDate: endDateParsed
-      },
-      headers: {
-        Authorization: getToken()
-      }
-    }).then(response => {
-      console.log('return call list extracts')
-      var listResponde = JSON.parse(JSON.stringify(response.data))
-      console.log(listResponde)
-      setExtracts(listResponde.extracts)
-      setOwnerExtract(listResponde.owner)
-      setLoadingModal(false)
-    }).catch((err: AxiosError) => {
-      const data = err.response?.data as { message: string }
-      toast.error(`Unidentified error: ${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
-      setLoadingModal(false)
-    })
-  }
 
   const headers: MRT_ColumnDef<any>[] = [
     {
@@ -314,7 +171,10 @@ export function Payments() {
           {row.original.id == openIndex && openListModal ?
             <PaysInfoListModal
               open={openListModal}
-              onClose={() => setOpenListModal(false)}
+              onClose={() => {
+                setOpenListModal(false)
+                handlePayments(searchButton)
+              }}
               infoData={{ownerId:row.original.id, dateStart: startDate.toISOString(), dateEnd: endDate.toISOString(), all: searchButton === 'A', done: searchButton === 'C'}}
             />
             : null}
@@ -355,7 +215,7 @@ export function Payments() {
     },
     {
       accessorKey: 'totalValue',
-      header: 'Owned',
+      header: 'Owed',
       size: 100,
       Cell: ({ renderedCellValue, row }) => (
         <div className="w-full cursor-pointer" onClick={() => {
@@ -370,14 +230,14 @@ export function Payments() {
           }
         </div>
       )
-    }, {
+    }, 
+    {
       accessorKey: 'action',
-      header: 'Actions',
-      size: 80,
+      header: 'Pay',
+      size: 75,
       Cell: ({ renderedCellValue, row }) => (
         <>
-          <div className="w-full cursor-pointer text-center" onClick={() => {
-            console.log('clicked')
+          <div className="w-full cursor-pointer" onClick={() => {
             setOpenPayingModal(true)
             setOpenIndex(row.original.id)
           }}>
@@ -388,7 +248,7 @@ export function Payments() {
               open={openPayingModal}
               onClose={() => setOpenPayingModal(false)}
               onSubmit={(values) => handlePayingAllRow(values)}
-              ownerDog={{ owner: row.original.name, dogs: row.original.dogsName, id: row.original.id, sales: row.original.totalValue }}
+              ownerDog={{ owner: row.original.name, id: row.original.id, sales: row.original.totalValue }}
             //name={row.original.name}
             />
             : null}
@@ -403,8 +263,9 @@ export function Payments() {
       label: 'Owner',
       name: 'Choose owner',
       type: "select",
-      required: true,
-      getDataSelect: selectPromise
+      required: newCustomerField ? false : true,
+      getDataSelect: selectPromise,
+      gridXS: 12, gridMS: 6,
     },
     {
       accessorKey: 'value',
@@ -417,6 +278,34 @@ export function Payments() {
         setValuePaidField(value)
       },
       required: true,
+      gridXS: 12, gridMS: 6,
+    },{
+      accessorKey: 'newCustomer',
+      label: 'New Customer',
+      name: 'New Customer',
+      type: "checkbox",
+      value: newCustomerField,
+      setValue: (value:any) => setNewCustomerField(value),
+      gridXS: 12, gridMS: newCustomerField ? 4 : 12,
+      marginGridTop: newCustomerField ? '16px' : '0px'
+    },
+    {
+      accessorKey: 'customerName',
+      label: 'Customer Name',
+      name: '',
+      type: "text",
+      noShow: !newCustomerField,
+      required: true,
+      gridXS: 12, gridMS: 4,
+    },
+    {
+      accessorKey: 'customerPhone',
+      label: 'Phone',
+      name: '',
+      type: "text",
+      noShow: !newCustomerField,
+      required: true,
+      gridXS: 12, gridMS: 4
     },
     {
       accessorKey: 'paid',
@@ -426,7 +315,7 @@ export function Payments() {
       value: paidField,
       setValue: (value:any) => setPaidField(value),
       gridXS: 12, gridMS: 4,
-      marginGridTop: '16px'
+      marginGridTop: paidField ? '16px' : '0px'
     },
     {
       accessorKey: 'typePaid',
@@ -455,8 +344,9 @@ export function Payments() {
     {
       accessorKey: 'description',
       label: 'Description',
-      name: 'Ex: Gromming ...',
+      name: 'Ex: Voucher, CBD Oil ...',
       type: "text",
+      gridXS: 12, gridMS: 12
     },
   ]
 
@@ -482,7 +372,6 @@ export function Payments() {
         toast.error(`Unidentified error: ${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
         setLoading(false)
       })
-
     } catch (e) {
       toast.error(`Unidentified error`, { position: "top-center", autoClose: 5000, })
     }

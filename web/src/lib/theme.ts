@@ -18,6 +18,10 @@ export const theme = createTheme({
       dark: colors.neutral[700],
       contrastText: colors.white,
     },
+    success:{
+      main: '#08CB00',
+      contrastText: colors.white,
+    },
     contrastThreshold: 3,
     tonalOffset: 0.2,
   },

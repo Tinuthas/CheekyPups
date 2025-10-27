@@ -3,7 +3,7 @@
 
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["fullTextSearch"]
+  previewFeatures = ["fullTextSearch", "filteredRelationCount"]
 }
 
 datasource db {
@@ -115,6 +115,7 @@ model Booking {
   status         String
   day_booking_id Int
   dog_id         Int?
+  notes          String?
 
   dayBooking DayBooking @relation(fields: [day_booking_id], references: [id])
   dog        Dog?       @relation(fields: [dog_id], references: [id])

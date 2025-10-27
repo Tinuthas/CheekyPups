@@ -9,7 +9,7 @@ interface PaymentAllModalProps {
   onClose: () => void;
   onSubmit: (values: any) => void;
   open: boolean;
-  ownerDog: {owner: string, dogs: string, id: number, sales: number},
+  ownerDog: {owner: string, id: number, sales: number},
 
 }
 
@@ -21,7 +21,6 @@ export const PaymentAllModal = ({
 }: PaymentAllModalProps) => {
 
   const [ownerName, setOwnerName] = useState(ownerDog.owner)
-  const [dogsOwner, setDogsOwner] = useState(ownerDog.dogs)
   const [ownerId, setOwnerId] = useState(ownerDog.id)
   const [sales, setSales] = useState(ownerDog.sales)
   const [valuePaid, setValuePaid] = useState(ownerDog.sales)
@@ -50,17 +49,7 @@ export const PaymentAllModal = ({
             value: ownerName,
             noEdit: true,
             setValue: (value) => setOwnerName(value),
-            gridXS: 12, gridMS: 6,
-          },
-          {
-            accessorKey: 'dogs',
-            label: 'Dogs',
-            name: '',
-            type: "text",
-            value: ownerName,
-            noEdit: true,
-            setValue: (value) => setOwnerName(value),
-            gridXS: 12, gridMS: 6,
+            gridXS: 12, gridMS: 8,
           },
           {
           accessorKey: 'typePaid',
@@ -72,7 +61,7 @@ export const PaymentAllModal = ({
             var listData: any[] = [{ value: 'CASH', label: 'Cash' }, { value: 'CARD', label: 'Card' }, { value: 'REV', label: 'Revolut' }]
             resolve(listData)
           }),
-          gridXS: 12, gridMS: 12,
+          gridXS: 12, gridMS: 4,
         },
         {
           accessorKey: 'salesValue',
@@ -93,6 +82,7 @@ export const PaymentAllModal = ({
           setValue: (value) => setValuePaid(value),
           gridXS: 12, gridMS: 6
         },
+        
       ]}
         open={open}
         onClose={() => onClose()}

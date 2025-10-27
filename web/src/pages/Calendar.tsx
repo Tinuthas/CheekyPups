@@ -7,10 +7,9 @@ import googleCalendarPlugin from '@fullcalendar/google-calendar';
 
 export default function Calendar() {
   return (
-    <div className='py-10 bg-blue px-1 md:px-10 lg:px-[100px]'>
-      <div className='w-full h-full p-2 md:p-5 bg-white text-neutral-700 text-xs md:text-base font-bold rounded-3xl'>
+    <div className='w-full py-10 bg-blue px-1 md:px-10 lg:px-[100px]'>
+      <div className='min-w-[550px] md:w-full h-full p-2 md:p-5 bg-white text-neutral-700 text-xs md:text-base font-bold md:rounded-3xl'>
         <FullCalendar
-          themeSystem='standard'
           plugins={[ dayGridPlugin, timeGridPlugin, listWeek, googleCalendarPlugin ]}
           initialView="dayGridMonth"
           firstDay={1}

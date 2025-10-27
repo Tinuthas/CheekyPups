@@ -9,7 +9,7 @@ interface CreateConfirmedOfferingProps {
   onClose: () => void;
   onSubmit: (values: any) => void;
   open: boolean;
-  ownerSearch: {search:string, owner: string, phone: string, time: string, id: number},
+  ownerSearch: {search:string, owner: string, phone: string, time: string, id: number, notes: string},
   listTimes: [{}]
 }
 
@@ -26,7 +26,7 @@ export const CreateConfirmedOffering = ({
   const [phoneOwner, setPhoneOwner] = useState(ownerSearch.phone)
   const [firstDog, setFirstDog] = useState<{ time: {} | null, name: string, breed: string, id:string }>({ time: ownerSearch.time, name: "", breed: "", id: ""})
   const [valueListTimes, setValueListTimes] = useState<[{}]>(listTimes)
-  const [notes, setNotes] = useState("")
+  const [notes, setNotes] = useState(ownerSearch.notes)
 
   function removeItemArrayTimes(key: any, oldKey: any) {
     var newList = valueListTimes

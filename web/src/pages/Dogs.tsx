@@ -10,6 +10,7 @@ import { Loading } from '../components/Loading';
 import { api, getToken } from '../lib/axios';
 import { ButtonGroupList } from '../components/ButtonGroupList';
 import { PaysInfoListModal } from '../components/payment/PaysInfoListModal';
+import InfoItemButton from '../components/attendance/InfoItemButton';
 
 const hideColumns = { owner: true }
 
@@ -103,9 +104,10 @@ export function Dogs() {
     }).then(response => {
       var data = response.data
       var listData = JSON.parse(JSON.stringify(data));
+      console.log(listData)
       for (const i in listData) {
-        listData[i].birthdayDate =  listData[i].birthdayDate != null ? dayjs(listData[i].birthdayDate).format('DD/MM/YYYY') : ""
-        delete listData[i].ownerId;
+        listData[i].birthdayDate = listData[i].birthdayDate != null ? dayjs(listData[i].birthdayDate).format('DD/MM/YYYY') : ""
+        //delete listData[i].ownerId;
       }
       setDogs(listData)
       setLoading(false)
@@ -148,19 +150,20 @@ export function Dogs() {
       size: 170,
       Cell: ({ renderedCellValue, row }) => (
         <>
-          <div className="w-full cursor-pointer" onClick={() => {
-            setOpenListModal(true)
-            setOpenIndex(row.original.id)
-          }}>
-            <span>{renderedCellValue}</span>
-          </div>
-          {row.original.id == openIndex && openListModal ?
-            <PaysInfoListModal
-              open={openListModal}
-              onClose={() => setOpenListModal(false)}
-              infoData={{ownerId:row.original.id}}
-            />
-            : null}
+          <InfoItemButton children={
+            <div className="flex flex-row justify-center align-baseline cursor-pointer" onClick={() => {
+              setOpenListModal(true)
+              setOpenIndex(row.original.ownerId)
+              console.log(row.original.ownerId)
+            }}>
+              <span>{renderedCellValue}</span>
+            </div>
+          } id={row.original.ownerId} onClose={() => {
+              setOpenListModal(false)
+              getAllDogs()
+            }}>
+          </InfoItemButton>
+          
         </>
       )
     },

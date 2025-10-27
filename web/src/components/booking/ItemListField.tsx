@@ -7,6 +7,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import PersonSearchRoundedIcon from '@mui/icons-material/PersonSearchRounded';
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
 import CheckCircleOutlinedIcon from '@mui/icons-material/CheckCircleOutlined';
+import PhoneIcon from '@mui/icons-material/Phone';
 import AddIcon from '@mui/icons-material/Add';
 import React from "react";
 import { DeleteModal } from "../DeleteModal";
@@ -15,6 +16,7 @@ import { CreateConfirmedOffering } from "./CreateConfirmedOffering";
 import { CreateFinish } from "./CreateFinish";
 import { PaysInfoListModal } from "../payment/PaysInfoListModal";
 import InfoItemButton from "../attendance/InfoItemButton";
+import { EditNotes } from "./EditNotesModal";
 
 
 
@@ -25,8 +27,10 @@ export interface ItemListFieldProps {
   ownerId?: number
   ownerName?: string
   phone?: string
+  dogId?: number
   dogName?: string
   dogBread?: string
+  notes?: string
   loadingMenuItem: number
   listTimes: [{}]
   date:string
@@ -34,15 +38,17 @@ export interface ItemListFieldProps {
   cancelBookingRow: (id: number) => void
   createRowOffered: (values: any) => void
   finishRowBooking: (values: any) => void
+  editNotesBooking: (values: any) => void
   setLoadingMenuItem: (loading: number) => void
 }
 
-export function ItemListField({ id, time, status, ownerId, ownerName, phone, dogName, dogBread, loadingMenuItem, listTimes, createRowOffered, setLoadingMenuItem, deleteRow, cancelBookingRow, finishRowBooking, date }: ItemListFieldProps) {
+export function ItemListField({ id, time, status, ownerId, dogId, ownerName, phone, dogName, dogBread, notes, loadingMenuItem, listTimes, createRowOffered, setLoadingMenuItem, deleteRow, cancelBookingRow, finishRowBooking, editNotesBooking, date }: ItemListFieldProps) {
 
   const [openDelete, setOpenDelete] = React.useState(false);
   const [createOfferedModalOpen, setCreateOfferedModalOpen] = React.useState(false);
   const [cancelModalOpen, setCancelModalOpen] = React.useState(false);
   const [finishModalOpen, setFinishModalOpen] = React.useState(false);
+  const [editNotesModalOpen, setEditNotesModalOpen] = React.useState(false);
 
   const [openIndex, setOpenIndex] = React.useState(-1)
   const [openListModal, setOpenListModal] = React.useState(false)
@@ -68,6 +74,11 @@ export function ItemListField({ id, time, status, ownerId, ownerName, phone, dog
     finishRowBooking(values)
   }
 
+  const handleEditNotes = (values: any) => {
+    setEditNotesModalOpen(false)
+    editNotesBooking(values)
+  }
+
   return (
     <>
       <div key={String(id)} className="h-20 w-fit mt-4 border border-neutral-300 rounded-xl text-neutral-800 flex flex-row self-center hover:border-neutral-500 hover:border-2 sm::text-base md:text-base lg:text-lg transition delay-300 duration-300"
@@ -82,7 +93,7 @@ export function ItemListField({ id, time, status, ownerId, ownerName, phone, dog
                 : status.includes('offered') ?
                   <div className="bg-yellow-500 w-full h-full rounded-bl-xl rounded-tl-xl" />
                   : status.includes('done') ?
-                    <div className="bg-blue w-full h-full rounded-bl-xl rounded-tl-xl" />
+                    <div className="bg-[#0047AB] w-full h-full rounded-bl-xl rounded-tl-xl" />
                     : null
           }
         </span>
@@ -92,7 +103,7 @@ export function ItemListField({ id, time, status, ownerId, ownerName, phone, dog
           </div>
           <div className="w-[120px] ml-2 md:ml-6 self-center text-center">
             {ownerId!= null && ownerId != 0 ? 
-              <InfoItemButton children={<h5>{ownerName}</h5>} id={Number(ownerId)} />
+              <InfoItemButton children={<h5>{ownerName}</h5>} id={Number(ownerId)} onClose={() => {}}/>
             : <h5>{ownerName}</h5>}
             
           </div>
@@ -105,19 +116,8 @@ export function ItemListField({ id, time, status, ownerId, ownerName, phone, dog
           <div className="w-[120px] ml-2 md:ml-6 self-center text-center">
             <h5>{dogBread}</h5>
           </div>
-          <div className="w-[80px] ml-2 md:ml-6 self-center ">
+          <div className="w-[100px] ml-2 md:ml-6 self-center ">
             <ThemeProvider theme={theme} >
-              {/**<MenuItemCustomBooking 
-                children={
-                  <MoreVertIcon />
-                }
-                handleDelete={(id) => {}}
-                handleEdit={(id) => {}}
-                id={id}
-                getBooking={(id) => {}}
-                editData={[]}
-              />*/}
-
               <div className="flex flex-row justify-around">
 
                 {status === 'empty' || status.includes('offered') ?
@@ -133,6 +133,11 @@ export function ItemListField({ id, time, status, ownerId, ownerName, phone, dog
                 {status.includes('confirmed') ?
                   <button onClick={() => setCancelModalOpen(true)}>
                     <CancelOutlinedIcon sx={iconSmallStyle} />
+                  </button>
+                  : null}
+                {status.includes('confirmed') ?
+                  <button onClick={() => setEditNotesModalOpen(true)}>
+                    <EditIcon sx={iconSmallStyle} />
                   </button>
                   : null}
                 {status.includes('confirmed') ?
@@ -154,6 +159,7 @@ export function ItemListField({ id, time, status, ownerId, ownerName, phone, dog
                     search: phone != null && phone != "" ? phone : ownerName != null && ownerName != "" ? ownerName : "",
                     owner: ownerName != null && ownerName != "" ? ownerName : "",
                     phone: phone != null && phone != "" ? phone : "",
+                    notes: notes != null && notes != "" ? notes : "",
                     time: time,
                     id: id,
                   }} /> : null
@@ -188,6 +194,24 @@ export function ItemListField({ id, time, status, ownerId, ownerName, phone, dog
                     dogName: dogName != null && dogName != "" ? dogName : "",
                     breed: dogBread != null && dogBread != "" ? dogBread : "",
                     date: date,
+                    notes: notes != null && notes != "" ? notes : "",
+                  }} /> : null
+              }
+              {editNotesModalOpen ?
+                <EditNotes
+                  key={"EditNotesModal"}
+                  onClose={() => {
+                    setEditNotesModalOpen(false);
+                  }}
+                  onSubmit={(values) => handleEditNotes(values)}
+                  open={editNotesModalOpen}
+                  ownerDog={{
+                    owner: ownerName != null && ownerName != "" ? ownerName : "",
+                    phone: phone != null && phone != "" ? phone : "",
+                    id: Number(dogId),
+                    dogName: dogName != null && dogName != "" ? dogName : "",
+                    breed: dogBread != null && dogBread != "" ? dogBread : "",
+                    notes: "",
                   }} /> : null
               }
             </ThemeProvider>

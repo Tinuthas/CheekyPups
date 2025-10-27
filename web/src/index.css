@@ -21,7 +21,7 @@
 }
 
 html {
-  //background-color: #FF499E;
+  //background-color: #f02a77;
 }
 
 body {
@@ -30,7 +30,7 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
-  //background-color: #FF499E;
+  //background-color: #f02a77;
   //overflow: hidden;
 }
 
@@ -68,6 +68,27 @@ button {
   font-family: "Gotham";
   src:local("Gotham-Regular"),
   url('/assets/fonts/GothamOffice.otf') 
+}
+
+//.fc .fc-button-primary {     color: #FFFFF;     background-color: #3485FF !important;  }
+.fc .fc-button-primary {
+  background-color: #f02a77 !important;
+  border-color: #f02a77 !important;
+  box-shadow:  0px 0px 0px 0px !important;
+}
+
+.fc .fc-button-primary:hover {
+  background-color: #FFF !important;
+  border-color: #f02a77 !important;
+  color: #f02a77 !important;
+  box-shadow:  0px 0px 0px 0px !important;
+}
+
+.fc .fc-button-active {
+  background-color: #FFF !important;
+  border-color: #f02a77 !important;
+  color: #f02a77 !important;
+  box-shadow:  0px 0px 0px 0px !important;
 }
 
 

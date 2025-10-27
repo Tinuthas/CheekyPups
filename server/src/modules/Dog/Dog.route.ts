@@ -306,7 +306,7 @@ async function updateDog(input: UpdateDogInput, id: number) {
     nickname = null
 
   var parsedBirthday = null
-  if(birthdayDate != null) {
+  if(birthdayDate != null && birthdayDate != "") {
     var dateParts:any[] = birthdayDate.split('/')
     var dateObject = new Date(+dateParts[2], dateParts[1] - 1, +dateParts[0])
     parsedBirthday = dayjs(dateObject).startOf('day').toISOString()

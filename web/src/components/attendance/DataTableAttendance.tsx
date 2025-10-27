@@ -29,9 +29,6 @@ interface AttendanceTableProps {
 
 export function DataTableAttendance({ title, attendances, columns, marginTable, handleCreateNewRow, loading, handleCreateNewWeekRow }: AttendanceTableProps) {
 
-  const [createModalOpen, setCreateModalOpen] = useState(false);
-  const [createWeekModalOpen, setCreateWeekModalOpen] = useState(false)
-
   return (
     <ThemeProvider theme={theme}>
       <div className={clsx('w-full mt-9 transition-all ', {
@@ -50,22 +47,10 @@ export function DataTableAttendance({ title, attendances, columns, marginTable, 
               columns={columns as MRT_ColumnDef<(typeof attendances)[0]>[]}
               data={attendances}
               renderTopToolbarCustomActions={() => (
-                <Box sx={{ fontSize: 16, fontWeight: 'medium', paddingTop: 0, paddingLeft: 1 }}>
-                 
+                <Box sx={{ fontSize: 16, fontWeight: 'medium', paddingTop: 1, paddingLeft: 1, paddingRight:2 }}>            
                   <div className="flex flex-row">
-                     <span className="mt-1">{title}</span>
-                    <div className="ml-6 mt-[2px]" onClick={() => {
-                      setCreateWeekModalOpen(true)
-                    }}>
-                      <ViewWeekIcon sx={iconSmallStyle} />
-                    </div>
-                    <div className="ml-4 mt-[2px]" onClick={() => {
-                      setCreateModalOpen(true)
-                    }}>
-                      <Add sx={iconSmallStyle} />
-                    </div>
+                     <span className="mt-1 text-sm">{title}</span>
                   </div>
-
                 </Box>
               )}
               muiTablePaperProps={{
@@ -99,25 +84,8 @@ export function DataTableAttendance({ title, attendances, columns, marginTable, 
                 showLastButton: false,
               }}
             />
-
-
-
           </div>
         }
-        {createModalOpen ?
-          <CreateNewAttendance
-            open={createModalOpen}
-            onClose={() => setCreateModalOpen(false)}
-            onSubmit={(values) => handleCreateNewRow(values)}
-          />
-          : null}
-        {createWeekModalOpen ?
-          <CreateWeekRow
-            open={createWeekModalOpen}
-            onClose={() => setCreateWeekModalOpen(false)}
-            onSubmit={(values) => handleCreateNewWeekRow(values)}
-          />
-          : null}
       </div>
 
     </ThemeProvider>

@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { prisma } from "../../lib/prisma";
-import { $ref, BookingInput, FilterBookingDateInput, DateFillSpacesBodyInput, FilterSearchingInput, BookingOfferingInput, BookingConfirmedOfferInput, BookingCreateNewCustomer, BookingCreateExistedCustomer, BookingFinishInput } from "./Booking.schema";
+import { $ref, BookingInput, FilterBookingDateInput, DateFillSpacesBodyInput, FilterSearchingInput, BookingOfferingInput, BookingConfirmedOfferInput, BookingCreateNewCustomer, BookingCreateExistedCustomer, BookingFinishInput, BookingEditInput } from "./Booking.schema";
 import { includes } from "lodash";
 import { updateTillHandle } from "../Payment/Payment.route";
 
@@ -30,11 +30,11 @@ export async function bookingRoutes(app: FastifyInstance) {
   }, addBookingFillSpaceHandle)
 
   app.get('/select', {
-      schema: {
-        querystring: $ref('filterSearching')
-      },
-      preHandler: [app.authenticate]
-    }, getSearchExistedHandle)
+    schema: {
+      querystring: $ref('filterSearching')
+    },
+    preHandler: [app.authenticate]
+  }, getSearchExistedHandle)
 
   app.delete('/', { preHandler: [app.authenticate] }, deleteBookingHandler)
 
@@ -75,13 +75,19 @@ export async function bookingRoutes(app: FastifyInstance) {
     preHandler: [app.authenticate]
   }, addBookingFinishCustomerHandle)
 
-  
+  app.post('/edit', {
+    schema: {
+      body: $ref('createEditOwner'),
+    },
+    preHandler: [app.authenticate]
+  }, addBookingEditOwnerHandle)
 }
 
 async function getBookingByDate(request: FastifyRequest<{ Querystring: FilterBookingDateInput }>, reply: FastifyReply) {
   try {
     return await getBookingsDate(request.query)
   } catch (err) {
+    console.log(err)
     reply.code(400).send('Error in get bookings appointments')
   }
 }
@@ -102,6 +108,7 @@ async function getBookingsDate(input: FilterBookingDateInput) {
       id: true,
       time: true,
       status: true,
+      notes: true,
       dog: {
         select: {
           id: true,
@@ -121,6 +128,7 @@ async function getBookingsDate(input: FilterBookingDateInput) {
           ownerId: true,
           owner: true,
           phone: true,
+          notes: true,
         }
       }
     },
@@ -131,35 +139,35 @@ async function getBookingsDate(input: FilterBookingDateInput) {
 
   const parsedDateStart = dayjs(date).subtract(1, 'month').toISOString()
   const parsedDateEnd = dayjs(date).add(2, 'month').toISOString()
-  console.log('calendar')
-  
-  const calendar = await prisma.dayBooking.findMany({
-    
+
+
+  const calendar = await prisma.booking.findMany({
+    distinct: 'day_booking_id',
     where: {
-        date: {
-          lte: parsedDateEnd,
-          gte: parsedDateStart
-        },
-        daysBooking: {
-          some: {
-            status: 'empty'
-          },
-        }
+      time: {
+        lte: parsedDateEnd,
+        gte: parsedDateStart
+      },
+      status: 'empty'
     },
     select: {
-      date:true,
-      _count: {
+      dayBooking: {
         select: {
-          daysBooking: true
+          date: true,
+          daysBooking: {
+            where: {
+              status: 'empty'
+            },
+            select: {
+              dayBooking: true
+            }
+          }
         }
       }
-    }
-    
+    },
   })
 
-
-
-  return {bookings: bookings, calendar: calendar}
+  return { bookings: bookings, calendar: calendar }
 }
 
 async function addBookingSpaceHandle(request: FastifyRequest<{ Body: BookingInput }>, reply: FastifyReply) {
@@ -227,7 +235,7 @@ async function addBookingFillSpaces(input: DateFillSpacesBodyInput) {
     }
   })
 
-  if(bookingDay == null) {
+  if (bookingDay == null) {
     bookingDay = await prisma.dayBooking.create({
       data: {
         date: parsedDate
@@ -254,24 +262,24 @@ async function addBookingFillSpaces(input: DateFillSpacesBodyInput) {
   return listBooking
 }
 
-async function bookingRow(time: {time : string, status: string}, date: string) {
+async function bookingRow(time: { time: string, status: string }, date: string) {
   let booking = await prisma.booking.create({
-      data: {
-        time: time.time,
-        status: time.status,
-        dayBooking: {
-          connectOrCreate: {
-            where: {
-              date,
-            },
-            create: {
-              date,
-            }
+    data: {
+      time: time.time,
+      status: time.status,
+      dayBooking: {
+        connectOrCreate: {
+          where: {
+            date,
+          },
+          create: {
+            date,
           }
         }
       }
-    })
-    return booking
+    }
+  })
+  return booking
 }
 
 
@@ -287,17 +295,17 @@ async function deleteBookingHandler(request: FastifyRequest<{ Querystring: { id:
 async function deleteBooking(id: number) {
 
   const booking = await prisma.booking.findUnique({
-    where: {id: Number(id)},
+    where: { id: Number(id) },
     include: {
       offering: true
     }
   })
 
-  if(booking?.offering != null) {
-    await prisma.offering.delete({where: {id: booking.offering.id}})
+  if (booking?.offering != null) {
+    await prisma.offering.delete({ where: { id: booking.offering.id } })
   }
 
-  const deleted = await prisma.booking.delete({where: { id: Number(id) }})
+  const deleted = await prisma.booking.delete({ where: { id: Number(id) } })
   return deleted
 }
 
@@ -313,7 +321,7 @@ async function cancelBookingHandler(request: FastifyRequest<{ Querystring: { id:
 async function cancelBooking(id: number) {
 
   const booking = await prisma.booking.update({
-    where: {id: Number(id)},
+    where: { id: Number(id) },
     data: {
       status: 'cancelled'
     }
@@ -323,10 +331,10 @@ async function cancelBooking(id: number) {
 }
 
 
-async function getSearchExistedHandle(request: FastifyRequest<{Querystring: FilterSearchingInput}>, reply: FastifyReply) {
-  try{
+async function getSearchExistedHandle(request: FastifyRequest<{ Querystring: FilterSearchingInput }>, reply: FastifyReply) {
+  try {
     return await getSearchByName(request.query.name)
-  }catch(err) {
+  } catch (err) {
     console.log(err)
     reply.code(400).send('Error in search owner by name')
   }
@@ -337,14 +345,18 @@ async function getSearchByName(name: string) {
     take: 10,
     where: {
       OR: [
-        { Owner: {
-          name: { contains: name},
-        }},
-        { name: { contains: name} },
-        { breed: { contains: name} },
-        { Owner: {
-          phoneOne: {contains: name}
-        }}
+        {
+          Owner: {
+            name: { contains: name },
+          }
+        },
+        { name: { contains: name } },
+        { breed: { contains: name } },
+        {
+          Owner: {
+            phoneOne: { contains: name }
+          }
+        }
         //{ nickname: { contains: name } }
       ]
     },
@@ -381,20 +393,20 @@ async function addBookingOfferingHandle(request: FastifyRequest<{ Body: BookingO
 
 async function addBookingOffering(input: BookingOfferingInput) {
   const { ownerId, owner, phone, typeOffered, notes, firstDogTime, secondDogTime, thirdDogTime, fourthDogTime } = input
-  
+
   var offers = []
-  if(firstDogTime != null && firstDogTime != "")
+  if (firstDogTime != null && firstDogTime != "")
     offers.push(await creatingOffering(firstDogTime, typeOffered, owner, phone, ownerId, notes, typeOffered))
-  if(secondDogTime != null && secondDogTime != "")
+  if (secondDogTime != null && secondDogTime != "")
     offers.push(await creatingOffering(secondDogTime, typeOffered, owner, phone, ownerId, notes, typeOffered))
-  if(thirdDogTime != null && thirdDogTime != "")
+  if (thirdDogTime != null && thirdDogTime != "")
     offers.push(await creatingOffering(thirdDogTime, typeOffered, owner, phone, ownerId, notes, typeOffered))
-  if(fourthDogTime != null && fourthDogTime != "")
+  if (fourthDogTime != null && fourthDogTime != "")
     offers.push(await creatingOffering(fourthDogTime, typeOffered, owner, phone, ownerId, notes, typeOffered))
   return offers
 }
 
-async function creatingOffering(time: string, status: string, owner: string | null, phone:string | null, ownerId:string | null, notes:string, type:string) {
+async function creatingOffering(time: string, status: string, owner: string | null, phone: string | null, ownerId: string | null, notes: string, type: string) {
 
   let offering = await prisma.booking.update({
     where: {
@@ -436,14 +448,15 @@ async function addBookingConfirmedOfferHandle(request: FastifyRequest<{ Body: Bo
 
 async function addBookingConfirmedOffer(input: BookingConfirmedOfferInput) {
   const { bookingId, dogId, owner, phone, notes, firstDogTime, firstDogName, firstDogBreed } = input
-  
-  const bookingOffer = await prisma.booking.findUnique({where: {id: bookingId}, include: { offering: true}})
 
-  const dog = await prisma.dog.findUnique({where: {id: dogId == null || dogId == ""? 0 : Number(dogId)}, include: {Owner: true}})
+  const bookingOffer = await prisma.booking.findUnique({ where: { id: bookingId }, include: { offering: true } })
+
+  const dog = await prisma.dog.findUnique({ where: { id: dogId == null || dogId == "" ? 0 : Number(dogId) }, include: { Owner: true } })
 
   const booking = await prisma.booking.update({
-    where: {id: bookingId},
+    where: { id: bookingId },
     data: {
+      notes: notes,
       status: 'confirmed',
       dog: {
         connectOrCreate: {
@@ -461,7 +474,6 @@ async function addBookingConfirmedOffer(input: BookingConfirmedOfferInput) {
                 create: {
                   name: owner,
                   phoneOne: phone,
-                  notes: notes,
                   type: 'G'
                 }
               }
@@ -472,7 +484,7 @@ async function addBookingConfirmedOffer(input: BookingConfirmedOfferInput) {
     },
     include: {
       dog: {
-        include: 
+        include:
         {
           Owner: true,
         }
@@ -481,7 +493,7 @@ async function addBookingConfirmedOffer(input: BookingConfirmedOfferInput) {
   })
 
   await prisma.offering.update({
-    where: {id: bookingOffer?.offering?.id},
+    where: { id: bookingOffer?.offering?.id },
     data: {
       ownerId: booking.dog?.Owner.id
     }
@@ -500,25 +512,26 @@ async function addBookingNewCustomerHandle(request: FastifyRequest<{ Body: Booki
 }
 
 async function addBookingNewCustomer(input: BookingCreateNewCustomer) {
-  const {owner, phone, notes, firstDogTime, firstDogName, firstDogBreed, secondDogTime, secondDogName, secondDogBreed, thirdDogTime, thirdDogName, thirdDogBreed, fourthDogTime, fourthDogName, fourthDogBreed } = input
+  const { owner, phone, notes, firstDogTime, firstDogName, firstDogBreed, secondDogTime, secondDogName, secondDogBreed, thirdDogTime, thirdDogName, thirdDogBreed, fourthDogTime, fourthDogName, fourthDogBreed } = input
   var listBooking = []
-  const firstDog:any = await addBookingNewCustomerUpdate(0, owner, phone, notes, firstDogTime, firstDogName, firstDogBreed)
+  const firstDog: any = await addBookingNewCustomerUpdate(0, owner, phone, notes, firstDogTime, firstDogName, firstDogBreed)
   listBooking.push(firstDog)
-  if(secondDogTime != null && secondDogTime != "")
+  if (secondDogTime != null && secondDogTime != "")
     listBooking.push(await addBookingNewCustomerUpdate(firstDog.dog?.Owner.id, owner, phone, notes, secondDogTime, String(secondDogName), String(secondDogBreed)))
-  if(thirdDogTime != null && thirdDogTime != "")
+  if (thirdDogTime != null && thirdDogTime != "")
     listBooking.push(await addBookingNewCustomerUpdate(firstDog.dog?.Owner.id, owner, phone, notes, thirdDogTime, String(thirdDogName), String(thirdDogBreed)))
-  if(fourthDogTime != null && fourthDogTime != "")
+  if (fourthDogTime != null && fourthDogTime != "")
     listBooking.push(await addBookingNewCustomerUpdate(firstDog.dog?.Owner.id, owner, phone, notes, fourthDogTime, String(fourthDogName), String(fourthDogBreed)))
 
   return listBooking
 }
 
-async function addBookingNewCustomerUpdate(ownerId: number, owner: string, phone:string, notes:string|null, dogTime:string, dogName:string, dogBreed:string) {
-  
+async function addBookingNewCustomerUpdate(ownerId: number, owner: string, phone: string, notes: string | null, dogTime: string, dogName: string, dogBreed: string) {
+
   const booking = await prisma.booking.update({
-    where: {id: Number(dogTime)},
+    where: { id: Number(dogTime) },
     data: {
+      notes: notes,
       status: 'confirmed',
       dog: {
         create: {
@@ -531,8 +544,7 @@ async function addBookingNewCustomerUpdate(ownerId: number, owner: string, phone
               },
               create: {
                 name: owner,
-                phoneOne: phone, 
-                notes: notes,
+                phoneOne: phone,
                 type: 'G'
               }
             }
@@ -565,31 +577,23 @@ async function addBookingExistedCustomer(input: BookingCreateExistedCustomer) {
   const { notes, firstDogTime, firstDogId, secondDogTime, secondDogId, thirdDogTime, thirdDogId, fourthDogTime, fourthDogId } = input
 
   var listBooking = []
-  listBooking.push(await addBookingExitedCustomerUpdate(firstDogId, firstDogTime))
-  if(secondDogId!= null && secondDogId!= 0)
-    listBooking.push(await addBookingExitedCustomerUpdate(secondDogId, Number(secondDogTime)))
-  if(thirdDogId!= null && thirdDogId!= 0)
-    listBooking.push(await addBookingExitedCustomerUpdate(thirdDogId, Number(thirdDogTime)))
-  if(fourthDogId!= null && fourthDogId!= 0)
-    listBooking.push(await addBookingExitedCustomerUpdate(fourthDogId, Number(fourthDogTime)))
-
-  await prisma.owner.update({
-    where: {
-      id: listBooking[0].dog?.Owner.id
-    },
-    data: {
-      notes: notes
-    }
-  })
+  listBooking.push(await addBookingExitedCustomerUpdate(firstDogId, firstDogTime, notes))
+  if (secondDogId != null && secondDogId != 0)
+    listBooking.push(await addBookingExitedCustomerUpdate(secondDogId, Number(secondDogTime), notes))
+  if (thirdDogId != null && thirdDogId != 0)
+    listBooking.push(await addBookingExitedCustomerUpdate(thirdDogId, Number(thirdDogTime), notes))
+  if (fourthDogId != null && fourthDogId != 0)
+    listBooking.push(await addBookingExitedCustomerUpdate(fourthDogId, Number(fourthDogTime), notes))
 
   return listBooking
 }
 
-async function addBookingExitedCustomerUpdate(dogId: number, timeId: number) {
+async function addBookingExitedCustomerUpdate(dogId: number, timeId: number, notes: string | null) {
 
   const booking = await prisma.booking.update({
-    where: {id: timeId},
+    where: { id: timeId },
     data: {
+      notes: notes,
       status: 'confirmed',
       dog: {
         connect: {
@@ -613,14 +617,14 @@ async function addBookingExitedCustomerUpdate(dogId: number, timeId: number) {
 async function addBookingFinishCustomerHandle(request: FastifyRequest<{ Body: BookingFinishInput }>, reply: FastifyReply) {
   try {
     return await addBookingFinishCustomer(request.body)
-  } catch (err) {
+  } catch (err:any) {
     console.log(err)
-    reply.code(400).send('Error in finishing booking')
+    reply.code(400).send('Error in finishing booking - ' + err.message)
   }
 }
 
 async function addBookingFinishCustomer(input: BookingFinishInput) {
-  const { bookingId, notes, salesValue, paidValue, typePaid, paid} = input
+  const { bookingId, notes, description, salesValue, paidValue, typePaid, paid } = input
 
   const bookingOwner = await prisma.booking.findUnique({
     where: {
@@ -635,12 +639,12 @@ async function addBookingFinishCustomer(input: BookingFinishInput) {
     }
   })
 
-  if(bookingOwner == null) {
+  if (bookingOwner == null) {
     throw new Error('Owner not found in booking')
   }
   var date = dayjs().toISOString()
 
-  if(paid && Number(paidValue) < Number(salesValue)) {
+  if (paid && Number(paidValue) < Number(salesValue)) {
     return new Error('Paid value needs to be bigger than the sales value')
   }
   var valuePaid = paid ? paidValue : 0
@@ -651,6 +655,7 @@ async function addBookingFinishCustomer(input: BookingFinishInput) {
     },
     data: {
       status: 'done',
+      notes: notes,
       extract: {
         create: {
           value: salesValue,
@@ -658,7 +663,7 @@ async function addBookingFinishCustomer(input: BookingFinishInput) {
           totalValue: totalValue < 0 ? 0 : totalValue,
           done: paid,
           type: typePaid,
-          description: notes,
+          description: description,
           date: date,
           Owner: {
             connect: {
@@ -670,11 +675,67 @@ async function addBookingFinishCustomer(input: BookingFinishInput) {
     }
   })
 
-  if(paid ) {
+  if (paid) {
     await updateTillHandle('G', typePaid, salesValue, valuePaid)
   }
 
   return booking
 }
+
+
+
+async function addBookingEditOwnerHandle(request: FastifyRequest<{ Body: BookingEditInput }>, reply: FastifyReply) {
+  try {
+    return await addBookingEditOwner(request.body)
+  } catch (err) {
+    console.log(err)
+    reply.code(400).send('Error in editing booking')
+  }
+}
+
+async function addBookingEditOwner(input: BookingEditInput) {
+  const { dogId, notes, owner, phone, dogName, dogBreed, second, secondOwner, secondPhone } = input
+
+  let ownerResult = null
+  if (second) {
+    ownerResult = await prisma.dog.update({
+      where: {
+        id: dogId
+      },
+      data: {
+        name: dogName,
+        breed: dogBreed,
+        Owner: {
+          update: {
+            name: owner,
+            phoneOne: phone,
+            secondOwner: secondOwner,
+            phoneTwo: secondPhone,
+            notes: notes
+          }
+        }
+      }
+    })
+  } else {
+    ownerResult = await prisma.dog.update({
+      where: {
+        id: dogId
+      },
+      data: {
+        name: dogName,
+        breed: dogBreed,
+        Owner: {
+          update: {
+            name: owner,
+            phoneOne: phone,
+            notes: notes
+          }
+        }
+      }
+    })
+  }
+  return ownerResult
+}
+
 
 

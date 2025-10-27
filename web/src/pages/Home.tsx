@@ -4,6 +4,14 @@ export function Home(){
 
   return (
     <div className="md:p-10 pt-4 h-full flex flex-col items-center">
+      <h3 className="font-medium text-3xl md:text-5xl text-pinkBackground font-borsok">Cheeky Pups APP</h3>
+
+    </div>
+  )
+}
+
+/*
+<div className="md:p-10 pt-4 h-full flex flex-col items-center">
       <h1 className="font-bold text-3xl md:text-4xl text-white">Cheeky Pups</h1>
       <div className="w-full flex flex-col items-center">
         <h2 className=" text-2xl font-medium mt-10 text-center">
@@ -27,6 +35,4 @@ export function Home(){
       </div>
       
     </div>
-  
-  )
-}
+*/

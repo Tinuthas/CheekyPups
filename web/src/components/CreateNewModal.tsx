@@ -74,8 +74,6 @@ export const CreateNewModal = ({
     var entries = Object.entries(values)
     console.log(entries)
 
-   
-
     Object.entries(values).forEach((element: any, index) => {
       console.log(element[1])
       console.log(columns[index])
@@ -115,14 +113,17 @@ export const CreateNewModal = ({
 
         if (columns[index].noShow == null || columns[index].noShow != true) {
           if (columns[index].required == true) {
-            if (validateRequired(element[1]) == false && (columns[index].value != undefined ? validateRequired(columns[index].value) == false : true))
+            if (validateRequired(element[1]) == false && (columns[index].value != undefined ? validateRequired(String(columns[index].value)) == false : true)) {
               validationRequired = true
+            }
           }
         }
 
       }
     });
     if (validationRequired) {
+      console.log('validation')
+      console.log(validationRequired)
       toast.error(`You need to fill some fields`, { position: 'top-center', autoClose: 2000, });
       toast.error(`${JSON.stringify(values)}`, { position: 'top-center', autoClose: 10000, });
     } else if (validationEmail) {
@@ -225,7 +226,7 @@ export const CreateNewModal = ({
       <DialogActions sx={{ p: '1.25rem' }}>
         <Button onClick={handleClose}>Cancel</Button>
         <Button color="secondary" onClick={handleSubmit} variant="contained">
-          Add
+          Save
         </Button>
       </DialogActions>
     </Dialog>

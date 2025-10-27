@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { string } from "zod";
 import { prisma } from "../../lib/prisma";
-import { $ref, CreateOwnerInput, FilterOwnerInput, FilterOwnerTypeInput, UpdateOwnerInput } from "./Owner.schema";
+import { $ref, CreateOwnerInput, FilterOwnerInput, FilterOwnerTypeInput, OwnerDogsCreateInput, UpdateOwnerInput } from "./Owner.schema";
 
 export async function ownerRoutes(app: FastifyInstance) {
   
@@ -44,6 +44,13 @@ export async function ownerRoutes(app: FastifyInstance) {
     },
     preHandler: [app.authenticate]
   }, createOwnerHandle)
+
+  app.post('/dogs', {
+    schema: {
+      body: $ref('createOwnerDogsSchema')
+    },
+    preHandler: [app.authenticate]
+  }, createOwnerDogsHandle)
 }
 
 async function getAllOwners() {
@@ -176,4 +183,71 @@ async function createOwner(input: UpdateOwnerInput) {
   })
 
   return owner
+}
+
+
+async function createOwnerDogsHandle(request: FastifyRequest<{Body: OwnerDogsCreateInput}>, reply: FastifyReply) {
+  try{
+    return await createOwnerDogs(request.body)
+  }catch(err) {
+    console.log(err)
+    reply.code(400).send('Error in create owner')
+  }
+}
+
+async function createOwnerDogs(input: OwnerDogsCreateInput) {
+  let {ownerName, phoneOne, secondOwner, phoneTwo, emailAddress, address, notes, dogName, nickname,birthdayDate,gender,colour,breed,secondDog,secondDogName,secondNickname,secondGender,secondColour,secondBirthdayDate,secondBreed} = input
+ 
+  if(nickname != null && nickname.trim() == "")
+    nickname = null
+
+  if(secondNickname != null && secondNickname.trim() == "")
+    secondNickname = null
+
+  const parsedBirthday = dayjs(birthdayDate).startOf('day')
+
+  const firstDog = await prisma.dog.create({
+    data: {
+      name: dogName,
+      nickname,
+      birthdayDate: parsedBirthday.toISOString(),
+      gender,
+      colour,
+      breed,
+      Owner: {
+        create: {
+          name: ownerName,
+          phoneOne,
+          phoneTwo,
+          secondOwner,
+          emailAddress,
+          address,
+          notes,
+          type: 'D'
+        }
+      }
+    }
+  })
+
+  if(secondDog) {
+    const parsedSecondBirthday = dayjs(secondBirthdayDate).startOf('day')
+    let secondDog = await prisma.dog.create({
+      data: {
+        name: String(secondDogName),
+        nickname: secondNickname,
+        birthdayDate: parsedSecondBirthday.toISOString(),
+        gender: secondGender,
+        colour: secondColour,
+        breed: String(secondBreed),
+        Owner: {
+          connect: {
+            id: firstDog.ownerId
+          }
+        }
+      }
+    })
+  }
+ 
+
+  return firstDog
 }

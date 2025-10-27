@@ -12,12 +12,13 @@ import FormatAlignJustifyIcon from '@mui/icons-material/FormatAlignJustify';
 import AccessAlarmRoundedIcon from '@mui/icons-material/AccessAlarmRounded';
 import { ButtonLight } from "../ButtonLight";
 import { ChooseDateButton } from "../ChooseDate";
+import { useState } from "react";
 
 interface FilterDateBookingProps {
   date: Date
   setDate: (value: Date) => void
   loading: boolean
-  calendar: Array<any>
+  calendar: Array<{dayBooking: {date: string, daysBooking: []}}>
   setLoading: (value: boolean) => void,
   onPreviousDate: () => void
   onNextDate: () => void

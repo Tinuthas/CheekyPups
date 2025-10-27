@@ -9,6 +9,7 @@ import { Loading } from "../components/Loading";
 import { ButtonGroupList } from "../components/ButtonGroupList";
 import { MRT_ColumnDef } from "material-react-table";
 import { PaysInfoListModal } from "../components/payment/PaysInfoListModal";
+import InfoItemButton from "../components/attendance/InfoItemButton";
 
 
 export function Owners() {
@@ -26,63 +27,63 @@ export function Owners() {
   }, [])
 
   const columnHeaders = [
-  {
-    accessorKey: 'name',
-    label: 'Name',
-    name: 'Owner Name',
-    type: "text",
-    required: true,
-  },
-  {
-    accessorKey: 'emailAddress',
-    label: 'Email',
-    name: 'Owner Email',
-    type: "email"
-  },
-  {
-    accessorKey: 'phoneOne',
-    label: 'Phone One',
-    name: '08x xxx xxxx',
-    type: "tel",
-    required: true,
-  },
-  {
-    accessorKey: 'type',
-    label: 'Daycare or Grooming',
-    name: '',
-    value: ownerType,
-    setValue: (value: string) => setOwnerType(value),
-    type: "radio",
-    radioListValues: [
-      { key: "daycare", value: "D", label: "Daycare" },
-      { key: "grooming", value: "G", label: "Grooming" },
-    ]
-  },
-  {
-    accessorKey: 'secondOwner',
-    label: 'Second Owner Name',
-    name: '',
-    type: "text",
-  },
-  {
-    accessorKey: 'phoneTwo',
-    label: 'Phone Two',
-    name: '8x xxx xxxx',
-    type: "tel",
-  },
-  {
-    accessorKey: 'address',
-    label: 'Address',
-    name: 'Owner Address',
-    type: "text",
-  },
-  {
-    accessorKey: 'notes',
-    label: 'Notes',
-    name: '',
-    type: "text",
-  }
-]
+    {
+      accessorKey: 'name',
+      label: 'Name',
+      name: 'Owner Name',
+      type: "text",
+      required: true,
+    },
+    {
+      accessorKey: 'emailAddress',
+      label: 'Email',
+      name: 'Owner Email',
+      type: "email"
+    },
+    {
+      accessorKey: 'phoneOne',
+      label: 'Phone One',
+      name: '08x xxx xxxx',
+      type: "tel",
+      required: true,
+    },
+    {
+      accessorKey: 'type',
+      label: 'Daycare or Grooming',
+      name: '',
+      value: ownerType,
+      setValue: (value: string) => setOwnerType(value),
+      type: "radio",
+      radioListValues: [
+        { key: "daycare", value: "D", label: "Daycare" },
+        { key: "grooming", value: "G", label: "Grooming" },
+      ]
+    },
+    {
+      accessorKey: 'secondOwner',
+      label: 'Second Owner Name',
+      name: 'Second Owner Name',
+      type: "text",
+    },
+    {
+      accessorKey: 'phoneTwo',
+      label: 'Phone Two',
+      name: '08x xxx xxxx',
+      type: "tel",
+    },
+    {
+      accessorKey: 'address',
+      label: 'Address',
+      name: 'Owner Address',
+      type: "text",
+    },
+    {
+      accessorKey: 'notes',
+      label: 'Notes',
+      name: '',
+      type: "text",
+    }
+  ]
 
   const headers: MRT_ColumnDef<any>[] = [
     {
@@ -91,19 +92,20 @@ export function Owners() {
       size: 200,
       Cell: ({ renderedCellValue, row }) => (
         <>
-          <div className="w-full cursor-pointer" onClick={() => {
-            setOpenListModal(true)
-            setOpenIndex(row.original.id)
+          <InfoItemButton children={
+            <div className="flex flex-row justify-center align-baseline cursor-pointer" onClick={() => {
+              setOpenListModal(true)
+              setOpenIndex(row.original.id)
+              console.log(row.original.id)
+            }}>
+              <span>{renderedCellValue}</span>
+            </div>
+          } id={row.original.id} onClose={() => {
+            setOpenListModal(false)
+            getAllOwnersFilter()
           }}>
-            <span>{renderedCellValue}</span>
-          </div>
-          {row.original.id == openIndex && openListModal ?
-            <PaysInfoListModal
-              open={openListModal}
-              onClose={() => setOpenListModal(false)}
-              infoData={{ownerId:row.original.id}}
-            />
-            : null}
+          </InfoItemButton>
+
         </>
       )
     },

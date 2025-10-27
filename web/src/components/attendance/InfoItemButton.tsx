@@ -1,26 +1,14 @@
-import Button from '@mui/material/Button';
-import ClickAwayListener from '@mui/material/ClickAwayListener';
-import Grow from '@mui/material/Grow';
-import Paper from '@mui/material/Paper';
-import Popper from '@mui/material/Popper';
-import MenuItem from '@mui/material/MenuItem';
-import MenuList from '@mui/material/MenuList';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import PaidIcon from '@mui/icons-material/Paid';
+
 import React from 'react';
-import ListItemText from '@mui/material/ListItemText';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import { DeleteModal } from '../DeleteModal';
-import { ColumnHeader, EditNewModal } from '../EditModal';
 import { PaysInfoListModal } from '../payment/PaysInfoListModal';
 
 interface InfoItemButtonProps {
   children: JSX.Element | JSX.Element[];
+  onClose: () => void;
   id: number,
 }
 
-export default function InfoItemButton({children, id}: InfoItemButtonProps) {
+export default function InfoItemButton({children, id, onClose}: InfoItemButtonProps) {
   const [open, setOpen] = React.useState(false);
   const anchorRef = React.useRef<HTMLButtonElement>(null);
 
@@ -37,6 +25,7 @@ export default function InfoItemButton({children, id}: InfoItemButtonProps) {
     }
 
     setOpen(false);
+    onClose()
   };
 
 

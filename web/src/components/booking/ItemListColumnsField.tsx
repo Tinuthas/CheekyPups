@@ -18,7 +18,7 @@ export function ItemListColumnsField() {
       <div className="w-[120px] ml-2 md:ml-6 self-center text-center">
         <h5>Bread</h5>
       </div>
-      <div className="w-[80px] ml-2 md:ml-6 self-center text-center">
+      <div className="w-[100px] ml-2 md:ml-6 self-center text-center">
         <h5>Menu</h5>
       </div>
     </div>
