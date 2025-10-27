@@ -196,7 +196,6 @@ const resizeFile = (file:any) => new Promise((resolve) => { Resizer.imageFileRes
 const imageResize = async (file:any) => { 
   try { 
     const resFile = await resizeFile(file) 
-    console.info("resized", resFile) 
     return resFile 
   } catch (err) { 
     throw new Error("Return error"); 

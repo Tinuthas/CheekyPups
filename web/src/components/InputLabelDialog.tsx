@@ -45,7 +45,6 @@ export const InputLabel = ({labelName, type, placeholder, accessorKey, value, se
       setValue(event.target.value)
     }
 
-    console.log(event.target.value)
     /*if(type == "select"){
       if(onSelect != undefined)
         onSelect(accessorKey.toLowerCase().replace('id', ''), event.target.placeholder)
@@ -56,8 +55,6 @@ export const InputLabel = ({labelName, type, placeholder, accessorKey, value, se
 
   function handleOnChangeValue(valueField: any) {
     if(type == "select"){
-      console.log('change selector')
-      console.log(valueField)
       if(setValue != undefined) 
         setValue(valueField)
       if(onSelect != undefined)

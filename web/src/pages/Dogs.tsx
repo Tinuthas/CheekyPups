@@ -24,8 +24,8 @@ const selectPromise = (inputValue: string) => new Promise<any[]>((resolve, rejec
     resolve(listData)
   }).catch((err: AxiosError) => {
     const data = err.response?.data as { message: string }
-    toast.error(`Unidentified error: ${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
-    throw new Error(`Unidentified error: ${data.message || err.response?.data || err.message}`);
+    toast.error(`${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
+    throw new Error(`${data.message || err.response?.data || err.message}`);
   })
 })
 
@@ -105,7 +105,6 @@ export function Dogs() {
     }).then(response => {
       var data = response.data
       var listData = JSON.parse(JSON.stringify(data));
-      console.log(listData)
       for (const i in listData) {
         listData[i].birthdayDate = listData[i].birthdayDate != null ? dayjs(listData[i].birthdayDate).format('DD/MM/YYYY') : ""
         //delete listData[i].ownerId;
@@ -114,7 +113,7 @@ export function Dogs() {
       setLoading(false)
     }).catch((err: AxiosError) => {
       const data = err.response?.data as { message: string }
-      toast.error(`Unidentified error: ${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
+      toast.error(`${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
       setLoading(false)
     })
   }
@@ -138,7 +137,7 @@ export function Dogs() {
       setLoading(false)
     }).catch((err: AxiosError) => {
       const data = err.response?.data as { message: string }
-      toast.error(`Unidentified error: ${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
+      toast.error(`${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
       setLoading(false)
     })
   }
@@ -154,7 +153,6 @@ export function Dogs() {
             <div className="flex flex-row justify-center align-baseline cursor-pointer" onClick={() => {
               setOpenListModal(true)
               setOpenIndex(row.original.ownerId)
-              console.log(row.original.ownerId)
             }}>
               <span>{renderedCellValue}</span>
             </div>
@@ -247,9 +245,9 @@ export function Dogs() {
         resolve(`Updated: ${response.data?.name}`);
       }).catch((err: AxiosError) => {
         const data = err.response?.data as { message: string }
-        toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
+        toast.error(`${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
         setLoading(false)
-        throw new Error(`Unidentified error: ${data.message || err.response?.data || err.message}`);
+        throw new Error(`${data.message || err.response?.data || err.message}`);
       })
     })
     return promise
@@ -257,11 +255,9 @@ export function Dogs() {
 
 
   function createNewRow(data: any) {
-    console.log(data)
     setLoading(true)
     var newData = {};
     delete Object.assign(newData, data, { ['owner_id']: Number(data['owner']) })['owner'];
-    console.log(newData)
     //return new Promise((resolve) => resolve('success'))
     const promise = new Promise((resolve, reject) => {
       api.post('dogs', newData, {
@@ -273,11 +269,10 @@ export function Dogs() {
         setLoading(false)
         resolve(`Created: ${response.data?.name}`);
       }).catch((err: AxiosError) => {
-        console.log(err)
         const data = err.response?.data as { message: string }
-        toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
+        toast.error(`${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
         setLoading(false)
-        throw new Error(`Unidentified error: ${data.message || err.response?.data || err.message}`);
+        throw new Error(`${data.message || err.response?.data || err.message}`);
       })
     });
     return promise
@@ -299,9 +294,9 @@ export function Dogs() {
         resolve(`Deleted: ${response.data?.name}`);
       }).catch((err: AxiosError) => {
         const data = err.response?.data as { message: string }
-        toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
+        toast.error(`${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
         setLoading(false)
-        throw new Error(`Unidentified error: ${data.message || err.response?.data || err.message}`);
+        throw new Error(`${data.message || err.response?.data || err.message}`);
       })
     });
     return promise

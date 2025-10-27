@@ -72,8 +72,6 @@ const DataTableCustom = ({headers, data, setData, createData, title, updateRow, 
 
   const handleDeleteRow = useCallback(
     (row: MRT_Row) => {
-      console.log('Index '+row.index)
-      console.log((data[row.index] as any).id)
 
       if(deleteRow != undefined)
         deleteRow((data[row.index] as any).id).then(() => {

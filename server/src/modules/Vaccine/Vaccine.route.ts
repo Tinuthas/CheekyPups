@@ -127,12 +127,10 @@ async function updateVaccineHandle(request: FastifyRequest<{Body: UpdateVaccineI
 
 async function updateVaccine(input: UpdateVaccineInput, id: number) {
   const {dateVaccine, type } = input
-  console.log({dateVaccine, type })
 
   var dateParts:any[] = dateVaccine.split('/')
   var dateObject = new Date(+dateParts[2], dateParts[1] - 1, +dateParts[0])
   var parsedVaccine = dayjs(dateObject).startOf('day').toISOString()
-  console.log(parsedVaccine)
 
   let vaccine = await prisma.vaccine.update({
     where: {
@@ -143,7 +141,6 @@ async function updateVaccine(input: UpdateVaccineInput, id: number) {
       type
     }
   })
-  console.log(vaccine)
 
   return vaccine
 }

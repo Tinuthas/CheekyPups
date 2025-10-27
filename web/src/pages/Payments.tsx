@@ -23,8 +23,8 @@ const selectPromise = (inputValue: string) => new Promise<any[]>((resolve, rejec
     resolve(listData)
   }).catch((err: AxiosError) => {
     const data = err.response?.data as { message: string }
-    toast.error(`Unidentified error: ${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
-    throw new Error(`Unidentified error: ${data.message || err.response?.data || err.message}`);
+    toast.error(`${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
+    throw new Error(`${data.message || err.response?.data || err.message}`);
   })
 })
 
@@ -63,9 +63,6 @@ export function Payments() {
     const done = status === 'C';
     const startDateParsed = dayjs(startDate).toISOString()
     const endDateParsed = dayjs(endDate).toISOString()
-    console.log('parsed')
-    console.log(startDateParsed)
-    console.log(endDateParsed)
     api.get('payment', {
       params: {
         all,
@@ -78,12 +75,11 @@ export function Payments() {
       }
     }).then(response => {
       var listResponde = JSON.parse(JSON.stringify(response.data))
-      console.log(listResponde)
       setPayments(listResponde)
       setLoading(false)
     }).catch((err: AxiosError) => {
       const data = err.response?.data as { message: string }
-      toast.error(`Unidentified error: ${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
+      toast.error(`${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
       setLoading(false)
     })
   }
@@ -102,10 +98,10 @@ export function Payments() {
         resolve(`Created payment: ${response.data?.id}`);
       }).catch((err: AxiosError) => {
         const data = err.response?.data as { message: string }
-        toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
+        toast.error(`${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
         setLoading(false)
         handlePayments(searchButton)
-        throw new Error(`Unidentified error: ${data.message || err.response?.data || err.message}`);
+        throw new Error(`${data.message || err.response?.data || err.message}`);
       })
     });
     return promise
@@ -115,8 +111,6 @@ export function Payments() {
     setStartDate(data[0])
     setEndDate(data[1])
     setSelectDateType(data[2])
-    console.log('change calendar dates')
-    console.log(data)
     const promise = new Promise((resolve, reject) => {
       handlePayments(searchButton)
       resolve("");
@@ -368,7 +362,7 @@ export function Payments() {
         setLoading(false)
       }).catch((err: AxiosError) => {
         const data = err.response?.data as { message: string }
-        toast.error(`Unidentified error: ${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
+        toast.error(`${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
         setLoading(false)
       })
     } catch (e) {

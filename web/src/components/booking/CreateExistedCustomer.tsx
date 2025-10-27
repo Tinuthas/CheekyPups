@@ -38,8 +38,7 @@ export const CreateExistedCustomer = ({
       newList.push(oldKey)
     }
     var index: number = newList.findIndex((i: any) => i.value === key.value);
-    console.log('index')
-    console.log(index)
+
     if (index > -1) {
       newList.splice(index, 1);
     }
@@ -48,10 +47,8 @@ export const CreateExistedCustomer = ({
   }
 
   function removeItemArrayDogs(newList:any, key: any) {
-    console.log('remove item')
     var index: number = newList.findIndex((i: any) => i.element.id === key.id);
-    console.log('index')
-    console.log(index)
+
     if (index > -1) {
       newList.splice(index, 1);
     }
@@ -80,13 +77,11 @@ export const CreateExistedCustomer = ({
                 resolve(listData)
               }).catch((err: AxiosError) => {
                 const data = err.response?.data as { message: string }
-                toast.error(`Unidentified error: ${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
-                throw new Error(`Unidentified error: ${data.message || err.response?.data || err.message}`);
+                toast.error(`${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
+                throw new Error(`${data.message || err.response?.data || err.message}`);
               })
             }),
             setValue: (value) => {
-              console.log('select value')
-              console.log(value)
               setOwnerName(value.element.Owner.name)
               setPhoneOwner(value.element.Owner.phoneOne)
               setFirstDog({time: firstDog.time, name: value.element.name, breed: value.element.breed, dogId: value.element.id})

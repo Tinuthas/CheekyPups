@@ -62,7 +62,6 @@ export function Attendances() {
   function setDates(newDateStart: Date, newDateEnd: Date) {
     setDateStart(newDateStart)
     setDateEnd(newDateEnd)
-    console.log(dateStart + " " + dateEnd)
   }
 
   function handleOpenAvatar(row: any) {
@@ -117,7 +116,6 @@ export function Attendances() {
                   <div className="flex flex-row justify-center align-baseline cursor-pointer" onClick={() => {
                     setOpenListModal(true)
                     setOpenIndex(row.original.owner_id)
-                    console.log(row.original.owner_id)
                   }}>
                     {row?.original?.['dates'].length >= 5 ?
                       <div className=" bg-purple-300 rounded-full py-1 px-3">
@@ -148,7 +146,6 @@ export function Attendances() {
 
             base.push(cellComponent(item, () => onSubmitUpdatePage(), totalSumDays))
           }
-          //console.log(base)
           setColumns(base)
         }
       } else {
@@ -158,7 +155,6 @@ export function Attendances() {
       }
       setLoading(false)
     }).catch(err => {
-      console.log(err)
       setLoading(false)
     })
   }
@@ -175,7 +171,6 @@ export function Attendances() {
       toast.success(`Added!`, { position: "top-center", autoClose: 1000, })
       clickSearchByDates()
     }).catch((err: AxiosError) => {
-      console.log(err)
       const data = err.response?.data as { message: string }
       toast.error(`${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
       setLoading(false)
@@ -195,10 +190,9 @@ export function Attendances() {
       toast.success(`Added!`, { position: "top-center", autoClose: 1000, })
       clickSearchByDates()
     }).catch((err: AxiosError) => {
-      console.log(err)
       const data = err.response?.data as { message: string }
-      toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
-      throw new Error(`Unidentified error: ${data.message || err.response?.data || err.message}`);
+      toast.error(`${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
+      throw new Error(`${data.message || err.response?.data || err.message}`);
       setLoading(false)
     })
   };
@@ -206,7 +200,6 @@ export function Attendances() {
   const handleCreateNewOwnerDog = (values: any) => {
     try {
       setLoading(true)
-      console.log(values)
       values.birthdayDate = dayjs(values.birthdayDate, 'DD/MM/YYYY').toISOString()
       if (values.secondDog)
         values.secondBirthdayDate = dayjs(values.secondBirthdayDate, 'DD/MM/YYYY').toISOString()
@@ -219,11 +212,10 @@ export function Attendances() {
         toast.success(`Created Owner and Dogs!`, { position: "top-center", autoClose: 1000, })
         clickSearchByDates()
       }).catch((err: AxiosError) => {
-        console.log(err)
         const data = err.response?.data as { message: string }
-        toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
+        toast.error(`${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
         setLoading(false)
-        throw new Error(`Unidentified error: ${data.message || err.response?.data || err.message}`);
+        throw new Error(`${data.message || err.response?.data || err.message}`);
 
       })
     } catch (e) {

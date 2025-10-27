@@ -105,7 +105,6 @@ export function Attendance(){
             listDates['paid'] = item.paids[i]? listDates['paid'] + 1 : listDates['paid']
           }
           var obj = Object.assign({}, item, listDates);
-          console.log(obj)
           rows.push(obj)
         })
 
@@ -131,12 +130,10 @@ export function Attendance(){
           width: 50
         }]
         for (const item of dates) {
-          console.log(item)
           base.push({field:item, headerName: item, width: 100, headerAlign: 'center', align: 'center'})
         }
         setColumns(base)
       }).catch(err => {
-        console.log(err)
       })
   }
 

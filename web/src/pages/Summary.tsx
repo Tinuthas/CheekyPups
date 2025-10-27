@@ -67,7 +67,6 @@ export function Summary() {
         }
       }).then(response => {
         var listResponde = JSON.parse(JSON.stringify(response.data))
-        console.log(listResponde)
 
         setAllInfoNull()
         listResponde.daycare.forEach((element: any) => {
@@ -118,9 +117,8 @@ export function Summary() {
         setInfo(listResponde)
         setLoading(false)
       }).catch((err: AxiosError) => {
-        console.log(err)
         const data = err.response?.data as { message: string }
-        toast.error(`Unidentified error: ${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
+        toast.error(`${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
         setLoading(false)
       })
 

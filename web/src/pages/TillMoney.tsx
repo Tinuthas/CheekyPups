@@ -90,11 +90,10 @@ export function TillMoney() {
         setLoading(false)
         getAllTillInfo()
       }).catch((err: AxiosError) => {
-        console.log(err)
         setLoading(false)
         const data = err.response?.data as { message: string }
-        toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
-        throw new Error(`Unidentified error: ${data.message || err.response?.data || err.message}`);
+        toast.error(`${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
+        throw new Error(`${data.message || err.response?.data || err.message}`);
       })
     } catch (e) {
       toast.error(`Unidentified error`, { position: "top-center", autoClose: 5000, })
@@ -116,16 +115,14 @@ export function TillMoney() {
         setDaycare(listData.daycare)
         setGrooming(listData.grooming)
         let listInfo = listData.all
-        console.log(listData.all)
         listInfo.forEach((info: any) => {
           info.date = dayjs(info.date).format('DD/MM/YYYY HH:mm')
         });
-        console.log(listData.all)
         setAllInfo(listInfo)
         setLoading(false)
       }).catch((err: AxiosError) => {
         const data = err.response?.data as { message: string }
-        toast.error(`Unidentified error: ${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
+        toast.error(`${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
         setLoading(false)
       })
     } catch (e) {
@@ -137,7 +134,7 @@ export function TillMoney() {
 
   const listDaycareItems = daycare.map((till: any) =>
     <div className="flex flex-row justify-around mt-2 text-center" key={till.id}>
-      <p className="w-[120px] ">{dayjs(till.date).format('DD/MM/YYYY HH:mm')}</p>
+      <p className="w-[120px] md:w-[150px]">{dayjs(till.date).format('DD/MM/YYYY HH:mm')}</p>
       <p className="w-[100px] ">{`€ ${till.valueStarted}`}</p>
       <p className="w-[100px] ">{`€ ${till.value}`}</p>
       <p className="w-[90px] ">{`€ ${till.valueCard}`}</p>
@@ -147,7 +144,7 @@ export function TillMoney() {
 
   const listGroomingItems = grooming.map((till: any) =>
     <div className="flex flex-row justify-around mt-2 text-center" key={till.id}>
-      <p className="w-[120px] ">{dayjs(till.date).format('DD/MM/YYYY HH:mm')}</p>
+      <p className="w-[120px] md:w-[150px]">{dayjs(till.date).format('DD/MM/YYYY HH:mm')}</p>
       <p className="w-[100px] ">{`€ ${till.valueStarted}`}</p>
       <p className="w-[100px] ">{`€ ${till.value}`}</p>
       <p className="w-[90px] ">{`€ ${till.valueCard}`}</p>
@@ -166,7 +163,7 @@ export function TillMoney() {
 
           </div>
           <div className=" w-full mt-4 lg:flex justify-around">
-            <div className="text-neutral-600 mt-3 bg-white p-10 rounded-3xl lg:w-[530px]">
+            <div className="text-neutral-600 mt-3 bg-white p-10 rounded-3xl lg:w-[560px]">
               <div className="flex flex-row justify-center">
                 <h4 className="font-borsok text-2xl md:text-3xl m-1 mr-3">Daycare</h4>
                 <div className="" onClick={() => {
@@ -179,7 +176,7 @@ export function TillMoney() {
               <div>
                 <div className="text-base">
                   <div className="flex flex-row justify-around text-center mt-2">
-                    <h6 className="w-[120px] font-semibold">Date</h6>
+                    <h6 className="w-[120px] md:w-[150px] font-semibold">Date</h6>
                     <h6 className="w-[100px] font-semibold">Start</h6>
                     <h6 className="w-[100px] font-semibold">Actual</h6>
                     <h6 className="w-[90px] font-semibold">Card</h6>
@@ -190,7 +187,7 @@ export function TillMoney() {
               </div>
             </div>
 
-            <div className="text-neutral-600 mt-3 bg-white p-10 rounded-3xl lg:w-[530px]">
+            <div className="text-neutral-600 mt-3 bg-white p-10 rounded-3xl lg:w-[560px]">
               <div className="flex flex-row justify-center">
                 <h4 className="font-borsok text-2xl md:text-3xl m-1 mr-3">Grooming</h4>
                 <div className="" onClick={() => {
@@ -203,7 +200,7 @@ export function TillMoney() {
               <div>
                 <div className="text-base">
                   <div className="flex flex-row justify-around text-center mt-2">
-                    <h6 className="w-[120px] font-semibold">Date</h6>
+                    <h6 className="w-[120px] md:w-[150px] font-semibold">Date</h6>
                     <h6 className="w-[100px] font-semibold">Start</h6>
                     <h6 className="w-[100px] font-semibold">Actual</h6>
                     <h6 className="w-[90px] font-semibold">Card</h6>

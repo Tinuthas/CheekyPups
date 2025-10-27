@@ -25,10 +25,7 @@ dayjs.updateLocale("en", {
 
 export function ChooseDateButton({ label, date, setDate, calendar }: ChooseDateButtonProps) {
 
-
   const [highlightedDays, setHighlitedDays] = useState(calendar != undefined ? calendar : []);
-  console.log(calendar)
-
   
   return (
     <div className="h-10 my-2 ">

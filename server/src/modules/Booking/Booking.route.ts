@@ -87,7 +87,6 @@ async function getBookingByDate(request: FastifyRequest<{ Querystring: FilterBoo
   try {
     return await getBookingsDate(request.query)
   } catch (err) {
-    console.log(err)
     reply.code(400).send('Error in get bookings appointments')
   }
 }
@@ -97,7 +96,6 @@ async function getBookingsDate(input: FilterBookingDateInput) {
   const parsedDate = dayjs(date).set('hour', 0).set('minute', 0).set('second', 0).millisecond(0).toISOString()
 
   //return await prisma.booking.findMany()
-  console.log(parsedDate)
   const bookings = await prisma.booking.findMany({
     where: {
       dayBooking: {

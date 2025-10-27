@@ -28,20 +28,6 @@ export const CreateConfirmedOffering = ({
   const [valueListTimes, setValueListTimes] = useState<[{}]>(listTimes)
   const [notes, setNotes] = useState(ownerSearch.notes)
 
-  function removeItemArrayTimes(key: any, oldKey: any) {
-    var newList = valueListTimes
-    if (oldKey != null) {
-      newList.push(oldKey)
-    }
-    var index: number = newList.findIndex((i: any) => i.id === key.id);
-    console.log('index')
-    console.log(index)
-    if (index > -1) {
-      newList.splice(index, 1);
-    }
-    newList.sort((a: any, b: any) => dayjs(a.value).toDate().getTime() - dayjs(b.value).toDate().getTime());
-    setValueListTimes(newList)
-  }
 
   return (
     <>
@@ -67,8 +53,8 @@ export const CreateConfirmedOffering = ({
                 resolve(listData)
               }).catch((err: AxiosError) => {
                 const data = err.response?.data as { message: string }
-                toast.error(`Unidentified error: ${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
-                throw new Error(`Unidentified error: ${data.message || err.response?.data || err.message}`);
+                toast.error(`${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
+                throw new Error(`${data.message || err.response?.data || err.message}`);
               })
             }),
             setValue: (value) => {

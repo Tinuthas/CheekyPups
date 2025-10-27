@@ -37,8 +37,7 @@ export const CreateNewOffering = ({
       newList.push(oldKey)
     }
     var index: number = newList.findIndex((i: any) => i.id === key.id);
-    console.log('index')
-    console.log(index)
+ 
     if (index > -1) {
       newList.splice(index, 1);
     }
@@ -68,12 +67,11 @@ export const CreateNewOffering = ({
                 resolve(listData)
               }).catch((err: AxiosError) => {
                 const data = err.response?.data as { message: string }
-                toast.error(`Unidentified error: ${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
-                throw new Error(`Unidentified error: ${data.message || err.response?.data || err.message}`);
+                toast.error(`${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
+                throw new Error(`${data.message || err.response?.data || err.message}`);
               })
             }),
             setValue: (value) => {
-              console.log(value)
               if(value.element == null) {
                 setOwnerName("")
                 setPhoneOwner("")

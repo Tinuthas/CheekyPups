@@ -50,21 +50,17 @@ export const CreateWeekRow = ({
 
 
   function calculateValuePaid() {
-    console.log('calc')
     var paidValue = 0
     if(firstDay.value != 0) 
       paidValue = Number(paidValue)+ Number(firstDay.value)
     if(secondDay.value != 0) 
       paidValue = Number(paidValue)+ Number(secondDay.value)
-    console.log(paidValue)
     if(thirdDay.value != 0)
       paidValue = Number(paidValue)+ Number(thirdDay.value)
-    console.log(paidValue)
     if(fourthDay.value != 0)
       paidValue = Number(paidValue)+ Number(fourthDay.value)
     if(fifthDay.value != 0)
       paidValue = Number(paidValue)+ Number(fifthDay.value)
-    console.log(paidValue)
 
     setValuePaidField(String(paidValue))
   }
@@ -103,8 +99,8 @@ export const CreateWeekRow = ({
                 resolve(listData)
               }).catch((err: AxiosError) => {
                 const data = err.response?.data as { message: string }
-                toast.error(`Unidentified error: ${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
-                throw new Error(`Unidentified error: ${data.message || err.response?.data || err.message}`);
+                toast.error(`${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
+                throw new Error(`${data.message || err.response?.data || err.message}`);
               })
             }),
             gridXS: 12, gridMS: 12,

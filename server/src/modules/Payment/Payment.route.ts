@@ -196,7 +196,6 @@ async function filterAllExtracts(pays: any[]) {
       totalValue: pays[index]._sum.totalValue,
     })
   })
-  console.log(listPayments)
   return listPayments
 }
 
@@ -353,7 +352,6 @@ async function getAllExtractByOwnerDoneDate(done: boolean, id: number, startDate
 }
 
 async function filterAllExtractByOwner(extracts: any[], ownerId: number) {
-  console.log(extracts)
   const filterExtracts = extracts.map(({ id, description, value, date, attendanceId, paidValue, totalValue, done, type, attendance, booking, }) => ({
     id,
     description,
@@ -802,8 +800,6 @@ export async function updateTillHandle(typeTill: string, type: string, value: nu
       }
     }*/
 
-    console.log('updating till')
-
     const till = await prisma.till.findFirst({
       where: {
         type: typeTill,
@@ -846,7 +842,7 @@ export async function updateTillHandle(typeTill: string, type: string, value: nu
       })
     }
 
-  } catch (e) {
-    throw new Error('Error in updating till')
+  } catch (e:any) {
+    throw new Error('Error in updating till: '+e.message)
   }
 }

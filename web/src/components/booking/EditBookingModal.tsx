@@ -47,7 +47,6 @@ export const EditBookingNewModal = ({
   const [selectInput, setSelectInput] = useState<any>({})
 
   const handleClose = () => {
-    console.log()
     setValues(emptyValues)
     onClose()
   }

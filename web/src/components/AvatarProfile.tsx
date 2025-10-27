@@ -33,7 +33,6 @@ export const downloadAvatar = (fileName: string) => {
   const gsReference = ref(storage, url);
   return new Promise(resolve => {
     getDownloadURL(gsReference).then(url => {
-      console.log(url)
       resolve(url)
       // Insert url into an <img> tag to "download"
     }).catch(error => {
@@ -68,13 +67,11 @@ export const AvatarModal = ({
       resizeFile(selectorFiles[0]).then(resolve => {
         setImage(resolve)
       }).catch(error => {
-        console.log(error)
         toast.error(`Error resize image`, { position: "top-center", autoClose: 5000, })
       })
       /*resizeFile(selectorFiles[0]).then(resolve => {
         setImage(resolve)
       }).catch(error => {
-        console.log(error)
         toast.error(`Error resize image`, { position: "top-center", autoClose: 5000, })
       })*/
     }

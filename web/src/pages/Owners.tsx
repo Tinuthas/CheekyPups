@@ -100,7 +100,6 @@ export function Owners() {
             <div className="flex flex-row justify-center align-baseline cursor-pointer" onClick={() => {
               setOpenListModal(true)
               setOpenIndex(row.original.id)
-              console.log(row.original.id)
             }}>
               <span>{renderedCellValue}</span>
             </div>
@@ -197,7 +196,7 @@ export function Owners() {
       setLoading(false)
     }).catch((err: AxiosError) => {
       const data = err.response?.data as { message: string }
-      toast.error(`Unidentified error: ${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
+      toast.error(`${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
       setLoading(false)
     })
   }
@@ -218,7 +217,7 @@ export function Owners() {
       setLoading(false)
     }).catch((err: AxiosError) => {
       const data = err.response?.data as { message: string }
-      toast.error(`Unidentified error: ${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
+      toast.error(`${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
       setLoading(false)
     })
   }
@@ -239,9 +238,9 @@ export function Owners() {
         setLoading(false)
       }).catch((err: AxiosError) => {
         const data = err.response?.data as { message: string }
-        toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
+        toast.error(`${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
         setLoading(false)
-        throw new Error(`Unidentified error: ${data.message || err.response?.data || err.message}`);
+        throw new Error(`${data.message || err.response?.data || err.message}`);
       })
     })
     return promise
@@ -260,9 +259,9 @@ export function Owners() {
         setLoading(false)
       }).catch((err: AxiosError) => {
         const data = err.response?.data as { message: string }
-        toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
+        toast.error(`${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
         setLoading(false)
-        throw new Error(`Unidentified error: ${data.message || err.response?.data || err.message}`);
+        throw new Error(`${data.message || err.response?.data || err.message}`);
       })
     });
     return promise
@@ -284,9 +283,9 @@ export function Owners() {
         setLoading(false)
       }).catch((err: AxiosError) => {
         const data = err.response?.data as { message: string }
-        toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
+        toast.error(`${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
         setLoading(false)
-        throw new Error(`Unidentified error: ${data.message || err.response?.data || err.message}`);
+        throw new Error(`${data.message || err.response?.data || err.message}`);
       })
     });
     return promise

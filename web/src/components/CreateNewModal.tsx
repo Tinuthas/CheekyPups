@@ -64,19 +64,13 @@ export const CreateNewModal = ({
 
   const handleSubmit = () => {
     //put your validation logic here
-    //console.log(Object.entries(values))
     var validationEmail = false
     var validationRequired = false
     var validationDate = false
     var validationTime = false
-    console.log('handle submit')
-    console.log(columns)
     var entries = Object.entries(values)
-    console.log(entries)
 
     Object.entries(values).forEach((element: any, index) => {
-      console.log(element[1])
-      console.log(columns[index])
       if (columns[index] != null) {
         if (columns[index].type.includes('checkbox')) {
           if (values[element[1]] == undefined)
@@ -103,7 +97,6 @@ export const CreateNewModal = ({
           }
         }
         if (columns[index].type.includes('time')) {
-          console.log(element[1])
           if (element[1].length == 0) {
             values[element[0]] = null
           } else {
@@ -122,10 +115,8 @@ export const CreateNewModal = ({
       }
     });
     if (validationRequired) {
-      console.log('validation')
-      console.log(validationRequired)
       toast.error(`You need to fill some fields`, { position: 'top-center', autoClose: 2000, });
-      toast.error(`${JSON.stringify(values)}`, { position: 'top-center', autoClose: 10000, });
+      //toast.error(`${JSON.stringify(values)}`, { position: 'top-center', autoClose: 10000, });
     } else if (validationEmail) {
       toast.error("Incorrect Email Field", { position: 'top-center', autoClose: 2000, });
     } else if (validationDate) {
@@ -144,7 +135,6 @@ export const CreateNewModal = ({
   };
 
   function onChangeValuesCheck(key: any, value: any) {
-    console.log({ [key]: value })
     setValues({ ...values, [key]: value })
   }
 

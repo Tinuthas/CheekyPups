@@ -62,7 +62,6 @@ export default function MenuItemCustom({children, handleDelete, handleEdit, hand
     handleClose(event)
   }
   const handleEditClose = (values: any, valuesData: any) => {
-    console.log('handle edit close')
     setOpenEdit(false)
     handleEdit(id, values)
   }

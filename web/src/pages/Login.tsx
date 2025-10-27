@@ -50,7 +50,6 @@ export function Login() {
       const validation: ZodError = err
       var listMessage = ""
       validation.errors.map(error => {
-        console.log(error.message)
         if (listMessage != "")
           listMessage = listMessage + " - "
         listMessage = listMessage + error.message
@@ -82,8 +81,6 @@ export function Login() {
         return
       } else {
         setErrorMessage("Unidentified error")
-        console.log(err.message)
-        console.log(err.response?.data)
         return
       }
     })

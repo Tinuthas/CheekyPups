@@ -53,8 +53,6 @@ function ReturnMenuItemCustom({ renderedCellValue, row, item, onSubmit }: Return
       }
     }).then(response => {
       var att = response.data
-      console.log("open edit")
-      console.log(att)
       setValueField(Number(att.extract.value))
       setValueDecriptionField(att.extract.description)
       setPaidField(att.paid)
@@ -64,18 +62,14 @@ function ReturnMenuItemCustom({ renderedCellValue, row, item, onSubmit }: Return
       setPaidTypeField(att.extract.type)
     }).catch((err: AxiosError) => {
       const data = err.response?.data as { message: string }
-      toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
+      toast.error(`${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
     })
   }
 
 
   function handleEdit(item: any, row: any, id: number, values: any) {
     try {
-      console.log('handle edit')
-      console.log(values)
-      console.log(values.typePaid?.toUpperCase?.())
       var paid = (paidField.toString().toLowerCase() === 'true')
-      console.log('type field '+ paidTypeField)
       var data = {
         typeDay: (values.typeDay?.toUpperCase?.()),
         paid,
@@ -84,7 +78,6 @@ function ReturnMenuItemCustom({ renderedCellValue, row, item, onSubmit }: Return
         typePaid: values.typePaid?.toUpperCase?.(),
         descriptionValue: valueDecriptionField
       }
-      console.log(data)
       api.put('attendance', data, {
         params: {
           id,
@@ -96,11 +89,11 @@ function ReturnMenuItemCustom({ renderedCellValue, row, item, onSubmit }: Return
         onSubmit().then((value) => {
           toast.success(`Attendance Updated`, { position: "top-center", autoClose: 1000, })
         }).catch((err: Error) => {
-          toast.error(`Unidentified error: ${err.message}`, { position: "top-center", autoClose: 5000, })
+          toast.error(`${err.message}`, { position: "top-center", autoClose: 5000, })
         })
       }).catch((err: AxiosError) => {
         const data = err.response?.data as { message: string }
-        toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
+        toast.error(`${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
       })
     } catch (e) {
       toast.error(`Unidentified error`, { position: "top-center", autoClose: 5000, })
@@ -127,12 +120,11 @@ function ReturnMenuItemCustom({ renderedCellValue, row, item, onSubmit }: Return
         onSubmit().then((value) => {
           toast.success(`Attendance Updated`, { position: "top-center", autoClose: 1000, })
         }).catch((err: Error) => {
-          toast.error(`Unidentified error: ${err.message}`, { position: "top-center", autoClose: 5000, })
+          toast.error(`${err.message}`, { position: "top-center", autoClose: 5000, })
         })
       }).catch((err: AxiosError) => {
-        console.log(err)
         const data = err.response?.data as { message: string }
-        toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
+        toast.error(`${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
       })
     } catch (e) {
       toast.error(`Unidentified error`, { position: "top-center", autoClose: 5000, })
@@ -141,7 +133,6 @@ function ReturnMenuItemCustom({ renderedCellValue, row, item, onSubmit }: Return
 
   function handleDelete(id: number) {
     try {
-      console.log(id)
       api.delete('attendance', {
         params: {
           id,
@@ -153,12 +144,11 @@ function ReturnMenuItemCustom({ renderedCellValue, row, item, onSubmit }: Return
         onSubmit().then((value) => {
           toast.success(`Attendance Deleted`, { position: "top-center", autoClose: 1000, })
         }).catch((err: Error) => {
-          toast.error(`Unidentified error: ${err.message}`, { position: "top-center", autoClose: 5000, })
+          toast.error(`${err.message}`, { position: "top-center", autoClose: 5000, })
         })
       }).catch((err: AxiosError) => {
-        console.log(err)
         const data = err.response?.data as { message: string }
-        toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
+        toast.error(`${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
       })
     } catch (e) {
       toast.error(`Unidentified error`, { position: "top-center", autoClose: 5000, })
@@ -306,7 +296,6 @@ function ReturnMenuItemCustom({ renderedCellValue, row, item, onSubmit }: Return
 }
 
 export function cellComponent(item: string, onSubmit: () => Promise<boolean>, totalSumDays: number) {
-  console.log(dayjs(item, 'DD/MM/YYYY').format('ddd DD'))
   var column: MRT_ColumnDef<any> = {
     accessorKey: item,
     header: dayjs(item, 'DD/MM/YYYY').format('ddd DD'),

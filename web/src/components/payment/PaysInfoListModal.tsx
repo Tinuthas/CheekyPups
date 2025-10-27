@@ -53,8 +53,6 @@ export const PaysInfoListModal = ({
 
     const all = infoData.all != null ? infoData.all : true;
     const done = infoData.done != null ? infoData.done : true;
-    console.log('owner id')
-    console.log(infoData.ownerId)
     api.get('payment/extracts', {
       params: {
         id: infoData.ownerId,
@@ -67,9 +65,7 @@ export const PaysInfoListModal = ({
         Authorization: getToken()
       }
     }).then(response => {
-      console.log('return call list extracts')
       var listResponde = JSON.parse(JSON.stringify(response.data))
-      console.log(listResponde)
       setExtracts(listResponde.extracts)
       setOwner(listResponde.owner)
       setBookings(listResponde.bookings)
@@ -77,7 +73,7 @@ export const PaysInfoListModal = ({
       setLoading(false)
     }).catch((err: AxiosError) => {
       const data = err.response?.data as { message: string }
-      toast.error(`Unidentified error: ${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
+      toast.error(`${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
       setLoading(false)
     })
   }
@@ -85,7 +81,6 @@ export const PaysInfoListModal = ({
 
   function deleteDataRow(id: number) {
     setLoading(true)
-    console.log('delete')
     const promise = new Promise((resolve, reject) => {
       api.delete('payment', {
         params: {
@@ -100,9 +95,9 @@ export const PaysInfoListModal = ({
         setLoading(false)
       }).catch((err: AxiosError) => {
         const data = err.response?.data as { message: string }
-        toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
+        toast.error(`${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
         setLoading(false)
-        throw new Error(`Unidentified error: ${data.message || err.response?.data || err.message}`);
+        throw new Error(`${data.message || err.response?.data || err.message}`);
       })
     }).then(() => callInit());
     return promise
@@ -110,7 +105,6 @@ export const PaysInfoListModal = ({
 
   function updateDataRow(data: any) {
     setLoading(true)
-    console.log('update payment')
     const promise = new Promise((resolve, reject) => {
       api.put('payment', data, {
         params: {
@@ -125,9 +119,9 @@ export const PaysInfoListModal = ({
         setLoading(false)
       }).catch((err: AxiosError) => {
         const data = err.response?.data as { message: string }
-        toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
+        toast.error(`${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
         setLoading(false)
-        throw new Error(`Unidentified error: ${data.message || err.response?.data || err.message}`);
+        throw new Error(`${data.message || err.response?.data || err.message}`);
       })
     }).then(() => callInit())
     return promise
@@ -148,7 +142,7 @@ export const PaysInfoListModal = ({
           setLoading(false)
         }).catch((err: AxiosError) => {
           const data = err.response?.data as { message: string }
-          toast.error(`Unidentified error: ${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
+          toast.error(`${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
           setLoading(false)
         })
       })

@@ -56,10 +56,7 @@ export function ListField({ date, setDate, loading, setLoading }: ListFieldProps
     }).then(response => {
       var data = response.data
       var listData = JSON.parse(JSON.stringify(data));
-      console.log(listData)
       setBookings(listData.bookings)
-      console.log('calendar')
-      console.log(listData.calendar)
       setCalendar(listData.calendar)
       var emptyBooking:Array<{}> = new Array()
       listData.bookings.forEach((time: any) => {
@@ -71,7 +68,7 @@ export function ListField({ date, setDate, loading, setLoading }: ListFieldProps
       setLoading(false)
     }).catch((err: AxiosError) => {
       const data = err.response?.data as { message: string }
-      toast.error(`Unidentified error: ${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
+      toast.error(`${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
       setLoading(false)
     })
   }
@@ -84,9 +81,6 @@ export function ListField({ date, setDate, loading, setLoading }: ListFieldProps
     setCreateBookModalOpen(true)
   }
 
-  function setTimeValueField(value: any) {
-    console.log(value)
-  }
 
   function onNextDate() {
     var newDate = new Date(date)
@@ -147,10 +141,9 @@ export function ListField({ date, setDate, loading, setLoading }: ListFieldProps
       getBookingFromDate()
       setLoading(false)
     }).catch((err: AxiosError) => {
-      console.log(err)
       const data = err.response?.data as { message: string }
-      toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
-      throw new Error(`Unidentified error: ${data.message || err.response?.data || err.message}`);
+      toast.error(`${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
+      throw new Error(`${data.message || err.response?.data || err.message}`);
       setLoading(false)
     })
   };
@@ -167,10 +160,9 @@ export function ListField({ date, setDate, loading, setLoading }: ListFieldProps
       getBookingFromDate()
       setLoading(false)
     }).catch((err: AxiosError) => {
-      console.log(err)
       const data = err.response?.data as { message: string }
-      toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
-      throw new Error(`Unidentified error: ${data.message || err.response?.data || err.message}`);
+      toast.error(`${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
+      throw new Error(`${data.message || err.response?.data || err.message}`);
       setLoading(false)
     })
   }
@@ -190,9 +182,8 @@ export function ListField({ date, setDate, loading, setLoading }: ListFieldProps
         getBookingFromDate()
         setLoading(false)
       }).catch((err: AxiosError) => {
-        console.log(err)
         const data = err.response?.data as { message: string }
-        toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
+        toast.error(`${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
       })
     } catch (e) {
       toast.error(`Unidentified error`, { position: "top-center", autoClose: 5000, })
@@ -215,7 +206,7 @@ export function ListField({ date, setDate, loading, setLoading }: ListFieldProps
         setLoading(false)
       }).catch((err: AxiosError) => {
         const data = err.response?.data as { message: string }
-        toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
+        toast.error(`${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
       })
     } catch (e) {
       toast.error(`Unidentified error`, { position: "top-center", autoClose: 5000, })
@@ -225,8 +216,6 @@ export function ListField({ date, setDate, loading, setLoading }: ListFieldProps
   function handleCreateNewDogAndCustomer(ownerDog:any) {
     try {
       setLoading(true)
-      console.log('handleCreateNewDogAndCustomer')
-      console.log(ownerDog)
       api.post('booking/newCustomer', ownerDog, {
         headers: {
           Authorization: getToken()
@@ -236,9 +225,8 @@ export function ListField({ date, setDate, loading, setLoading }: ListFieldProps
         getBookingFromDate()
         setLoading(false)
       }).catch((err: AxiosError) => {
-        console.log(err)
         const data = err.response?.data as { message: string }
-        toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
+        toast.error(`${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
       })
     } catch (e) {
       toast.error(`Unidentified error`, { position: "top-center", autoClose: 5000, })
@@ -248,8 +236,6 @@ export function ListField({ date, setDate, loading, setLoading }: ListFieldProps
   function handleCreateExistedDogAndCustomer(ownerDog: any) {
     try {
       setLoading(true)
-      console.log('handleCreateExistedDogAndCustomer')
-      console.log(ownerDog)
       api.post('booking/existedCustomer', ownerDog, {
         headers: {
           Authorization: getToken()
@@ -259,9 +245,8 @@ export function ListField({ date, setDate, loading, setLoading }: ListFieldProps
         getBookingFromDate()
         setLoading(false)
       }).catch((err: AxiosError) => {
-        console.log(err)
         const data = err.response?.data as { message: string }
-        toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
+        toast.error(`${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
       })
     } catch (e) {
       toast.error(`Unidentified error`, { position: "top-center", autoClose: 5000, })
@@ -271,22 +256,17 @@ export function ListField({ date, setDate, loading, setLoading }: ListFieldProps
   function handleCreateOfferedCustomer(offeredTime: any) {
     try {
       setLoading(true)
-      console.log('handleCreateOfferedCustomer')
-      console.log(offeredTime)
       api.post('booking/offering', offeredTime, {
         headers: {
           Authorization: getToken()
         }
       }).then(response => {
-        console.log('response')
-        console.log(response.data)
         toast.success(`Offered created`, { position: "top-center", autoClose: 1000, })
         getBookingFromDate()
         setLoading(false)
       }).catch((err: AxiosError) => {
-        console.log(err)
         const data = err.response?.data as { message: string }
-        toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
+        toast.error(`${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
       })
      setLoading(false)
     } catch (e) {
@@ -297,22 +277,17 @@ export function ListField({ date, setDate, loading, setLoading }: ListFieldProps
   function handleOfferedConfirmedCustomer(confirmedTime: any) {
     try {
       setLoading(true)
-      console.log('handleOfferedConfirmedCustomer')
-      console.log(confirmedTime)
       api.post('booking/confirmedOffer', confirmedTime, {
         headers: {
           Authorization: getToken()
         }
       }).then(response => {
-        console.log('response')
-        console.log(response.data)
         toast.success(`Booking created`, { position: "top-center", autoClose: 1000, })
         getBookingFromDate()
         setLoading(false)
       }).catch((err: AxiosError) => {
-        console.log(err)
         const data = err.response?.data as { message: string }
-        toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
+        toast.error(`${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
       })
      setLoading(false)
     } catch (e) {
@@ -328,15 +303,12 @@ export function ListField({ date, setDate, loading, setLoading }: ListFieldProps
           Authorization: getToken()
         }
       }).then(response => {
-        console.log('response')
-        console.log(response.data)
         toast.success(`Booking finished`, { position: "top-center", autoClose: 1000, })
         getBookingFromDate()
         setLoading(false)
       }).catch((err: AxiosError) => {
-        console.log(err)
         const data = err.response?.data as { message: string }
-        toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
+        toast.error(`${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
       })
      setLoading(false)
     } catch (e) {
@@ -352,15 +324,12 @@ export function ListField({ date, setDate, loading, setLoading }: ListFieldProps
           Authorization: getToken()
         }
       }).then(response => {
-        console.log('response')
-        console.log(response.data)
         toast.success(`Booking edit`, { position: "top-center", autoClose: 1000, })
         getBookingFromDate()
         setLoading(false)
       }).catch((err: AxiosError) => {
-        console.log(err)
         const data = err.response?.data as { message: string }
-        toast.error(`Unidentified error: ${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
+        toast.error(`${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
       })
      setLoading(false)
     } catch (e) {

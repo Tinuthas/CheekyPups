@@ -42,17 +42,14 @@ export function NewOwnerDog(){
   }
   
   function createNewOwnerDog(body:Object) {
-    console.log(body)
     api.post('/dogs', body, {
       headers: { 'Content-Type': 'application/json', 'Authorization': getToken() }
     }).then( response =>{
       
       toast.success(`Owner ${name} is created`, { position: "top-center", autoClose: 5000, })
     }).catch((err: AxiosError) => {
-      console.log(err)
-      console.log(err.response?.data)
       const data = err.response?.data as {message: string}
-      toast.error(`Unidentified error: ${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
+      toast.error(`${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
       return 
     })
   }

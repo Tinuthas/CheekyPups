@@ -49,7 +49,6 @@ export const EditNewModal = ({
   const [selectInput, setSelectInput] = useState<any>({})
 
   const handleClose = () => {
-    console.log()
     setValues(emptyValues)
     onClose()
   }
@@ -59,13 +58,9 @@ export const EditNewModal = ({
     var validationRequired = false
     var validationDate = false
     var validationTime = false
-    console.log(Object.entries(values))
-    console.log(columns)
 
 
     Object.entries(values).forEach((element: any, index) => {
-      console.log(element[1])
-      console.log(columns[index])
       if (columns[index] != null) {
         if (columns[index].type.includes('checkbox')) {
           if (values[element[1]] == undefined)
@@ -97,7 +92,6 @@ export const EditNewModal = ({
           }
         }
         if (columns[index].type.includes('time')) {
-          console.log(element[1])
           if (element[1].length == 0) {
             values[element[0]] = null
           } else {
@@ -128,7 +122,6 @@ export const EditNewModal = ({
   }
 
   function onChangeValuesCheck(key: any, value: any) {
-    console.log({ [key]: value })
     setValues({ ...values, [key]: value })
   }
 

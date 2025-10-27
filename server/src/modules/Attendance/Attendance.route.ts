@@ -84,7 +84,6 @@ export async function attendanceRoutes(app: FastifyInstance) {
   async function addAttendance(input: AttendanceInput) {
     const { date, paid, typePaid, paidValue, descriptionValue, firstDogId, firstDogValue, firstDogTypeDay, secondDogId, secondDogValue, secondDogTypeDay, thirdDogId, thirdDogValue, thirdDogTypeDay, fourthDogId, fourthDogValue, fourthDogTypeDay } = input
     //const parsedDate = dayjs(date).startOf('day')
-    console.log(input)
     var dateParts: any[] = date.split('/')
     var dateObject = new Date(+dateParts[2], dateParts[1] - 1, +dateParts[0])
     var parsedDate = dayjs(dateObject).startOf('day').toISOString()
@@ -142,14 +141,10 @@ export async function attendanceRoutes(app: FastifyInstance) {
         }
       }
     })
-    console.log(checkedAttendance)
 
     if (checkedAttendance != undefined && checkedAttendance.id != null) {
       throw new Error('Dog already in the day')
     }
-
-    console.log('creating attendance')
-    console.log(date, dogId, typeDay, paid, paidValue, typePaid, value, descriptionValue)
 
     let attendance = await prisma.attendance.create(
       {
@@ -297,7 +292,6 @@ export async function attendanceRoutes(app: FastifyInstance) {
     try {
       return await getUniqueAttendance(request.query.id)
     } catch (err) {
-      console.log(err)
       reply.code(400).send('Error in get unique attendance')
     }
   }
@@ -333,9 +327,8 @@ export async function attendanceRoutes(app: FastifyInstance) {
   async function deleteAttendanceHandle(request: FastifyRequest<{ Querystring: { id: number } }>, reply: FastifyReply) {
     try {
       return await deleteAttendance(request.query.id)
-    } catch (err) {
-      console.log(err)
-      reply.code(400).send('Error in delete attendance')
+    } catch (err:any) {
+      reply.code(400).send('Error in delete attendance: '+err.message)
     }
   }
 
@@ -375,9 +368,8 @@ export async function attendanceRoutes(app: FastifyInstance) {
   async function updateAttendanceHandle(request: FastifyRequest<{ Body: AttendanceUpdateInput, Querystring: { id: number } }>, reply: FastifyReply) {
     try {
       return await updateAttendance(request.body, request.query.id)
-    } catch (err) {
-      console.log(err)
-      reply.code(400).send('Error in update attendance')
+    } catch (err:any) {
+      reply.code(400).send('Error in update attendance: '+err.message)
     }
   }
 
@@ -390,10 +382,6 @@ export async function attendanceRoutes(app: FastifyInstance) {
     }
 
     let totalValue = paid ? (Number(value) - Number(paidValue)) : value
-
-    console.log(' --------- ')
-    console.log(typePaid)
-    console.log(paidValue)
 
     let attendanceUpt = await prisma.attendance.update({
       where: {
@@ -417,7 +405,7 @@ export async function attendanceRoutes(app: FastifyInstance) {
     })
 
     if (paid) {
-      await updateTillHandle('D', String(typePaid), value, Number(paidValue))
+      await updateTillHandle('D', String(typePaid).toUpperCase(), value, Number(paidValue))
     }
     return attendanceUpt
   }
@@ -425,9 +413,8 @@ export async function attendanceRoutes(app: FastifyInstance) {
   async function updateAttendancePayHandle(request: FastifyRequest<{ Body: AttendanceUpdatePayInput, Querystring: { id: number } }>, reply: FastifyReply) {
     try {
       return await updatePayAttendance(request.body, request.query.id)
-    } catch (err) {
-      console.log(err)
-      reply.code(400).send('Error in update attendance payment')
+    } catch (err:any) {
+      reply.code(400).send('Error in update attendance payment: '+err.message)
     }
   }
 
@@ -494,7 +481,7 @@ export async function attendanceRoutes(app: FastifyInstance) {
     try {
       return await addAttendanceWeek(request.body)
     } catch (err:any) {
-      reply.code(400).send('Error in adding dog daycare - ' + String(err.message))
+      reply.code(400).send('Error in adding dog daycare: ' + String(err.message))
     }
   }
 
@@ -507,9 +494,6 @@ export async function attendanceRoutes(app: FastifyInstance) {
 
   async function addAttendanceWeek(input: AttendanceWeekInput) {
     const { dogId, paid, typePaid, paidValue, firstDayDate, firstDayDescription, firstDayTypeDay, firstDayValue, secondDayDate, secondDayDescription, secondDayTypeDay, secondDayValue, thirdDayDate, thirdDayDescription, thirdDayTypeDay, thirdDayValue, fourthDayDate, fourthDayDescription, fourthDayTypeDay, fourthDayValue, fifthDayDate, fifthDayDescription, fifthDayTypeDay, fifthDayValue } = input
-    //const parsedDate = dayjs(date).startOf('day')
-    console.log(input)
-
 
     var restPaidValue = null
     var booleanPaid = paid

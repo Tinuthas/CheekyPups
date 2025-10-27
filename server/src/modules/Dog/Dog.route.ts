@@ -108,7 +108,10 @@ async function getSearchByName(name:string) {
         { Owner: {
           name: { contains: name}
         }}
-      ]
+      ],
+      Owner: {
+        type: 'D'
+      }
     },
     select: {
       id: true,
@@ -196,7 +199,6 @@ async function createDogAndOwner(input: DogOwnerInput) {
   const parsedBirthday = dayjs(birthdayDate).startOf('day')
   const parsedVaccine = dayjs(dateVaccine).startOf('day')
 
-  console.log('create dog')
   let dog = await prisma.dog.create({
     data:{
       name: nameDog,

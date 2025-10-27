@@ -41,11 +41,7 @@ export const CreateNewAttendance = ({
     if(oldKey!= undefined && oldKey != null) {
       listDogs.push(oldKey)
     }
-    console.log(listDogs)
-    console.log(key)
     var index: number = listDogs.findIndex((i: any) => i.element.id === key.id);
-    console.log('index')
-    console.log(index)
     if (index > -1) {
       listDogs.splice(index, 1);
     }
@@ -74,18 +70,14 @@ export const CreateNewAttendance = ({
   }
 
   function calculateValuePaid() {
-    console.log('calc')
     var paidValue = firstDog.value
 
     if(secondDog.id != 0) 
       paidValue = Number(paidValue)+ Number(secondDog.value)
-    console.log(paidValue)
     if(thirdDog.id != 0)
       paidValue = Number(paidValue)+ Number(thirdDog.value)
-    console.log(paidValue)
     if(fourthDog.id != 0)
       paidValue = Number(paidValue)+ Number(fourthDog.value)
-    console.log(paidValue)
 
     setValuePaidField(paidValue)
   }
@@ -126,18 +118,16 @@ export const CreateNewAttendance = ({
                 var data = response.data
                 var listData: any[] = []
                 data.forEach((element: any) => {
-                  console.log(element)
                   listData.push({ value: element.id, label: `${element.name} ${element.nickname != null && element.nickname != "" ? '- ' + element.nickname : ''} - ${element.Owner.name}`, element: element })
                 });
                 resolve(listData)
               }).catch((err: AxiosError) => {
                 const data = err.response?.data as { message: string }
-                toast.error(`Unidentified error: ${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
-                throw new Error(`Unidentified error: ${data.message || err.response?.data || err.message}`);
+                toast.error(`${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
+                throw new Error(`${data.message || err.response?.data || err.message}`);
               })
             }),
             setValue: (value: any) => {
-              console.log('select')
               var dogs = value.element.Owner.dogs
               
               var listDogs: { value: any; label: string; element: any; }[] = []
@@ -145,7 +135,6 @@ export const CreateNewAttendance = ({
               dogs.forEach((dog: any) => {
                 listDogs.push({ value: dog.id, label: `${dog.name} - ${value.element.Owner.name}`, element: dog })
               });
-              console.log(listDogs)
               setLengthDogs(listDogs.length)
               setFirstDog({id: value.element.id, value: firstDog.value, typeDay: firstDog.typeDay})
 
