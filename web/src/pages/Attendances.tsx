@@ -82,7 +82,7 @@ export function Attendances() {
         Authorization: getToken()
       }
     }).then(response => {
-      setDates(dateStartField, dateEndField)
+      setDates(dateStartField == undefined ? dateStart : dateStartField, dateEndField == undefined ? dateEnd : dateEndField)
       var att = response.data
       if (att.length != 0) {
         var rows: any[] = []
