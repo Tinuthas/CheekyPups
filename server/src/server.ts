@@ -105,7 +105,7 @@ app.register(cors)
 app.register(appRoutes)
 
 const port:number = process.env.PORT == undefined ? 3333 : Number(process.env.PORT)
-
-app.listen({ port }, 
+const host:string = process.env.HOST == undefined ? '0.0.0.0' : process.env.HOST
+app.listen({ host, port }, 
   (err: any) => { if (err) throw err })
 
