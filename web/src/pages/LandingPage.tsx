@@ -17,7 +17,7 @@ export function LandingPage() {
       <header className="h-fit w-full flex flex-col justify-center ">
       
         <div className="flex justify-center">
-          <img src={Banner} className=" max-h-[300px] md:rounded-xl"/>
+          <img src={Banner} className=" max-h-[250px] md:rounded-xl"/>
         </div>
         {
         //<h1 className="font-cursed leading-6 text-center break-words antialiased hover:subpixel-antialiased font-bold text-neutral-50 text-5xl md:text-7xl bg-background-image p-2  mt-10"><span className="text-xl md:text-2xl align-middle	">Declan's </span>Cheeky Pups <br/><span className="md:text-5xl text-3xl">Dog Grooming & Daycare</span></h1>

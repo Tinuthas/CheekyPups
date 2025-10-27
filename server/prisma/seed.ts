@@ -14,20 +14,20 @@ async function run() {
   await Promise.all([
     prisma.user.create({
       data: {
-        email: 'main@cheekypups.com',
+        email: 'info@cheekypups.com',
         name: 'Main User',
         admin: true,
-        password: '96b02f0ac9f8e6d1d0b702414ce7c632a67c6b2c94e5f476e44f9853af9032e7579108c745f7488c0adf99f6ca340ac0177516ea6da6c694e904eda8c265378f',
-        salt: 'cb5952d265424e47609f2134dd96d85e'
+        password: '5a35e5d0111a8994609454b6351b5088982af2985e54b4f4198382ee22968556f8a68ec41e4528699987d123f2ea1fbf62cc1b8469477d8af99b4dbe76ee90ab',
+        salt: '9d61eca4d8c235a1596bda8cc0240c3a'
       }
     }),
     prisma.user.create({
       data: {
-        email: 'admin@admin.com',
-        name: 'Admin User',
+        email: 'declanplyne@gmail.com',
+        name: 'Declan Lyne',
         admin: true,
-        password: '96b02f0ac9f8e6d1d0b702414ce7c632a67c6b2c94e5f476e44f9853af9032e7579108c745f7488c0adf99f6ca340ac0177516ea6da6c694e904eda8c265378f',
-        salt: 'cb5952d265424e47609f2134dd96d85e'
+        password: 'adfd5636188a3848eb3e21984839bd2722eb9c614a15e745e4507deb84ee2fc01eb9b20b7371f8526c40235878b88772c9ff509f9e6876f7d3fb99dd8f604d96',
+        salt: '4245dffdc2db8cc11214047648e96148'
       }
     }),
     prisma.preferences.create({
