@@ -72,8 +72,8 @@ export function Attendances() {
 
   function clickSearchByDates(dateStartField?: Date, dateEndField?: Date) {
     setLoading(true)
-    if (dateStartField == null) dateStartField = dateStart
-    if (dateEndField == null) dateEndField = dateEnd
+    if (dateStartField == undefined || dateStartField == null) dateStartField = dateStart
+    if (dateEndField == undefined || dateEndField == null) dateEndField = dateEnd
     api.get<Attendances>('attendance', {
       params: {
         dateStart: dayjs(dateStartField).toISOString(),
@@ -132,8 +132,8 @@ export function Attendances() {
 
                     }
                   </div>
-                } id={row.original.owner_id} onClose={() => clickSearchByDates()}>
-                </InfoItemButton>
+                } id={row.original.owner_id} onClose={() => clickSearchByDates()} />
+                
               </>
             ),
             Footer: ({ }) => <div className="">Total: </div>

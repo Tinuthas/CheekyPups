@@ -69,7 +69,7 @@ const selectPromise = (inputValue: string) => new Promise<any[]>((resolve, rejec
 
 
 export function Vaccines(){
-
+  /*
   const [vaccines, setVaccines] = useState([{}])
   const [loading, setLoading] = useState(false)
   const [dateVaccineField, setDateVaccineField] = useState(new Date())
@@ -216,4 +216,6 @@ export function Vaccines(){
       }
     </div>
   )
+    */
+   return(<></>)
 }

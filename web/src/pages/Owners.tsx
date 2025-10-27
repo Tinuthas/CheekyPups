@@ -106,8 +106,8 @@ export function Owners() {
           } id={row.original.id} onClose={() => {
             setOpenListModal(false)
             getAllOwnersFilter(searchButton)
-          }}>
-          </InfoItemButton>
+          }} />
+          
 
         </>
       )

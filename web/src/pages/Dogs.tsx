@@ -159,8 +159,8 @@ export function Dogs() {
           } id={row.original.ownerId} onClose={() => {
               setOpenListModal(false)
               selectTypeOwner(searchButton)
-            }}>
-          </InfoItemButton>
+            }} />
+          
           
         </>
       )
