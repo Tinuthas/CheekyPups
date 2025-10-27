@@ -38,6 +38,7 @@ const columnHeaders = [
     name: 'Users Name',
     type: "text",
     required: true,
+    gridXS: 12, gridMS: 12,
   },
   {
     accessorKey: 'email',
@@ -45,6 +46,7 @@ const columnHeaders = [
     name: 'Email',
     type: "email",
     required: true,
+    gridXS: 12, gridMS: 12,
   },
   {
     accessorKey: 'password',
@@ -52,6 +54,7 @@ const columnHeaders = [
     name: 'Password',
     type: "password",
     required: true,
+    gridXS: 12, gridMS: 12,
   }
 ]
 
@@ -63,6 +66,7 @@ const columnHeadersSettings = [
     name: 'Key',
     type: "text",
     required: true,
+    gridXS: 12, gridMS: 12,
   },
   {
     accessorKey: 'value',
@@ -70,6 +74,7 @@ const columnHeadersSettings = [
     name: 'Value',
     type: "text",
     required: true,
+    gridXS: 12, gridMS: 12,
   }
 ]
 

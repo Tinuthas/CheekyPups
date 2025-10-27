@@ -33,12 +33,14 @@ export function Owners() {
       name: 'Owner Name',
       type: "text",
       required: true,
+      gridXS: 12, gridMS: 4,
     },
     {
       accessorKey: 'emailAddress',
       label: 'Email',
       name: 'Owner Email',
-      type: "email"
+      type: "email",
+      gridXS: 12, gridMS: 4
     },
     {
       accessorKey: 'phoneOne',
@@ -46,6 +48,7 @@ export function Owners() {
       name: '08x xxx xxxx',
       type: "tel",
       required: true,
+      gridXS: 12, gridMS: 4,
     },
     {
       accessorKey: 'type',
@@ -57,7 +60,8 @@ export function Owners() {
       radioListValues: [
         { key: "daycare", value: "D", label: "Daycare" },
         { key: "grooming", value: "G", label: "Grooming" },
-      ]
+      ],
+      gridXS: 12, gridMS: 12,
     },
     {
       accessorKey: 'secondOwner',
@@ -102,7 +106,7 @@ export function Owners() {
             </div>
           } id={row.original.id} onClose={() => {
             setOpenListModal(false)
-            getAllOwnersFilter()
+            getAllOwnersFilter(searchButton)
           }}>
           </InfoItemButton>
 

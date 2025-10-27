@@ -143,8 +143,8 @@ export function Summary() {
             }} />
           </div>
           <div className="flex flex-col md:flex-row">
-            <div className="bg-white mt-4 p-4 rounded-3xl text-neutral-700 text-center text-base ">
-              <h3 className="text-neutral-400 text-2xl font-borsok p-2">Daycare</h3>
+            <div className="bg-white mt-4 p-4 rounded-3xl text-neutral-600 text-center text-base ">
+              <h4 className="text-neutral-600 text-2xl font-borsok p-2">Daycare</h4>
               <div className="w-full md:w-[500px]">
                 <div className="grid grid-cols-5 font-bold">
                   <h6 className=""></h6>
@@ -173,8 +173,8 @@ export function Summary() {
               </div>
             </div>
 
-            <div className="bg-white mt-4 p-4 rounded-3xl text-neutral-700 text-center text-base md:ml-4">
-              <h3 className="text-neutral-400 text-2xl font-borsok p-2">Grooming</h3>
+            <div className="bg-white mt-4 p-4 rounded-3xl text-neutral-600 text-center text-base md:ml-4">
+              <h4 className="text-neutral-600 text-2xl font-borsok p-2">Grooming</h4>
               <div className="w-full md:w-[500px]">
                 <div className="grid grid-cols-5 font-bold">
                   <h6 className=""></h6>
@@ -205,8 +205,8 @@ export function Summary() {
             </div>
           </div>
           <div className="flex flex-col md:flex-row">
-            <div className="bg-white mt-4 p-4 rounded-3xl text-neutral-700 text-center text-base">
-              <h3 className="text-neutral-400 text-2xl font-borsok p-2">Others</h3>
+            <div className="bg-white mt-4 p-4 rounded-3xl text-neutral-600 text-center text-base">
+              <h4 className="text-neutral-600 text-2xl font-borsok p-2">Others</h4>
               <div className="w-full md:w-[500px]">
                 <div className="grid grid-cols-5 font-bold">
                   <h6 className=""></h6>
@@ -235,8 +235,8 @@ export function Summary() {
               </div>
             </div>
 
-            <div className="bg-white mt-4 p-4 rounded-3xl text-neutral-700 text-center text-base md:ml-4">
-              <h3 className="text-neutral-400 text-2xl font-borsok p-2">Total</h3>
+            <div className="bg-white mt-4 p-4 rounded-3xl text-neutral-600 text-center text-base md:ml-4">
+              <h4 className="text-neutral-600 text-2xl font-borsok p-2">Total</h4>
               <div className="w-full md:w-[500px]">
                 <div className="grid grid-cols-5 font-bold">
                   <h6 className=""></h6>

@@ -51,7 +51,8 @@ export function Dogs() {
       name: 'Choose owner',
       type: "select",
       required: true,
-      getDataSelect: selectPromise
+      getDataSelect: selectPromise,
+      gridXS: 12, gridMS: 12,
     },
     {
       accessorKey: 'name',
@@ -132,7 +133,6 @@ export function Dogs() {
       var listData = JSON.parse(JSON.stringify(data));
       for (const i in listData) {
         listData[i].birthdayDate = listData[i].birthdayDate != null ? dayjs(listData[i].birthdayDate).format('DD/MM/YYYY') : ""
-        delete listData[i].ownerId;
       }
       setDogs(listData)
       setLoading(false)
@@ -160,7 +160,7 @@ export function Dogs() {
             </div>
           } id={row.original.ownerId} onClose={() => {
               setOpenListModal(false)
-              getAllDogs()
+              selectTypeOwner(searchButton)
             }}>
           </InfoItemButton>
           

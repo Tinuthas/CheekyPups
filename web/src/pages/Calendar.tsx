@@ -4,6 +4,12 @@ import timeGridPlugin from '@fullcalendar/timegrid'
 import listWeek from '@fullcalendar/list'
 import googleCalendarPlugin from '@fullcalendar/google-calendar';
 
+const CALENDAR_API_KEY = import.meta.env.VITE_CALENDAR_API_KEY
+const CALENDAR_BOARDING = import.meta.env.VITE_CALENDAR_BOARDING
+const CALENDAR_HOLIDAYS = import.meta.env.VITE_CALENDAR_HOLIDAYS
+const CALENDAR_STAFF = import.meta.env.VITE_CALENDAR_STAFF
+const CALENDAR_DAYCARE = import.meta.env.VITE_CALENDAR_DAYCARE
+
 
 export default function Calendar() {
   return (
@@ -19,25 +25,25 @@ export default function Calendar() {
             center: 'title',
             right: 'dayGridYear,dayGridMonth,dayGridWeek,dayGridDay,listMonth'
           }}
-          googleCalendarApiKey={'AIzaSyC4Q3pcEUxFtj_YxxIryszKkYsIkAL4zwk'}
+          googleCalendarApiKey={CALENDAR_API_KEY}
           eventSources={[
             {
-              googleCalendarId: 'cheekypups.com_tv1ilaq6sjck2hobrd16qnh818@group.calendar.google.com',
+              googleCalendarId: CALENDAR_BOARDING,
               className: 'Boarding',
               color: '#0047AB'
             },
             {
-              googleCalendarId: 'en.irish#holiday@group.v.calendar.google.com',
+              googleCalendarId: CALENDAR_HOLIDAYS,
               className: 'Holidays',
               color: '#f62c13'
             },
             {
-              googleCalendarId: 'c_bc0e5d0d879ad231ae042ee2423bbff5fb6d61d6cfa3b87a17d241a816152a9b@group.calendar.google.com',
+              googleCalendarId: CALENDAR_STAFF,
               className: 'Staff',
               color: '#800080'
             },
             {
-              googleCalendarId: 'c_a50072a74ea10a24bbaebd7b996cc373b9e9fb934005bd05978a9f1313c6eef7@group.calendar.google.com',
+              googleCalendarId: CALENDAR_DAYCARE,
               className: 'Daycare',
               color: '#147917'
             }
