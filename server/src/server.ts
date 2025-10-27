@@ -14,6 +14,8 @@ import { bookingSchemas } from "./modules/Booking/Booking.schema";
 import { preferenceSchemas } from "./modules/Preferences/Preferences.schema";
 
 
+
+
 export const app = fastify({ logger: true })
 
 declare module  "fastify" {
@@ -102,6 +104,8 @@ app.decorate("authenticate", async (request: FastifyRequest, reply: FastifyReply
 app.register(cors)
 app.register(appRoutes)
 
-app.listen({ port: 3333 }, 
+const port:number = process.env.PORT == undefined ? 3333 : Number(process.env.PORT)
+
+app.listen({ port }, 
   (err: any) => { if (err) throw err })
 
