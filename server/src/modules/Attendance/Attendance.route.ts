@@ -146,6 +146,10 @@ export async function attendanceRoutes(app: FastifyInstance) {
       throw new Error('Dog already in the day')
     }
 
+    let totalValue = paid ? (Number(value) - Number(paidValue)) : value
+    let paidVal = paid ? (Number(paidValue) > value ? value : (paidValue)) : 0
+    let typePad = paid ? typePaid : null
+
     let attendance = await prisma.attendance.create(
       {
         data: {
@@ -171,10 +175,10 @@ export async function attendanceRoutes(app: FastifyInstance) {
               value,
               description: descriptionValue,
               date: dayjs().toISOString(),
-              type: typePaid,
+              type: typePad,
               done: paid,
-              paidValue: paidValue == null ? null : Number(paidValue) > value ? value : paidValue,
-              totalValue: paid ? 0 : value,
+              paidValue: paidVal,
+              totalValue: totalValue,
               Owner: {
                 connect: {
                   id: dog?.ownerId
@@ -382,6 +386,26 @@ export async function attendanceRoutes(app: FastifyInstance) {
     }
 
     let totalValue = paid ? (Number(value) - Number(paidValue)) : value
+    let paidVal = paid ? (Number(paidValue) > value ? value : (paidValue)) : 0
+    let typePad = paid ? typePaid : null
+
+    let attOld = await prisma.attendance.findFirst({
+      where:{
+        id: Number(id),
+        extract: {
+          done: true
+        }
+      },
+      select: {
+        extract: {
+          select: {
+            done: true,
+            value: true,
+            paidValue: true,
+          }
+        }
+      }
+    })
 
     let attendanceUpt = await prisma.attendance.update({
       where: {
@@ -394,10 +418,10 @@ export async function attendanceRoutes(app: FastifyInstance) {
           update: {
             value,
             description: descriptionValue,
-            paidValue: paidValue,
+            paidValue: paidVal,
             totalValue,
             done: paid,
-            type: typePaid,
+            type: typePad,
             date: dayjs().toISOString(),
           }
         }
@@ -406,6 +430,8 @@ export async function attendanceRoutes(app: FastifyInstance) {
 
     if (paid) {
       await updateTillHandle('D', String(typePaid).toUpperCase(), value, Number(paidValue))
+    }else if(attOld != undefined &&  attOld != null && attOld.extract?.done) {
+      await updateTillHandle('D', String(typePaid).toUpperCase(), (value-Number(attOld?.extract?.value)),  (Number(paidValue)-Number(attOld?.extract?.paidValue)))
     }
     return attendanceUpt
   }
@@ -447,6 +473,26 @@ export async function attendanceRoutes(app: FastifyInstance) {
     }
 
     let totalValue = done ? (Number(att?.extract?.value) - Number(paidValue)) : att?.extract?.value
+    let paidVal = done ? (Number(paidValue) > Number(att?.extract?.value) ? Number(att?.extract?.value) : (paidValue)) : 0
+    let typePad = done ? typePaid : null
+
+    let attOld = await prisma.attendance.findFirst({
+      where:{
+        id: Number(id),
+        extract: {
+          done: true
+        }
+      },
+      select: {
+        extract: {
+          select: {
+            done: true,
+            value: true,
+            paidValue: true,
+          }
+        }
+      }
+    })
 
     let updAtt = await prisma.attendance.update({
       where: {
@@ -459,9 +505,9 @@ export async function attendanceRoutes(app: FastifyInstance) {
             description: descriptionValue,
             date: dayjs().toISOString(),
             done,
-            paidValue,
+            paidValue: paidVal,
             totalValue,
-            type: typePaid,
+            type: typePad,
             Owner: {
               connect: {
                 id: att?.dog?.ownerId
@@ -471,6 +517,12 @@ export async function attendanceRoutes(app: FastifyInstance) {
         }
       }
     })
+
+    if (done) {
+      await updateTillHandle('D', String(typePaid).toUpperCase(), Number(att?.extract?.value), Number(paidValue))
+    }else if(attOld != undefined &&  attOld != null && attOld.extract?.done) {
+      await updateTillHandle('D', String(typePaid).toUpperCase(), (Number(att?.extract?.value)-Number(attOld?.extract?.value)),  (Number(paidValue)-Number(attOld?.extract?.paidValue)))
+    }
 
     await updateTillHandle('D', String(typePaid), Number(att?.extract?.value), Number(paidValue))
 

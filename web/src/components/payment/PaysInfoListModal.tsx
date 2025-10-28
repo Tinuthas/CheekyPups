@@ -455,7 +455,7 @@ export const PaysInfoListModal = ({
                       <div className="flex flex-col">
                         <div className="w-full text-center text-xl">
                           <button className="bg-pinkBackground text-white p-1 px-5 font-semibold hover:bg-white hover:text-pinkBackground hover:border hover:border-pinkBackground" onClick={() => setOpenTotalPayingModal(true)}>
-                            <span className="">Total Owned: </span>
+                            <span className="">Total Owed: </span>
                             <span className="">{'€ '}</span>
                             <span className="">{(totalPays[0] as {totalValue:string}).totalValue}</span>
                           </button>

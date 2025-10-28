@@ -2,7 +2,7 @@ import { Decimal } from "@prisma/client/runtime";
 import dayjs from "dayjs";
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { prisma } from "../../lib/prisma";
-import { $ref, CreateNewTillInput, CreatePaymentOwnerAllInput, PaidOwnerInput, PayOwnerInput, TotalOwnerInput, UpdatePaymentInput } from "./Payment.schema";
+import { $ref, ChangingLastTillInput, CreateNewTillInput, CreatePaymentOwnerAllInput, PaidOwnerInput, PayOwnerInput, TotalOwnerInput, UpdatePaymentInput } from "./Payment.schema";
 
 export async function paymentRoutes(app: FastifyInstance) {
 
@@ -80,6 +80,13 @@ export async function paymentRoutes(app: FastifyInstance) {
     },
     preHandler: [app.authenticate]
   }, creatingNewTillChangeHandle)
+
+  app.post('/till/error', {
+    schema: {
+      body: $ref('changingLastTill'),
+    },
+    preHandler: [app.authenticate]
+  }, changingNewTillChangeHandle)
 
 }
 
@@ -186,15 +193,18 @@ async function filterAllExtracts(pays: any[]) {
 
   var listPayments: { id: number; name: string; dogsName: string, extracts: number; value: Decimal | null; paidValue: Decimal | null; totalValue: Decimal | null; }[] = []
   payments.forEach((element, index) => {
-    listPayments.push({
-      id: element.id,
-      name: element.name,
-      dogsName: element.dogs.map(dog => dog.name).join(' - '),
-      extracts: pays[index]._count.id,
-      value: pays[index]._sum.value,
-      paidValue: pays[index]._sum.paidValue,
-      totalValue: pays[index]._sum.totalValue,
-    })
+    const pay = pays.find(p => p.ownerId === element.id) ?? null;
+    if(pay != null) {
+      listPayments.push({
+        id: element.id,
+        name: element.name,
+        dogsName: element.dogs.map(dog => dog.name).join(' - '),
+        extracts: pay._count.id,
+        value: pay._sum.value,
+        paidValue: pay._sum.paidValue,
+        totalValue: pay._sum.totalValue,
+      })
+    }
   })
   return listPayments
 }
@@ -783,14 +793,89 @@ async function creatingNewTillChanges(input: CreateNewTillInput) {
     }
   })
 
-  await prisma.till.findFirst({
+  return tillChange
+}
+
+async function changingNewTillChangeHandle(request: FastifyRequest<{ Body: ChangingLastTillInput }>, reply: FastifyReply) {
+  try {
+    return await changingNewTillChanges(request.body)
+  } catch (err) {
+    console.log(err)
+    reply.code(400).send('Error in changing till values')
+  }
+}
+
+async function changingNewTillChanges(input: ChangingLastTillInput) {
+
+  const { newValue, description, type, typePaid } = input
+
+  const tillLast = await prisma.till.findFirst({
+    where: {
+      type: type
+    },
     orderBy: {
       id: 'desc',
     },
+    select: {
+      id: true,
+      value: true,
+      valueCard: true,
+      valueOther: true
+    }
   })
+
+  var tillChange = null
+  if(typePaid.toUpperCase().includes('REV')) {
+    var value = 0
+    if(description.toUpperCase().includes('DEDUCT'))
+      value = Number(tillLast?.valueOther) - newValue
+    else 
+      value = Number(tillLast?.valueOther) + newValue
+
+    tillChange = await prisma.till.update({
+      where: {
+        id: tillLast?.id
+      },
+      data: {
+        valueOther: value,
+      }
+    })
+
+  }else if(typePaid.toUpperCase().includes('CARD')) {
+    var value = 0
+    if(description.toUpperCase().includes('DEDUCT'))
+      value = Number(tillLast?.valueCard) - newValue
+    else 
+      value = Number(tillLast?.valueCard) + newValue
+
+    tillChange = await prisma.till.update({
+      where: {
+        id: tillLast?.id
+      },
+      data: {
+        valueCard: value,
+      }
+    })
+  }else {
+    var value = 0
+    if(description.toUpperCase().includes('DEDUCT'))
+      value = Number(tillLast?.value) - newValue
+    else 
+      value = Number(tillLast?.value) + newValue
+
+    tillChange = await prisma.till.update({
+      where: {
+        id: tillLast?.id
+      },
+      data: {
+        value: value,
+      }
+    })
+  }
 
   return tillChange
 }
+
 
 export async function updateTillHandle(typeTill: string, type: string, value: number, valuePaid: number) {
   try {

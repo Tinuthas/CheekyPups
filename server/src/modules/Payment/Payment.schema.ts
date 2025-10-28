@@ -77,12 +77,20 @@ const createTillNewDate = z.object({
   type: z.string().max(1),
 })
 
+const changingLastTill = z.object({
+  newValue: z.number(),
+  description: z.string(),
+  type: z.string().max(1),
+  typePaid: z.string().max(4)
+})
+
 export type TotalOwnerInput = z.infer<typeof totalOwnerSchema>
 export type PayOwnerInput = z.infer<typeof createPayBody>
 export type PaidOwnerInput = z.infer<typeof createPayPaidBody>
 export type UpdatePaymentInput = z.infer<typeof updatePaymentBody>
 export type CreatePaymentOwnerAllInput = z.infer<typeof createPaymentOwnerAll>
 export type CreateNewTillInput = z.infer<typeof createTillNewDate>
+export type ChangingLastTillInput = z.infer<typeof changingLastTill>
 
 export const {schemas: paymentSchemas, $ref} = buildJsonSchemas({
   createPayBody,
@@ -95,5 +103,6 @@ export const {schemas: paymentSchemas, $ref} = buildJsonSchemas({
   statusDone,
   statusDoneExtracts,
   createPaymentOwnerAll,
-  createTillNewDate
+  createTillNewDate,
+  changingLastTill
 }, { $id: "PaymentSchemas" })

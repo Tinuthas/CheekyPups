@@ -5,6 +5,7 @@ import { api, getToken } from "../lib/axios"
 import { Loading } from "../components/Loading";
 import { ButtonGroupList } from "../components/ButtonGroupList"
 import AddCircleIcon from '@mui/icons-material/AddCircle';
+import ErrorIcon from '@mui/icons-material/Error';
 import { theme, iconStyle, iconSmallStyle } from "../lib/theme";
 import dayjs from "dayjs";
 import { FilterDatesRange } from "../components/FilterDatesRange";
@@ -62,9 +63,11 @@ export function TillMoney() {
   const [endDate, setEndDate] = useState<Date>(dayjs().toDate());
   const [startDate, setStartDate] = useState<Date>(dayjs().subtract(1, 'month').toDate());
   const [openNewChangeModal, setNewChangeModal] = useState(false)
+  const [openDeductErrorModal, setOpenDeductErrorModal] = useState(false)
   const [newValue, setNewValue] = useState("")
   const [description, setDescription] = useState("")
   const [type, setType] = useState("")
+  const [typePaid, setTypePaid] = useState("")
   const [daycare, setDaycare] = useState([])
   const [grooming, setGrooming] = useState([])
   const [allInfo, setAllInfo] = useState([])
@@ -99,6 +102,34 @@ export function TillMoney() {
       toast.error(`Unidentified error`, { position: "top-center", autoClose: 5000, })
     }
 
+  }
+
+  function changingTillError() {
+    var values = {
+      newValue: newValue,
+      description: description,
+      type: type,
+      typePaid: typePaid,
+    }
+    try {
+      setLoading(true)
+      api.post('payment/till/error', values, {
+        headers: {
+          Authorization: getToken()
+        }
+      }).then(response => {
+        toast.success(`Changed Till Deduct/Add`, { position: "top-center", autoClose: 1000, })
+        setLoading(false)
+        getAllTillInfo()
+      }).catch((err: AxiosError) => {
+        setLoading(false)
+        const data = err.response?.data as { message: string }
+        toast.error(`${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
+        throw new Error(`${data.message || err.response?.data || err.message}`);
+      })
+    } catch (e) {
+      toast.error(`Unidentified error`, { position: "top-center", autoClose: 5000, })
+    }
   }
 
 
@@ -165,7 +196,13 @@ export function TillMoney() {
           <div className=" w-full mt-4 lg:flex justify-around">
             <div className="text-neutral-600 mt-3 bg-white p-10 rounded-3xl lg:w-[560px]">
               <div className="flex flex-row justify-center">
-                <h4 className="font-borsok text-2xl md:text-3xl m-1 mr-3">Daycare</h4>
+                <div className="" onClick={() => {
+                  setType('D')
+                  setOpenDeductErrorModal(true)
+                }}>
+                  <ErrorIcon sx={iconStyle} />
+                </div>
+                <h4 className="font-borsok text-2xl md:text-3xl m-1 mr-4 ml-4">Daycare</h4>
                 <div className="" onClick={() => {
                   setType('D')
                   setNewChangeModal(true)
@@ -178,7 +215,7 @@ export function TillMoney() {
                   <div className="flex flex-row justify-around text-center mt-2">
                     <h6 className="w-[120px] md:w-[150px] font-semibold">Date</h6>
                     <h6 className="w-[100px] font-semibold">Start</h6>
-                    <h6 className="w-[100px] font-semibold">Actual</h6>
+                    <h6 className="w-[100px] font-semibold">Cash</h6>
                     <h6 className="w-[90px] font-semibold">Card</h6>
                     <h6 className="w-[90px] font-semibold">Rev/Other</h6>
                   </div>
@@ -189,7 +226,13 @@ export function TillMoney() {
 
             <div className="text-neutral-600 mt-3 bg-white p-10 rounded-3xl lg:w-[560px]">
               <div className="flex flex-row justify-center">
-                <h4 className="font-borsok text-2xl md:text-3xl m-1 mr-3">Grooming</h4>
+                <div className="" onClick={() => {
+                  setType('G')
+                  setOpenDeductErrorModal(true)
+                }}>
+                  <ErrorIcon sx={iconStyle} />
+                </div>
+                <h4 className="font-borsok text-2xl md:text-3xl m-1 mr-4 ml-4">Grooming</h4>
                 <div className="" onClick={() => {
                   setType('G')
                   setNewChangeModal(true)
@@ -202,7 +245,7 @@ export function TillMoney() {
                   <div className="flex flex-row justify-around text-center mt-2">
                     <h6 className="w-[120px] md:w-[150px] font-semibold">Date</h6>
                     <h6 className="w-[100px] font-semibold">Start</h6>
-                    <h6 className="w-[100px] font-semibold">Actual</h6>
+                    <h6 className="w-[100px] font-semibold">Cash</h6>
                     <h6 className="w-[90px] font-semibold">Card</h6>
                     <h6 className="w-[90px] font-semibold">Rev/Other</h6>
                   </div>
@@ -267,6 +310,63 @@ export function TillMoney() {
               }}
               onSubmit={() => addingNewChange()}
               title="Add New Till Change"
+
+            /> : null
+          }
+          {openDeductErrorModal ?
+            <CreateNewModal
+              grid={true}
+              open={openDeductErrorModal}
+              columns={[
+                {
+                  accessorKey: 'description',
+                  label: 'Description',
+                  name: 'Description',
+                  type: "select",
+                  required: true,
+                  getDataSelect: (inputValue: string) => new Promise<any[]>((resolve, reject) => {
+                    resolve([{ label: "Deduct", value: "Deduct" }, { label: "Add", value: "Add" }])
+                  }),
+                  setValue: (value) => {
+                    setDescription(value.value)
+                  },
+                  gridXS: 12, gridMS: 12,
+                },
+                {
+                  accessorKey: 'typePaid',
+                  label: 'Payment',
+                  name: 'Choose Payment Type',
+                  type: "select",
+                  required: true,
+                  getDataSelect: (inputValue: string) => new Promise<any[]>((resolve, reject) => {
+                    var listData: any[] = [{ value: 'CASH', label: 'Cash' }, { value: 'CARD', label: 'Card' }, { value: 'REV', label: 'Revolut' }]
+                    resolve(listData)
+                  }),
+                  setValue: (value) => {
+                    setTypePaid(value.value)
+                  },
+                  gridXS: 12, gridMS: 3.5,
+                },
+                {
+                  accessorKey: 'newValue',
+                  label: 'Value Add/Deduct',
+                  name: '',
+                  type: "number",
+                  required: true,
+                  value: newValue,
+                  setValue: (value) => {
+                    setNewValue(value)
+                  },
+                  gridXS: 12, gridMS: 12,
+                },
+              ]}
+              onClose={() => {
+                setDescription("")
+                setNewValue("")
+                setOpenDeductErrorModal(false)
+              }}
+              onSubmit={() => changingTillError()}
+              title="Deduct or Add Error Till"
 
             /> : null
           }
