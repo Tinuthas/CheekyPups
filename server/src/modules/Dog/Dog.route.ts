@@ -103,10 +103,11 @@ async function getSearchByName(name:string) {
     take: 5,
     where: {
       OR: [
-        { name: { contains: name} },
-        { nickname: { contains: name } },
+        { name: { contains: name, mode: 'insensitive'} },
+        { nickname: { contains: name, mode: 'insensitive'} },
         { Owner: {
-          name: { contains: name}
+          name: { contains: name, mode: 'insensitive'},
+          phoneOne: {contains: name, mode: 'insensitive'}
         }}
       ],
       Owner: {

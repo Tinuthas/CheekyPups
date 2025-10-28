@@ -345,14 +345,14 @@ async function getSearchByName(name: string) {
       OR: [
         {
           Owner: {
-            name: { contains: name },
+            name: { contains: name, mode: 'insensitive' },
           }
         },
-        { name: { contains: name } },
-        { breed: { contains: name } },
+        { name: { contains: name, mode: 'insensitive' } },
+        { breed: { contains: name, mode: 'insensitive' } },
         {
           Owner: {
-            phoneOne: { contains: name }
+            phoneOne: { contains: name, mode: 'insensitive' }
           }
         }
         //{ nickname: { contains: name } }
