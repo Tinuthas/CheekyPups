@@ -115,12 +115,13 @@ model Booking {
   status         String
   day_booking_id Int
   dog_id         Int?
+  offering_id    Int?
   notes          String?
 
   dayBooking DayBooking @relation(fields: [day_booking_id], references: [id])
   dog        Dog?       @relation(fields: [dog_id], references: [id])
   extract    Extract?
-  offering   Offering?
+  offering   Offering?  @relation(fields: [offering_id], references: [id])
 
   @@map("bookings")
 }
@@ -133,8 +134,7 @@ model Offering {
   type    String?
   notes   String?
 
-  bookingId Int     @unique
-  booking   Booking @relation(fields: [bookingId], references: [id])
+  bookings Booking[]
 
   @@map("offering")
 }

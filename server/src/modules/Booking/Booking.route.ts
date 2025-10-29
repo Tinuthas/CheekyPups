@@ -4,6 +4,7 @@ import { prisma } from "../../lib/prisma";
 import { $ref, BookingInput, FilterBookingDateInput, DateFillSpacesBodyInput, FilterSearchingInput, BookingOfferingInput, BookingConfirmedOfferInput, BookingCreateNewCustomer, BookingCreateExistedCustomer, BookingFinishInput, BookingEditInput } from "./Booking.schema";
 import { includes } from "lodash";
 import { updateTillHandle } from "../Payment/Payment.route";
+import { Offering, Owner } from "@prisma/client";
 
 
 export async function bookingRoutes(app: FastifyInstance) {
@@ -393,18 +394,33 @@ async function addBookingOffering(input: BookingOfferingInput) {
   const { ownerId, owner, phone, typeOffered, notes, firstDogTime, secondDogTime, thirdDogTime, fourthDogTime } = input
 
   var offers = []
+
+  const offering = await creatingOfferingBody(owner, phone, ownerId, notes, typeOffered)
   if (firstDogTime != null && firstDogTime != "")
-    offers.push(await creatingOffering(firstDogTime, typeOffered, owner, phone, ownerId, notes, typeOffered))
+    offers.push(await creatingOffering(firstDogTime, typeOffered, offering))
   if (secondDogTime != null && secondDogTime != "")
-    offers.push(await creatingOffering(secondDogTime, typeOffered, owner, phone, ownerId, notes, typeOffered))
+    offers.push(await creatingOffering(secondDogTime, typeOffered, offering))
   if (thirdDogTime != null && thirdDogTime != "")
-    offers.push(await creatingOffering(thirdDogTime, typeOffered, owner, phone, ownerId, notes, typeOffered))
+    offers.push(await creatingOffering(thirdDogTime, typeOffered, offering))
   if (fourthDogTime != null && fourthDogTime != "")
-    offers.push(await creatingOffering(fourthDogTime, typeOffered, owner, phone, ownerId, notes, typeOffered))
+    offers.push(await creatingOffering(fourthDogTime, typeOffered, offering))
   return offers
 }
 
-async function creatingOffering(time: string, status: string, owner: string | null, phone: string | null, ownerId: string | null, notes: string, type: string) {
+async function creatingOfferingBody(owner: string | null, phone: string | null, ownerId: string | null, notes: string, type: string) {
+  const offering = await prisma.offering.create({
+    data: {
+      owner,
+      phone,
+      ownerId: Number(ownerId),
+      notes,
+      type,
+    }
+  })
+  return offering
+}
+
+async function creatingOffering(time: string, status: string, offer:Offering) {
 
   let offering = await prisma.booking.update({
     where: {
@@ -413,21 +429,8 @@ async function creatingOffering(time: string, status: string, owner: string | nu
     data: {
       status,
       offering: {
-        upsert: {
-          create: {
-            owner,
-            phone,
-            ownerId: Number(ownerId),
-            notes,
-            type
-          },
-          update: {
-            owner,
-            phone,
-            ownerId: Number(ownerId),
-            notes,
-            type
-          }
+        connect: {
+          id: offer.id
         }
       }
     },
@@ -449,6 +452,27 @@ async function addBookingConfirmedOffer(input: BookingConfirmedOfferInput) {
 
   const bookingOffer = await prisma.booking.findUnique({ where: { id: bookingId }, include: { offering: true } })
 
+  var ownerId = bookingOffer?.offering?.ownerId
+  if(ownerId == null|| ownerId == 0) {
+    const ownerObj = await prisma.owner.create({
+      data: {
+        name: owner,
+        phoneOne: phone,
+      }
+    })
+    ownerId = ownerObj.id
+    const offeringUpdated = await prisma.booking.update({
+      where: { id: bookingId },
+      data: {
+        offering:{
+          update: {
+            ownerId: ownerObj.id
+          }
+        }
+      }
+    })
+  }
+
   const dog = await prisma.dog.findUnique({ where: { id: dogId == null || dogId == "" ? 0 : Number(dogId) }, include: { Owner: true } })
 
   const booking = await prisma.booking.update({
@@ -465,15 +489,8 @@ async function addBookingConfirmedOffer(input: BookingConfirmedOfferInput) {
             name: firstDogName,
             breed: firstDogBreed,
             Owner: {
-              connectOrCreate: {
-                where: {
-                  id: dog == null ? 0 : dog.Owner.id,
-                },
-                create: {
-                  name: owner,
-                  phoneOne: phone,
-                  type: 'G'
-                }
+              connect: {
+                id: ownerId
               }
             }
           }
@@ -487,13 +504,6 @@ async function addBookingConfirmedOffer(input: BookingConfirmedOfferInput) {
           Owner: true,
         }
       }
-    }
-  })
-
-  await prisma.offering.update({
-    where: { id: bookingOffer?.offering?.id },
-    data: {
-      ownerId: booking.dog?.Owner.id
     }
   })
 
