@@ -472,7 +472,6 @@ async function addBookingConfirmedOffer(input: BookingConfirmedOfferInput) {
       }
     })
   }
-
   const dog = await prisma.dog.findUnique({ where: { id: dogId == null || dogId == "" ? 0 : Number(dogId) }, include: { Owner: true } })
 
   const booking = await prisma.booking.update({
