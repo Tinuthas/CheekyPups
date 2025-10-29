@@ -45,6 +45,7 @@ export function ListField({ date, setDate, loading, setLoading }: ListFieldProps
   }, [date])
 
   function getBookingFromDate() {
+    try{
     setLoading(true)
     api.get('booking', {
       params: {
@@ -71,6 +72,10 @@ export function ListField({ date, setDate, loading, setLoading }: ListFieldProps
       toast.error(`${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
       setLoading(false)
     })
+    }catch(e:any){
+      toast.error('Unidentified error: '+e.message, { position: "top-center", autoClose: 5000, })
+    }
+    
   }
 
   function addEventClick() {
