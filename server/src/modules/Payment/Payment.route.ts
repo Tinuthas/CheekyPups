@@ -598,10 +598,13 @@ async function addValuePaidExtract(input: PaidOwnerInput, id: number) {
       totalValue,
       done,
       type: typePaid
+    },
+    include: {
+      Owner:true
     }
   })
 
-  await updateTillHandle('D', typePaid, value, paidValue)
+  await updateTillHandle(extract.Owner.type == null ? 'D' : extract.Owner.type, typePaid, value, paidValue)
   return extract
 }
 
@@ -657,6 +660,12 @@ async function ownerPayingAll(input: CreatePaymentOwnerAllInput) {
   if (paidValue < salesValue) {
     return new Error('Paid value needs to be bigger than the sales value')
   }
+
+  const owner = await prisma.owner.findUnique({
+    where: {
+      id: ownerId
+    }
+  })
 
   const extracts = await prisma.extract.findMany({
     where: {
@@ -724,7 +733,7 @@ async function ownerPayingAll(input: CreatePaymentOwnerAllInput) {
       paidValues = paidValues - Number(extracts[index].value)
     }
   }
-  await updateTillHandle('D', typePaid, salesValue, paidValue)
+  await updateTillHandle(owner?.type == null ? 'D' : owner.type, typePaid, salesValue, paidValue)
 
 }
 
@@ -742,6 +751,9 @@ async function getLastTillChanges() {
   var lastDaycareChanges = await prisma.till.findMany({
     where: {
       type: 'D'
+    },
+    select: {
+
     },
     orderBy: {
       id: 'desc',
