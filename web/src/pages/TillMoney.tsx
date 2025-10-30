@@ -158,7 +158,6 @@ export function TillMoney() {
       })
     } catch (e) {
       toast.error(`Unidentified error`, { position: "top-center", autoClose: 5000, })
-
     }
 
   }

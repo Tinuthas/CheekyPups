@@ -752,9 +752,6 @@ async function getLastTillChanges() {
     where: {
       type: 'D'
     },
-    select: {
-
-    },
     orderBy: {
       id: 'desc',
     },
