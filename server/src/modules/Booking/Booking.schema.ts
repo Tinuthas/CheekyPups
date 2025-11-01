@@ -18,6 +18,10 @@ const filterSearching = z.object({
   name: z.string()
 })
 
+const updateBookingId = z.object({
+  id: z.number()
+})
+
 const createBookingNewCustomer = z.object({
   owner: z.string(),
   phone: z.string(),
@@ -93,6 +97,10 @@ const createEditOwner = z.object({
   secondPhone: z.string().nullable()
 })
 
+const updateEditNotes = z.object({
+  notes: z.string(),
+})
+
 export type BookingInput = z.infer<typeof createBookingBody>
 export type FilterBookingDateInput = z.infer<typeof filterBookingDate>
 export type DateFillSpacesBodyInput = z.infer<typeof dateFillSpacesBody>
@@ -103,6 +111,7 @@ export type BookingOfferingInput = z.infer<typeof createBookingOffering>
 export type BookingConfirmedOfferInput = z.infer<typeof createBookingConfirmedOffer>
 export type BookingFinishInput = z.infer<typeof createBookingFinish>
 export type BookingEditInput = z.infer<typeof createEditOwner>
+export type BookingUpdateNotes = z.infer<typeof updateEditNotes>
 
 export const {schemas: bookingSchemas, $ref} = buildJsonSchemas({
   createBookingBody,
@@ -114,5 +123,7 @@ export const {schemas: bookingSchemas, $ref} = buildJsonSchemas({
   createBookingConfirmedOffer,
   createBookingExistedCustomer,
   createBookingFinish,
-  createEditOwner
+  createEditOwner,
+  updateEditNotes,
+  updateBookingId
 }, { $id: "BookingSchemas" })

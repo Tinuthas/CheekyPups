@@ -16,7 +16,7 @@ import { CreateConfirmedOffering } from "./CreateConfirmedOffering";
 import { CreateFinish } from "./CreateFinish";
 import { PaysInfoListModal } from "../payment/PaysInfoListModal";
 import InfoItemButton from "../attendance/InfoItemButton";
-import { EditNotes } from "./EditNotesModal";
+import { EditOwnerNotes } from "./EditOwnerNotesModal";
 
 
 
@@ -201,7 +201,7 @@ export function ItemListField({ id, time, status, ownerId, dogId, ownerName, pho
                   }} /> : null
               }
               {editNotesModalOpen ?
-                <EditNotes
+                <EditOwnerNotes
                   key={"EditNotesModal"}
                   onClose={() => {
                     setEditNotesModalOpen(false);

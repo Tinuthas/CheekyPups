@@ -82,6 +82,14 @@ export async function bookingRoutes(app: FastifyInstance) {
     },
     preHandler: [app.authenticate]
   }, addBookingEditOwnerHandle)
+
+  app.put('/edit/notes', {
+    schema: {
+          body: $ref('updateEditNotes'),
+          querystring: $ref('updateBookingId'),
+    },
+    preHandler: [app.authenticate]
+  }, updateBookingEditNotesHandle)
 }
 
 async function getBookingByDate(request: FastifyRequest<{ Querystring: FilterBookingDateInput }>, reply: FastifyReply) {
@@ -117,7 +125,8 @@ async function getBookingsDate(input: FilterBookingDateInput) {
             select: {
               id: true,
               name: true,
-              phoneOne: true
+              phoneOne: true,
+              type: true
             }
           }
         }
@@ -341,7 +350,7 @@ async function getSearchExistedHandle(request: FastifyRequest<{ Querystring: Fil
 
 async function getSearchByName(name: string) {
   const result = await prisma.dog.findMany({
-    take: 10,
+    take: 7,
     where: {
       OR: [
         {
@@ -369,7 +378,8 @@ async function getSearchByName(name: string) {
           id: true,
           name: true,
           phoneOne: true,
-          dogs: true
+          dogs: true,
+          type: true
         }
       }
     },
@@ -742,6 +752,32 @@ async function addBookingEditOwner(input: BookingEditInput) {
     })
   }
   return ownerResult
+}
+
+
+
+
+async function updateBookingEditNotesHandle(request: FastifyRequest<{ Body: BookingEditInput, Querystring: {id:number} }>, reply: FastifyReply) {
+  try {
+    return await updateBookingEditNotes(request.body, request.query.id)
+  } catch (err) {
+    console.log(err)
+    reply.code(400).send('Error in editing booking')
+  }
+}
+
+async function updateBookingEditNotes(input: BookingEditInput, id:number) {
+  const {notes } = input
+
+  let bookingResult = await prisma.booking.update({
+      where: {
+        id: id
+      },
+      data: {
+        notes: notes
+      }
+    })
+  return bookingResult
 }
 
 

@@ -17,6 +17,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { DeleteModal } from "../DeleteModal";
 import { EditPayment } from "./EditPaymentModal";
+import { EditNotes } from "../booking/EditNotesModal";
 
 
 interface PaysInfoListModalProps {
@@ -40,6 +41,7 @@ export const PaysInfoListModal = ({
   const [totalPays, setTotalPays] = useState([])
   const [openPayingModal, setOpenPayingModal] = useState(false)
   const [openEditingModal, setOpenEditingModal] = useState(false)
+  const [openEditingBookModal, setOpenEditingBookModal] = useState(false)
   const [openDeletingModal, setOpenDeletingModal] = useState(false)
   const [openIndex, setOpenIndex] = useState(-1)
   const [openTotalPayingModal, setOpenTotalPayingModal] = useState(false)
@@ -66,6 +68,7 @@ export const PaysInfoListModal = ({
       }
     }).then(response => {
       var listResponde = JSON.parse(JSON.stringify(response.data))
+      console.log(listResponde)
       setExtracts(listResponde.extracts)
       setOwner(listResponde.owner)
       setBookings(listResponde.bookings)
@@ -116,6 +119,30 @@ export const PaysInfoListModal = ({
       }).then(response => {
         toast.success(`Updated payment: ${response.data?.id}`, { position: "top-center", autoClose: 1000, })
         resolve(`Updated payment: ${response.data?.id}`);
+        setLoading(false)
+      }).catch((err: AxiosError) => {
+        const data = err.response?.data as { message: string }
+        toast.error(`${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
+        setLoading(false)
+        throw new Error(`${data.message || err.response?.data || err.message}`);
+      })
+    }).then(() => callInit())
+    return promise
+  }
+
+  function updateBookingDataRow(data: any) {
+    setLoading(true)
+    const promise = new Promise((resolve, reject) => {
+      api.put('booking/edit/notes', data, {
+        params: {
+          id: (data as any).id
+        },
+        headers: {
+          Authorization: getToken()
+        }
+      }).then(response => {
+        toast.success(`Updated booking: ${response.data?.id}`, { position: "top-center", autoClose: 1000, })
+        resolve(`Updated bookingbooking: ${response.data?.id}`);
         setLoading(false)
       }).catch((err: AxiosError) => {
         const data = err.response?.data as { message: string }
@@ -349,6 +376,33 @@ export const PaysInfoListModal = ({
       size: 300,
       enableEditing: false,
     },
+    {
+      accessorKey: 'actionCol',
+      header: 'Actions',
+      size: 110,
+      Cell: ({ renderedCellValue, row }) => (
+        <>
+          <div className="flex flex-row justify-between">
+            <div className="w-full cursor-pointer" onClick={() => {
+              setOpenEditingBookModal(true)
+              setOpenIndex(row.original.id)
+            }}>
+              <EditIcon sx={iconSmallStyle} />
+            </div>
+          </div>
+        
+          {row.original.id == openIndex && openEditingBookModal ?
+            <EditNotes
+              open={openEditingBookModal}
+              onClose={() => setOpenEditingBookModal(false)}
+              onSubmit={(values) => updateBookingDataRow(values)}
+              ownerDog={{id: row.original.id, notes: row.original.notes}}
+            //name={row.original.name}
+            />
+            : null}
+        </>
+      )
+    }
 
   ]
 
@@ -373,7 +427,7 @@ export const PaysInfoListModal = ({
           <DialogContent>
             {loading ? <div className="w-full flex justify-center"><Loading /> </div> :
               <>
-                <div className="w-full text-sm md:text-base text-neutral-700">
+                <div key='InfoList' className="w-full text-sm md:text-base text-neutral-700">
                   {owner != null ?
                     <div key='infoOwner' className="flex flex-col p-3 border-2 border-neutral-200 rounded-3xl">
                       <div className="flex flex-col mb-3 px-2">
@@ -413,7 +467,7 @@ export const PaysInfoListModal = ({
                         </div>
                       </div>
                       {owner.dogs.map((dog: any) => (
-                        <>
+                        <div key={`Dog_${dog.name}`}>
                           <div className="flex flex-col p-2 mt-2 border-2 border-neutral-200 rounded-xl" key={dog.id}>
                             <div className="flex flex-col md:flex-row ">
                               <div className="md:w-60 md:mt-1">
@@ -444,7 +498,7 @@ export const PaysInfoListModal = ({
                               </div>
                             </div>
                           </div>
-                        </>
+                        </div>
                       ))}
 
                     </div>

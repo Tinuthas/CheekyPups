@@ -29,7 +29,6 @@ export function SelectInput({getData, onChangeSelect, inputValue}:SelectInputPro
     new Promise<any[]>((resolve, reject) => {
       if(getData != undefined){
         getData(inputValue).then((data) => {
-          setInput(inputValue)
           resolve(data)
         })
       }
@@ -46,8 +45,6 @@ export function SelectInput({getData, onChangeSelect, inputValue}:SelectInputPro
       onChange={handleChange}
       onBlur={handleBlue}
       inputValue={input}
-      //value={input}
-      
       onInputChange={(value) => setInput(value)}
       styles={{ menuPortal: base => ({ ...base, color: '#525252' , zIndex: 9999 }) }}
               menuPortalTarget={document.body} 

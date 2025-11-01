@@ -401,6 +401,7 @@ async function filterAllExtractByOwner(extracts: any[], ownerId: number) {
       dog: {
         select: {
           name: true,
+          breed: true
         }
       },
       extract: {

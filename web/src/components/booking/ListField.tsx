@@ -103,7 +103,7 @@ export function ListField({ date, setDate, loading, setLoading }: ListFieldProps
       ownerName={booking.status.includes('offered') ? Object(booking.offering)['owner']: (booking.dog == null ? "" : booking.dog.Owner.name)} 
       phone={booking.status.includes('offered') ? Object(booking.offering)['phone'] : (booking.dog == null ? "" : booking.dog.Owner.phoneOne)} 
       dogId={booking.dog == null ? "" : booking.dog.id}
-      dogName={booking.dog == null ? "" : booking.dog.name} 
+      dogName={booking.dog == null ? "" : booking.dog.Owner.type != null && booking.dog.Owner.type.toUpperCase().includes('D') ? (booking.dog.name+' - DC'):booking.dog.name} 
       dogBread={booking.dog == null ? "" : booking.dog.breed} 
       notes={booking.status.includes('offered') ? Object(booking.offering)['notes']: (booking.notes == null ? null : booking.notes)}
       date={booking.time}

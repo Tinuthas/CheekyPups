@@ -61,7 +61,7 @@ export const SearchAddBooking = ({
                 var data = response.data
                 var listData: any[] = []
                 data.forEach((element: any) => {
-                  listData.push({ element: element, value: element.id, label: `${element.Owner.name} - ${element.Owner.phoneOne} - ${element.name} - ${element.breed}` })
+                  listData.push({ element: element, value: element.id, label: `${element.Owner.name} - ${element.Owner.phoneOne} - ${element.name} - ${element.breed}${element.Owner.type != null && element.Owner.type.toUpperCase().includes('D') ? ' - DC':''}` })
                 });
                 resolve(listData)
               }).catch((err: AxiosError) => {

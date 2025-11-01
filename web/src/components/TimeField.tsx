@@ -22,7 +22,7 @@ export function TimeField({value, label, onChange} : TimeFieldProps) {
           <DesktopTimePicker
             className="block w-full px-4 h-10 py-2  text-neutral-600 bg-white border-[1px] border-neutral-300 hover:border-neutral-400 rounded transition-all focus:outline-none focus:border-pinkBackground"
             //label={label}
-            ampm={false}
+            ampm={true}
             views={['hours', 'minutes']}
             value={value || new Date()}
             onChange={(newValue) => {onChange(newValue)}}
