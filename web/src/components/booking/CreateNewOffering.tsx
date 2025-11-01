@@ -9,14 +9,16 @@ interface CreateNewOfferingProps {
   onClose: () => void;
   onSubmit: (values: any) => void;
   open: boolean;
-  listTimes: [{}]
+  listTimes: [{}];
+  inputValue: string | null;
 }
 
 export const CreateNewOffering = ({
   open,
   onClose,
   onSubmit,
-  listTimes
+  listTimes,
+  inputValue
 }: CreateNewOfferingProps) => {
 
   const [ownerId, setOwnerId] = useState("")
@@ -56,6 +58,7 @@ export const CreateNewOffering = ({
             label: 'Search Owner/Phone/Dog',
             name: 'Search Owner/Phone/Dog',
             type: "select",
+            value: inputValue == null ? "": inputValue,
             getDataSelect: (inputValue: string) => new Promise<any[]>((resolve, reject) => {
               api.get('booking/select', { params: { name: inputValue }, headers: { Authorization: getToken() } }).then(response => {
                 var data = response.data

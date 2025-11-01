@@ -9,14 +9,17 @@ interface CreateExistedCustomerProps {
   onClose: () => void;
   onSubmit: (values:any) => void;
   open: boolean;
-  listTimes: [{}]
+  listTimes: [{}];
+  inputValue: string | null  ;
 }
 
 export const CreateExistedCustomer = ({
   open,
   onClose,
   onSubmit,
-  listTimes
+  listTimes,
+  inputValue
+
 }: CreateExistedCustomerProps) => {
 
   const [ownerName, setOwnerName] = useState("")
@@ -67,6 +70,7 @@ export const CreateExistedCustomer = ({
             name: 'Search Owner/Phone/Dog',
             type: "select",
             required: true,
+            value: inputValue,
             getDataSelect: (inputValue: string) => new Promise<any[]>((resolve, reject) => {
               api.get('booking/select', { params: { name: inputValue }, headers: { Authorization: getToken() } }).then(response => {
                 var data = response.data

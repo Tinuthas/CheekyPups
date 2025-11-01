@@ -18,6 +18,7 @@ import { FillSpacesModal } from "./FillSpacesModal";
 import { CreateNewCustomer } from "./CreateNewCustomer";
 import { CreateExistedCustomer } from "./CreateExistedCustomer";
 import { CreateNewOffering } from "./CreateNewOffering";
+import { SearchAddBooking } from "./SearchAddBookingModal";
 
 interface ListFieldProps {
   date: Date
@@ -30,9 +31,7 @@ interface ListFieldProps {
 export function ListField({ date, setDate, loading, setLoading }: ListFieldProps) {
 
   const [createEventModalOpen, setCreateEventModalOpen] = useState(false);
-  const [createBookModalOpen, setCreateBookModalOpen] = useState(false);
-  const [createExistedModalOpen, setCreateExistedModalOpen] = useState(false);
-  const [createOfferingModalOpen, setCreateOfferingModalOpen] = useState(false);
+  const [searchAddBookingModalOpen, setSearchAddBookingModalOpen] = useState(false);
   const [fillSpacesModalOpen, setFillSpacesModalOpen] = useState(false);
   const [bookings, setBookings] = useState<any>([])
   const [calendar, setCalendar] = useState<any>([])
@@ -81,11 +80,6 @@ export function ListField({ date, setDate, loading, setLoading }: ListFieldProps
   function addEventClick() {
     setCreateEventModalOpen(true)
   }
-
-  function addBookClick() {
-    setCreateBookModalOpen(true)
-  }
-
 
   function onNextDate() {
     var newDate = new Date(date)
@@ -347,7 +341,7 @@ export function ListField({ date, setDate, loading, setLoading }: ListFieldProps
     <div className="border-neutral-800 md:p-10 pt-4 h-full flex flex-col items-center">
       <div className="flex flex-col justify-center items-center">
         <h3 className="font-medium text-4xl md:text-5xl lg:text-6xl text-pinkBackground font-borsok md:mr-6 text-center mt-2 md:mt-0">{date.toLocaleString(undefined, { weekday: "long", day: "numeric", month: 'long', year: 'numeric' })}</h3>
-        <FilterDateBooking date={date} setDate={setDate} calendar={calendar} loading={loading} setLoading={setLoading} onPreviousDate={onPreviousDate} onNextDate={onNextDate} addEventClick={addEventClick} addBookClick={addBookClick} addFillClick={() => setFillSpacesModalOpen(true)} addExistedClick={() => setCreateExistedModalOpen(true)} addOfferingClick={() => setCreateOfferingModalOpen(true)}/>
+        <FilterDateBooking date={date} setDate={setDate} calendar={calendar} loading={loading} setLoading={setLoading} onPreviousDate={onPreviousDate} onNextDate={onNextDate} addEventClick={addEventClick} addFillClick={() => setFillSpacesModalOpen(true)} searchAddBooking={()=> setSearchAddBookingModalOpen(true)}/>
       </div>
       <div className="w-full md:px-4 my-4 flex justify-center">
         {loading ? <div className="w-full flex justify-center"><Loading /> </div> :
@@ -394,39 +388,18 @@ export function ListField({ date, setDate, loading, setLoading }: ListFieldProps
               open={fillSpacesModalOpen}
             /> : null
         }
-        {createBookModalOpen ?
-           <CreateNewCustomer 
-            key={"NewCustomerKey"}
+        {searchAddBookingModalOpen ?
+           <SearchAddBooking 
             onClose={() => {
               getBookingFromDate()
-              setCreateBookModalOpen(false)
-            }} 
-            onSubmit={(values) => handleCreateNewDogAndCustomer(values)} 
-            open={createBookModalOpen} 
-            listTimes={emptyBooking}/>: null
-        }
-        {createExistedModalOpen ?
-           <CreateExistedCustomer 
-            key={"ExistedCustomerKey"}
-            onClose={() => {
-              getBookingFromDate()
-              setCreateExistedModalOpen(false)
+              setSearchAddBookingModalOpen(false)
             }} 
             onSubmit={(values) => handleCreateExistedDogAndCustomer(values)} 
-            open={createExistedModalOpen} 
+            open={searchAddBookingModalOpen} 
+            handleOffer={(values => handleCreateOfferedCustomer(values))}
+            handleNewCustomer={(values) => handleCreateNewDogAndCustomer(values)}
+            handleExistedCustomer={(values) => handleCreateExistedDogAndCustomer(values)}
             listTimes={emptyBooking}/>: null
-        }
-        {createOfferingModalOpen ?
-          <CreateNewOffering 
-            key={"OfferingCustomerKey"}
-            onClose={() => {
-              getBookingFromDate()
-              setCreateOfferingModalOpen(false)
-            }} 
-            onSubmit={(values) => handleCreateOfferedCustomer(values)} 
-            open={createOfferingModalOpen} 
-            listTimes={emptyBooking}
-          />: null
         }
       </ThemeProvider>
 

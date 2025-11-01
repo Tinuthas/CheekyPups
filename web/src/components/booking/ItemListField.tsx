@@ -81,7 +81,7 @@ export function ItemListField({ id, time, status, ownerId, dogId, ownerName, pho
 
   return (
     <>
-      <div key={String(id)} className="h-20 w-fit mt-4 border border-neutral-300 rounded-xl text-neutral-800 flex flex-row self-center hover:border-neutral-500 hover:border-2 sm::text-base md:text-base lg:text-lg transition delay-300 duration-300"
+      <div key={String(id)} className={`group h-20 w-fit mt-4 shadow border border-neutral-300 rounded-xl text-neutral-800 flex flex-row self-center hover:border-neutral-400 sm::text-base md:text-base lg:text-base transition delay-300 duration-300 ${!status.includes('empty') && notes!=null && notes!='' ? 'hover:h-32': ''}`}
         onClick={() => setLoadingMenuItem(id)}>
         <span className="w-[16px] h-full ">
           {status === 'empty' ?
@@ -97,7 +97,10 @@ export function ItemListField({ id, time, status, ownerId, dogId, ownerName, pho
                     : null
           }
         </span>
-        <div className="p-4 flex flex-row self-center">
+        <div>
+
+        
+        <div className="p-4 h-20 flex flex-row self-center">
           <div className="self-center w-[100px]">
             <h5>{time}</h5>
           </div>
@@ -217,9 +220,20 @@ export function ItemListField({ id, time, status, ownerId, dogId, ownerName, pho
             </ThemeProvider>
           </div>
         </div>
-
-
+        {status !== 'empty' && notes!=null && notes!='' ?
+          <div className="px-4 flex flex-row self-center invisible group-hover:visible">
+            <div className="self-center mr-5">
+              <h5 className="">Notes:</h5>
+            </div>
+            <div className="">
+              <h5 className="">{notes}</h5>
+            </div>
+        </div>
+        : null}
+        
+        </div>
       </div>
+       
     </>
 
   )

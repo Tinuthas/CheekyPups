@@ -79,7 +79,7 @@ export const InputLabel = ({labelName, type, placeholder, accessorKey, value, se
       }
       {
         type.includes('select') ?
-          <SelectInput getData={getData} onChangeSelect={handleOnChangeValue}/>
+          <SelectInput inputValue={value == null ? "": value} getData={getData} onChangeSelect={handleOnChangeValue}/>
         : type.includes('checkbox') ? 
           <FormControlLabel control={<Checkbox onChange={setEventChange} sx={{ color: '#FF499E', '& .MuiSvgIcon-root': { fontSize: 24 } }} checked={value}  />}  label={status ? placeholder : labelName}  />
         : type.includes('radio') ? 
