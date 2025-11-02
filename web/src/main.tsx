@@ -5,10 +5,6 @@ import { HashRouter, Route, Routes } from 'react-router-dom'
 
 import './index.css'
 import App from './App.jsx'
-import { Header } from './pages/Header'
-import { Home } from './pages/Home'
-import { Login } from './pages/Login'
-import { LandingPage } from './pages/LandingPage'
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>

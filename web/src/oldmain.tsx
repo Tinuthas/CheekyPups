@@ -4,14 +4,8 @@ import { HashRouter, Route, Routes } from 'react-router-dom'
 
 import App from './App'
 import './index.css'
-import { About } from './pages/About'
-import { Attendances } from './pages/Attendances'
-import { Dogs } from './pages/Dogs'
 import { Home } from './pages/Home'
 import { Login } from './pages/Login'
-import { Owners } from './pages/Owners'
-import { Payments } from './pages/Payments'
-import { Vaccines } from './pages/Vaccines'
 import { LandingPage } from './pages/LandingPage'
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
