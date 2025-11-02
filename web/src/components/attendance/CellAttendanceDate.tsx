@@ -295,7 +295,7 @@ function ReturnMenuItemCustom({ renderedCellValue, row, item, onSubmit }: Return
   )
 }
 
-export function cellComponent(item: string, onSubmit: () => Promise<boolean>, totalSumDays: number) {
+export function cellComponent(item: string, onSubmit: () => Promise<boolean>, totalSumDays: number, totalHalfDays:number, totalPaid:number) {
   var column: MRT_ColumnDef<any> = {
     accessorKey: item,
     header: dayjs(item, 'DD/MM/YYYY').format('ddd DD'),
@@ -311,7 +311,7 @@ export function cellComponent(item: string, onSubmit: () => Promise<boolean>, to
           : null}
       </div>
     ),
-    Footer: ({ }) => <div className="w-[90px] text-center mr-[43.06px]">{totalSumDays}</div>
+    Footer: ({ }) => <div className="w-[90px] mr-[43.06px] text-neutral-600 flex justify-center"><div className="text-center"><div className="bg-neutral-200 rounded-3xl px-3">{totalSumDays}</div><div className="mt-2 bg-neutral-200 rounded-3xl px-3">{totalHalfDays}</div><div className="mt-2 bg-green-500 text-white rounded-3xl px-3">{totalPaid}</div></div></div>
   }
   return column
 }

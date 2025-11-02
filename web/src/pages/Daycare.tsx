@@ -13,6 +13,7 @@ import { FilterDays } from "../components/attendance/FilterDays";
 import { DataTableAttendance } from "../components/attendance/DataTableAttendance";
 import { cellComponent } from "../components/attendance/CellAttendanceDate";
 import InfoItemButton from "../components/attendance/InfoItemButton";
+import {Helmet} from "react-helmet";
 
 type Attendances = Array<{
   id: string;
@@ -24,7 +25,7 @@ type Attendances = Array<{
   paids: boolean[];
 }>
 
-export function Attendances() {
+export function Daycare() {
 
   const [attendances, setAttendances] = useState<any>([])
   const [columns, setColumns] = useState<any>([])
@@ -90,20 +91,20 @@ export function Attendances() {
         var marginDates = 0
         att.map((item, index) => {
           var listDates: any = {}
-          listDates['total'] = 0
-          listDates['paid'] = 0
+          //listDates['halfday'] = 0
+          //listDates['paid'] = 0
           for (let i = 0; i < item.dates.length; i++) {
             listDates[item.dates[i]] = item.paids[i] ? (item.typeDays[i] != 'HD' ? 'DP' : 'D½P') : item.typeDays[i] != 'HD' ? 'D' : 'D½'
             dates.add(item.dates[i])
-            listDates['total'] = listDates['total'] + 1
-            listDates['paid'] = item.paids[i] ? listDates['paid'] + 1 : listDates['paid']
+            //listDates['halfday'] = item.typeDays[i].includes('H') ? listDates['halfday'] + 1 : listDates['halfday']
+            //listDates['paid'] = item.paids[i] ? listDates['paid'] + 1 : listDates['paid']
           }
-          marginDates = listDates['total'] > marginDates ? listDates['total'] : marginDates
+          //marginDates = listDates['total'] > marginDates ? listDates['total'] : marginDates
 
           var obj = Object.assign({}, item, listDates);
           rows.push(obj)
         })
-        setMarginTable(marginDates)
+        setMarginTable(-1)
         setAttendances(rows)
         if (rows.length != 0) {
           var base: MRT_ColumnDef<any>[] = [{
@@ -136,15 +137,26 @@ export function Attendances() {
                 
               </>
             ),
-            Footer: ({ }) => <div className="">Total: </div>
+            Footer: ({ }) => <div className=""><div>Total</div><div className="mt-2">D½</div><div className="mt-2">Paid</div></div>
           }]
           for (const item of Array.from(dates)) {
             var totalSumDays = 0
+            var totalHalfDays =  0
+            var totalPaid = 0
+            
             rows.map((row) => {
-              item in row ? totalSumDays++ : null
+              if(item in row) {
+                totalSumDays++
+                row.dates.map((date:any, index:number) => {
+                  if(date.includes(item)) {
+                    totalPaid = row.paids[index] ? totalPaid  + 1 : totalPaid
+                    totalHalfDays = row.typeDays[index].includes('H') ? totalHalfDays + 1 : totalHalfDays
+                  }
+                })
+              }
             })
 
-            base.push(cellComponent(item, () => onSubmitUpdatePage(), totalSumDays))
+            base.push(cellComponent(item, () => onSubmitUpdatePage(), totalSumDays, totalHalfDays, totalPaid))
           }
           setColumns(base)
         }
@@ -226,6 +238,9 @@ export function Attendances() {
 
   return (
     <div className="md:p-10 pt-4 h-full flex flex-col items-center">
+      <Helmet>
+        <title>Daycare</title>
+      </Helmet>
       <h3 className="font-medium text-3xl md:text-4xl lg:text-5xl text-pinkBackground font-borsok">Daycare</h3>
       <h3 className="text-white font-borsok text-lg md:text-2xl lg:text-4xl">{dateStart.toLocaleString(undefined, { weekday: "short", day: "numeric", month: 'short', year: 'numeric' })} - {dateEnd.toLocaleString(undefined, { weekday: "short", day: "numeric", month: 'short', year: 'numeric' })}</h3>
       <FilterDays

@@ -18,7 +18,7 @@ export function NavBar() {
     { name: "Services", 
       links: [
         {
-          name: "Daycare", path: "Attendances",
+          name: "Daycare", path: "Daycare",
         },
         {
           name: "Booking", path: "Booking",

@@ -32,6 +32,7 @@ export function DataTableAttendance({ title, attendances, columns, marginTable, 
   return (
     <ThemeProvider theme={theme}>
       <div className={clsx('w-full mt-9 transition-all ', {
+        'md:px-2 lg:px-4 lg:flex lg:justify-center': marginTable == -1,
         'md:px-28 lg:px-56 xl:flex xl:justify-center': marginTable == 0,
         'md:px-16 lg:px-48 xl:flex xl:justify-center': marginTable == 1,
         'md:px-20 lg:px-36 xl:flex xl:justify-center': marginTable == 2,
@@ -39,6 +40,7 @@ export function DataTableAttendance({ title, attendances, columns, marginTable, 
         'md:px-12 lg:px-40 xl:px-16': marginTable == 4,
         'md:px-8 lg:px-24 xl:px-0 desktop:px-8': marginTable == 5,
         'px-0': marginTable >= 5,
+      
       })}>
         {loading ? <div className="w-full flex justify-center"><Loading /> </div> :
           <div className="bg-white rounded">

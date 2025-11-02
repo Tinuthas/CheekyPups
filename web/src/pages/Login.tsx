@@ -5,6 +5,7 @@ import logoImage from '../assets/roundedlogo.png'
 import z, { ZodError } from 'zod'
 import { api, updateToken } from '../lib/axios';
 import { Loading } from '../components/Loading';
+import {Helmet} from "react-helmet";
 
 interface Token {
   accessToken: string;
@@ -88,6 +89,9 @@ export function Login() {
 
   return (
     <div className="relative flex flex-col justify-center min-h-screen overflow-hidden">
+      <Helmet>
+        <title>Login</title>
+      </Helmet>
       <div className="w-full p-6 m-auto bg-white rounded-3xl shadow-md lg:max-w-xl">
         <div className='flex justify-center m-6'>
           <img src={logoImage} alt="Cheeky Pubs Logo" className='h-[100px] md:h-[150px]' />

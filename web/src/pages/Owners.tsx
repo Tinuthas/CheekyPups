@@ -10,7 +10,7 @@ import { ButtonGroupList } from "../components/ButtonGroupList";
 import { MRT_ColumnDef } from "material-react-table";
 import { PaysInfoListModal } from "../components/payment/PaysInfoListModal";
 import InfoItemButton from "../components/attendance/InfoItemButton";
-
+import {Helmet} from "react-helmet";
 
 export function Owners() {
 
@@ -298,6 +298,9 @@ export function Owners() {
 
   return (
     <div className="md:p-10 pt-4 h-full flex flex-col items-center">
+      <Helmet>
+        <title>Owners</title>
+      </Helmet>
       <h3 className="font-medium text-3xl md:text-5xl text-pinkBackground font-borsok">Owners</h3>
 
       {loading ? <div className="w-full flex justify-center"><Loading /> </div> :

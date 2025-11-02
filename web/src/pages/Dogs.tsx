@@ -11,6 +11,7 @@ import { api, getToken } from '../lib/axios';
 import { ButtonGroupList } from '../components/ButtonGroupList';
 import { PaysInfoListModal } from '../components/payment/PaysInfoListModal';
 import InfoItemButton from '../components/attendance/InfoItemButton';
+import {Helmet} from "react-helmet";
 
 const hideColumns = { owner: true }
 
@@ -313,6 +314,9 @@ export function Dogs() {
 
   return (
     <div className="md:p-10 pt-4 h-full flex flex-col items-center">
+      <Helmet>
+        <title>Dogs</title>
+      </Helmet>
       <h3 className="font-medium text-3xl md:text-5xl text-pinkBackground font-borsok">Dogs</h3>
       {loading ? <div className="w-full flex justify-center"><Loading /> </div> :
         <>

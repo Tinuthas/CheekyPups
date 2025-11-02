@@ -12,6 +12,7 @@ import PaidIcon from '@mui/icons-material/Paid';
 import { theme, iconStyle, iconSmallStyle } from "../lib/theme";
 import { PaymentAllModal } from "../components/payment/PaymentAllModal"
 import { PaysInfoListModal } from "../components/payment/PaysInfoListModal"
+import {Helmet} from "react-helmet";
 
 const selectPromise = (inputValue: string) => new Promise<any[]>((resolve, reject) => {
   api.get('owners/select', { params: { name: inputValue }, headers: { Authorization: getToken() } }).then(response => {
@@ -373,6 +374,9 @@ export function Payments() {
 
   return (
     <div className="md:p-10 pt-4 h-full flex flex-col items-center">
+      <Helmet>
+        <title>Payments</title>
+      </Helmet>
       <h3 className="font-medium text-3xl md:text-5xl text-pinkBackground font-borsok">Payments/Orders</h3>
       {loading ? <div className="w-full flex justify-center"><Loading /> </div> :
         <>

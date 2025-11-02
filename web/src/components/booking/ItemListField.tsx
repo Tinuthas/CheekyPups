@@ -81,7 +81,7 @@ export function ItemListField({ id, time, status, ownerId, dogId, ownerName, pho
 
   return (
     <>
-      <div key={String(id)} className={`group h-20 w-fit mt-4 shadow border border-neutral-300 rounded-xl text-neutral-800 flex flex-row self-center hover:border-neutral-400 sm::text-base md:text-base lg:text-base transition delay-300 duration-300 ${!status.includes('empty') && notes!=null && notes!='' ? 'hover:h-32': ''}`}
+      <div key={String(id)} className={`group h-20 w-fit mt-4 shadow border border-neutral-300 rounded-xl text-neutral-800 flex flex-row self-center hover:border-neutral-400 sm::text-base md:text-base lg:text-base transition-all transition-discrete delay-150 duration-300 ease-in-out hover:-translate-y-1 hover:scale-[1.01] hover:shadow-xl ${!status.includes('empty') && notes!=null && notes!='' ? 'hover:h-32': ''}`}
         onClick={() => setLoadingMenuItem(id)}>
         <span className="w-[16px] h-full ">
           {status === 'empty' ?
@@ -106,8 +106,8 @@ export function ItemListField({ id, time, status, ownerId, dogId, ownerName, pho
           </div>
           <div className="w-[120px] ml-2 md:ml-6 self-center text-center">
             {ownerId!= null && ownerId != 0 ? 
-              <InfoItemButton children={<h5>{ownerName}</h5>} id={Number(ownerId)} onClose={() => {}}/>
-            : <h5>{ownerName}</h5>}
+              <InfoItemButton children={<h5 className="p-7">{ownerName}</h5>} id={Number(ownerId)} onClose={() => {}}/>
+            : <h5 className="p-10">{ownerName}</h5>}
             
           </div>
           <div className="w-[120px] ml-2 md:ml-6 self-center text-center">
@@ -221,7 +221,7 @@ export function ItemListField({ id, time, status, ownerId, dogId, ownerName, pho
           </div>
         </div>
         {status !== 'empty' && notes!=null && notes!='' ?
-          <div className="px-4 flex flex-row self-center invisible group-hover:visible">
+          <div className="px-4 flex flex-row self-center group-hover:transition-all group-hover:delay-300 ease-in invisible group-hover:visible">
             <div className="self-center mr-5">
               <h5 className="">Notes:</h5>
             </div>

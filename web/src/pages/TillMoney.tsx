@@ -14,8 +14,7 @@ import { ThemeProvider } from "@mui/material";
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import DataTableCustom from "../components/DataTableCustom";
-
-
+import {Helmet} from "react-helmet";
 
 const headersInfo = [
   {
@@ -186,6 +185,9 @@ export function TillMoney() {
 
   return (
     <div className="md:p-10 pt-4 h-full flex flex-col items-center">
+      <Helmet>
+        <title>TillMoney</title>
+      </Helmet>
       <h3 className="font-medium text-3xl md:text-5xl text-pinkBackground font-borsok">Till Money</h3>
       {loading ? <div className="w-full flex justify-center"><Loading /> </div> :
         <>

@@ -7,7 +7,7 @@ import { Header } from './pages/Header'
 import { Home } from './pages/Home'
 import { Login } from './pages/Login'
 import { LandingPage } from './pages/LandingPage'
-import { Attendances } from './pages/Attendances'
+import { Daycare } from './pages/Daycare'
 import { Dogs } from './pages/Dogs'
 import { Owners } from './pages/Owners'
 import { Payments } from './pages/Payments'
@@ -24,9 +24,9 @@ function App() {
     <div className="App">
       <Routes>
         <Route path="/" element= {<LandingPage/>} />
-        <Route path="/app" element= {<Header/>}>
+        <Route path="/app" element= {<Header/>} >
           <Route index element={<Home/>} />
-          <Route path='attendances' element={<Attendances/>} />
+          <Route path='daycare' element={<Daycare/>}/>
           <Route path="dogs" element={<Dogs/>}/>
           <Route path="owners" element={<Owners/>}/>
           <Route path="payments" element={<Payments/>}/>

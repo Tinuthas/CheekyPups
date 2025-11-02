@@ -4,6 +4,7 @@ import DataTableCustom from "../components/DataTableCustom"
 import { api, getToken } from "../lib/axios"
 import { AxiosError } from "axios"
 import { toast } from "react-toastify"
+import {Helmet} from "react-helmet";
 
 const headers = [
   {
@@ -265,6 +266,9 @@ export function Users() {
 
   return(
     <div className="md:p-10 pt-4 h-full flex flex-col items-center">
+      <Helmet>
+        <title>Users & Services</title>
+      </Helmet>
       <h3 className="font-medium text-3xl md:text-5xl text-pinkBackground font-borsok">Settings</h3>
       { loading ? <div className="w-full flex justify-center"><Loading /> </div> :
         <>

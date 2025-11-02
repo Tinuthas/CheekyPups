@@ -1,6 +1,7 @@
 import { toast } from "react-toastify"
 import {ListField} from '../components/booking/ListField'
 import { useState } from "react";
+import {Helmet} from "react-helmet";
 
 export function Booking(){
   var newDate = new Date()
@@ -11,6 +12,9 @@ export function Booking(){
   return (
     
     <div>
+      <Helmet>
+        <title>Booking</title>
+      </Helmet>
       <ListField 
         date={date} 
         setDate={setDate} 
