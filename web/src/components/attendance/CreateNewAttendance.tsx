@@ -118,7 +118,7 @@ export const CreateNewAttendance = ({
                 var data = response.data
                 var listData: any[] = []
                 data.forEach((element: any) => {
-                  listData.push({ value: element.id, label: `${element.name} ${element.nickname != null && element.nickname != "" ? '- ' + element.nickname : ''} - ${element.Owner.name}`, element: element })
+                  listData.push({ value: element.id, label: `${element.name} ${element.nickname != null && element.nickname != "" ? ' - ' + element.nickname : ''} - ${element.Owner.name}`, element: element })
                 });
                 resolve(listData)
               }).catch((err: AxiosError) => {

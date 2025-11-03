@@ -13,7 +13,7 @@ import { FilterDays } from "../components/attendance/FilterDays";
 import { DataTableAttendance } from "../components/attendance/DataTableAttendance";
 import { cellComponent } from "../components/attendance/CellAttendanceDate";
 import InfoItemButton from "../components/attendance/InfoItemButton";
-import {Helmet} from "react-helmet";
+import { Helmet } from "react-helmet";
 
 type Attendances = Array<{
   id: string;
@@ -134,22 +134,22 @@ export function Daycare() {
                     }
                   </div>
                 } id={row.original.owner_id} onClose={() => clickSearchByDates()} />
-                
+
               </>
             ),
             Footer: ({ }) => <div className=""><div>Total</div><div className="mt-2">D½</div><div className="mt-2">Paid</div></div>
           }]
           for (const item of Array.from(dates)) {
             var totalSumDays = 0
-            var totalHalfDays =  0
+            var totalHalfDays = 0
             var totalPaid = 0
-            
+
             rows.map((row) => {
-              if(item in row) {
+              if (item in row) {
                 totalSumDays++
-                row.dates.map((date:any, index:number) => {
-                  if(date.includes(item)) {
-                    totalPaid = row.paids[index] ? totalPaid  + 1 : totalPaid
+                row.dates.map((date: any, index: number) => {
+                  if (date.includes(item)) {
+                    totalPaid = row.paids[index] ? totalPaid + 1 : totalPaid
                     totalHalfDays = row.typeDays[index].includes('H') ? totalHalfDays + 1 : totalHalfDays
                   }
                 })
@@ -174,7 +174,7 @@ export function Daycare() {
 
   const handleCreateNewRow = (values: any) => {
     setLoading(true)
-   
+
     api.post('attendance', values, {
       headers: {
         Authorization: getToken()
@@ -193,20 +193,24 @@ export function Daycare() {
   const handleCreateNewWeekRow = (values: any) => {
     setLoading(true)
 
+    try {
+      api.post('attendance/week', values, {
+        headers: {
+          Authorization: getToken()
+        }
+      }).then(response => {
+        toast.success(`Added!`, { position: "top-center", autoClose: 1000, })
+        clickSearchByDates()
+      }).catch((err: AxiosError) => {
+        const data = err.response?.data as { message: string }
+        toast.error(`${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
+        setLoading(false)
+        throw new Error(`${data.message || err.response?.data || err.message}`);
+      })
+    } catch (e) {
+      toast.error(`Unidentified error`, { position: "top-center", autoClose: 5000, })
+    }
 
-    api.post('attendance/week', values, {
-      headers: {
-        Authorization: getToken()
-      }
-    }).then(response => {
-      toast.success(`Added!`, { position: "top-center", autoClose: 1000, })
-      clickSearchByDates()
-    }).catch((err: AxiosError) => {
-      const data = err.response?.data as { message: string }
-      toast.error(`${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
-      throw new Error(`${data.message || err.response?.data || err.message}`);
-      setLoading(false)
-    })
   };
 
   const handleCreateNewOwnerDog = (values: any) => {

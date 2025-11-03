@@ -588,16 +588,19 @@ export async function attendanceRoutes(app: FastifyInstance) {
   async function checkPaidAttendance(date: string, dogId: number, typeDay: string, paid: boolean, paidValue: number | null, typePaid: string, value: number, descriptionValue: string) {
 
     var att = null
-    if (value != null && value >= 0 && dogId != 0)
-      att = await addingAttendanceDog(date, dogId, typeDay, paid, paidValue, String(typePaid), value, descriptionValue)
+    if(String(typeDay) != "") {
+      if (value != null && value >= 0 && dogId != 0)
+        att = await addingAttendanceDog(date, dogId, typeDay, paid, paidValue, String(typePaid), value, descriptionValue)
 
-    if (paidValue != null && value != null) {
-      paidValue = (paidValue - value)
-      if (paidValue <= 0) {
-        paidValue = null
-        paid = false
+      if (paidValue != null && value != null) {
+        paidValue = (paidValue - value)
+        if (paidValue <= 0) {
+          paidValue = null
+          paid = false
+        }
       }
     }
+    
 
     return [att, paidValue, paid]
   }
