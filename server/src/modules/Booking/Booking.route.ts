@@ -711,7 +711,7 @@ async function addBookingEditOwnerHandle(request: FastifyRequest<{ Body: Booking
 }
 
 async function addBookingEditOwner(input: BookingEditInput) {
-  const { dogId, notes, owner, phone, dogName, dogBreed, second, secondOwner, secondPhone } = input
+  const { dogId, bookingId, notes, owner, phone, dogName, dogBreed, second, secondOwner, secondPhone } = input
 
   let ownerResult = null
   if (second) {
@@ -728,7 +728,6 @@ async function addBookingEditOwner(input: BookingEditInput) {
             phoneOne: phone,
             secondOwner: secondOwner,
             phoneTwo: secondPhone,
-            notes: notes
           }
         }
       }
@@ -745,12 +744,20 @@ async function addBookingEditOwner(input: BookingEditInput) {
           update: {
             name: owner,
             phoneOne: phone,
-            notes: notes
           }
         }
       }
     })
   }
+  const booking = await prisma.booking.update({
+    where: {
+      id: bookingId,
+    },
+    data: {
+      notes: notes,
+    }
+  })
+
   return ownerResult
 }
 

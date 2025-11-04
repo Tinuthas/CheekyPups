@@ -246,16 +246,19 @@ export async function attendanceRoutes(app: FastifyInstance) {
       },
       orderBy: [
         {
-          dog: {
-            Owner: {
-              name: 'desc'
-            }
-          },
-        },
-        {
           day: {
             date: 'asc'
           }
+        },
+        {
+          dog: {
+            ownerId: 'asc'
+          },
+        },
+        {
+          dog: {
+            name: 'asc'
+          },
         }
       ]
     })

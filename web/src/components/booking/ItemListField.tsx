@@ -212,6 +212,7 @@ export function ItemListField({ id, time, status, ownerId, dogId, ownerName, pho
                     owner: ownerName != null && ownerName != "" ? ownerName : "",
                     phone: phone != null && phone != "" ? phone : "",
                     id: Number(dogId),
+                    bookingId: Number(id),
                     dogName: dogName != null && dogName != "" ? dogName : "",
                     breed: dogBread != null && dogBread != "" ? dogBread : "",
                     notes: "",

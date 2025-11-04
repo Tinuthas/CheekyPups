@@ -87,6 +87,7 @@ const createBookingFinish = z.object({
 
 const createEditOwner = z.object({
   dogId: z.number(),
+  bookingId: z.number(),
   owner: z.string(),
   phone: z.string(),
   notes: z.string(),

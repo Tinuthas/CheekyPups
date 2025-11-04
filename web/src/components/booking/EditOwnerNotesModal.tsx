@@ -6,7 +6,7 @@ interface EditOwnerNotesProps {
   onClose: () => void;
   onSubmit: (values: any) => void;
   open: boolean;
-  ownerDog: { owner: string, phone: string, id: number, dogName: string, breed: string, notes: string },
+  ownerDog: { owner: string, phone: string, id: number, bookingId: number, dogName: string, breed: string, notes: string },
 
 }
 
@@ -59,6 +59,16 @@ export const EditOwnerNotes = ({
             name: '',
             type: "number",
             value: ownerDog.id,
+            noEdit: true,
+            noShow: true,
+            gridXS: 12, gridMS: 12,
+          },
+          {
+            accessorKey: 'bookingId',
+            label: '',
+            name: '',
+            type: "number",
+            value: ownerDog.bookingId,
             noEdit: true,
             noShow: true,
             gridXS: 12, gridMS: 12,
