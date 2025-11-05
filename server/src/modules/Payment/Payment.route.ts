@@ -194,7 +194,7 @@ async function filterAllExtracts(pays: any[]) {
   var listPayments: { id: number; name: string; dogsName: string, extracts: number; value: Decimal | null; paidValue: Decimal | null; totalValue: Decimal | null; }[] = []
   payments.forEach((element, index) => {
     const pay = pays.find(p => p.ownerId === element.id) ?? null;
-    if(pay != null) {
+    if (pay != null) {
       listPayments.push({
         id: element.id,
         name: element.name,
@@ -269,7 +269,7 @@ async function getAllExtractByOwnerAll(id: number, startDate: string, endDate: s
       }
     }
   })
-  return await filterAllExtractByOwner(extracts, Number(id))
+  return await filterAllExtractByOwner(extracts, Number(id), startDate, endDate)
 }
 
 async function getAllExtractByOwnerDone(done: boolean, id: number) {
@@ -358,10 +358,10 @@ async function getAllExtractByOwnerDoneDate(done: boolean, id: number, startDate
     }
   })
 
-  return await filterAllExtractByOwner(extracts, Number(id))
+  return await filterAllExtractByOwner(extracts, Number(id), startDate, endDate)
 }
 
-async function filterAllExtractByOwner(extracts: any[], ownerId: number) {
+async function filterAllExtractByOwner(extracts: any[], ownerId: number, startDate?: string, endDate?: string) {
   const filterExtracts = extracts.map(({ id, description, value, date, attendanceId, paidValue, totalValue, done, type, attendance, booking, }) => ({
     id,
     description,
@@ -421,24 +421,48 @@ async function filterAllExtractByOwner(extracts: any[], ownerId: number) {
     sales: extract != null ? extract.value : ""
   }));
 
-  const pays = await prisma.extract.groupBy({
-    by: ['ownerId'],
-    where: {
-      ownerId: ownerId,
-      done: false,
-    },
-    _count: {
-      id: true,
-    },
-    _sum: {
-      value: true,
-      paidValue: true,
-      totalValue: true
-    },
-  })
+  var pays:any = null
+  if (startDate == null || endDate || null) {
+    pays = await prisma.extract.groupBy({
+      by: ['ownerId'],
+      where: {
+        ownerId: ownerId,
+        done: false,
+      },
+      _count: {
+        id: true,
+      },
+      _sum: {
+        value: true,
+        paidValue: true,
+        totalValue: true
+      },
+    })
+  } else {
+    pays = await prisma.extract.groupBy({
+      by: ['ownerId'],
+      where: {
+        ownerId: ownerId,
+        done: false,
+        date: {
+          lte: endDate,
+          gte: startDate
+        }
+      },
+      _count: {
+        id: true,
+      },
+      _sum: {
+        value: true,
+        paidValue: true,
+        totalValue: true
+      },
+    })
+  }
+
 
   var totalPays: { id: number; extracts: number; value: Decimal | null; paidValue: Decimal | null; totalValue: Decimal | null; }[] = []
-  pays.forEach((element, index) => {
+  pays.forEach((element:any, index:number) => {
     totalPays.push({
       id: element.ownerId,
       extracts: pays[index]._count.id,
@@ -601,7 +625,7 @@ async function addValuePaidExtract(input: PaidOwnerInput, id: number) {
       type: typePaid
     },
     include: {
-      Owner:true
+      Owner: true
     }
   })
 
@@ -616,7 +640,7 @@ async function updatePayment(input: UpdatePaymentInput, id: number) {
 
   const totalValue = Number(sales) - (paid ? Number(paidValue) : 0);
 
-  const type = typePaid != null ? (typePaid.toUpperCase().includes('REV') ? 'REV' : typePaid.toUpperCase()): typePaid
+  const type = typePaid != null ? (typePaid.toUpperCase().includes('REV') ? 'REV' : typePaid.toUpperCase()) : typePaid
 
   const extract = await prisma.extract.update({
     where: {
@@ -835,11 +859,11 @@ async function changingNewTillChanges(input: ChangingLastTillInput) {
   })
 
   var tillChange = null
-  if(typePaid.toUpperCase().includes('REV')) {
+  if (typePaid.toUpperCase().includes('REV')) {
     var value = 0
-    if(description.toUpperCase().includes('DEDUCT'))
+    if (description.toUpperCase().includes('DEDUCT'))
       value = Number(tillLast?.valueOther) - newValue
-    else 
+    else
       value = Number(tillLast?.valueOther) + newValue
 
     tillChange = await prisma.till.update({
@@ -851,11 +875,11 @@ async function changingNewTillChanges(input: ChangingLastTillInput) {
       }
     })
 
-  }else if(typePaid.toUpperCase().includes('CARD')) {
+  } else if (typePaid.toUpperCase().includes('CARD')) {
     var value = 0
-    if(description.toUpperCase().includes('DEDUCT'))
+    if (description.toUpperCase().includes('DEDUCT'))
       value = Number(tillLast?.valueCard) - newValue
-    else 
+    else
       value = Number(tillLast?.valueCard) + newValue
 
     tillChange = await prisma.till.update({
@@ -866,11 +890,11 @@ async function changingNewTillChanges(input: ChangingLastTillInput) {
         valueCard: value,
       }
     })
-  }else {
+  } else {
     var value = 0
-    if(description.toUpperCase().includes('DEDUCT'))
+    if (description.toUpperCase().includes('DEDUCT'))
       value = Number(tillLast?.value) - newValue
-    else 
+    else
       value = Number(tillLast?.value) + newValue
 
     tillChange = await prisma.till.update({
@@ -937,7 +961,7 @@ export async function updateTillHandle(typeTill: string, type: string, value: nu
       })
     }
 
-  } catch (e:any) {
-    throw new Error('Error in updating till: '+e.message)
+  } catch (e: any) {
+    throw new Error('Error in updating till: ' + e.message)
   }
 }

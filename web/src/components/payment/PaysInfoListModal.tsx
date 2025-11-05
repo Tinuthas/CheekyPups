@@ -34,6 +34,7 @@ export const PaysInfoListModal = ({
 
   const [dateStart, setDateStart] = useState(infoData.dateStart == null ? dayjs(new Date).subtract(6, 'month').toISOString() : infoData.dateStart)
   const [dateEnd, setDateEnd] = useState(infoData.dateEnd == null ? dayjs(new Date).add(1, 'month').toISOString() : infoData.dateEnd)
+  const [selectDateType, setSelectDateType] = useState<string>('T')
   const [loading, setLoading] = useState(false)
   const [extracts, setExtracts] = useState([])
   const [owner, setOwner] = useState<any>(null)
@@ -79,6 +80,17 @@ export const PaysInfoListModal = ({
       toast.error(`${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
       setLoading(false)
     })
+  }
+
+  function changeCalendarDates(data: any[]) {
+    setDateStart(data[0])
+    setDateEnd(data[1])
+    setSelectDateType(data[2])
+    const promise = new Promise((resolve, reject) => {
+      callInit()
+      resolve("");
+    });
+    return promise
   }
 
 
@@ -536,6 +548,8 @@ export const PaysInfoListModal = ({
                     setData={(data: any) => setExtracts(data)}
                     title={"Last Payments"}
                     deleteRow={id => deleteDataRow(id)}
+                    searchCalendar={(data) => changeCalendarDates(data)}
+                    calendarData={[dateStart, dateEnd, selectDateType]}
                     updateRow={data => updateDataRow(data)} />
                 </div>
                 <div className="md:flex bg-white w-full mt-6 rounded">
