@@ -222,7 +222,7 @@ export function ItemListField({ id, time, status, ownerId, dogId, ownerName, pho
           </div>
         </div>
         {status !== 'empty' && notes!=null && notes!='' ?
-          <div className="px-4 flex flex-row self-center group-hover:transition-all group-hover:delay-300 ease-in invisible group-hover:visible">
+          <div className="px-4 flex flex-row max-w-[820px] self-center group-hover:transition-all group-hover:delay-300 ease-in invisible group-hover:visible">
             <div className="self-center mr-5">
               <h5 className="">Notes:</h5>
             </div>
