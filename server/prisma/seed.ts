@@ -35,6 +35,25 @@ async function run() {
         key: "FullDayBooking",
         value: `[\'09:30\',\'09:30\',\'11:00\',\'11:00\',\'12:30\',\'12:30\']`
       }
+    }),
+    prisma.preferences.create({
+      data: {
+        key: "Reminders",
+        value: 
+`Hi,
+
+Just reminding you know that your [dog] booked [time].
+
+Payments by revolut or cash
+
+Hardness or secure collars
+
+In case of cancellation
+
+
+Thanks,
+Cheeky Pups`
+      }
     })
 
     

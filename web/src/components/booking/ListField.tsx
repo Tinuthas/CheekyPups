@@ -345,7 +345,7 @@ export function ListField({ date, setDate, loading, setLoading }: ListFieldProps
       </div>
       <div className="w-full md:px-4 my-4 flex justify-center">
         {loading ? <div className="w-full flex justify-center"><Loading /> </div> :
-          <div className="min-h-[500px] w-fit bg-white border rounded p-4 overflow-auto">
+          <div className=" h-full min-h-[500px] w-fit bg-white border rounded p-4 pb-5 overflow-auto">
             <ItemListColumnsField />
             {listItem}
           </div>

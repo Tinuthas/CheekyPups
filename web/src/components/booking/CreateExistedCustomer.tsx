@@ -240,7 +240,7 @@ export const CreateExistedCustomer = ({
             label: 'Third Dog',
             name: 'Third Dog',
             type: "checkbox",
-            noShow: !valueCheckbox.second || valueListDogs.length == 0,
+            noShow: !valueCheckbox.second || valueListDogs.length == 1,
             value: valueCheckbox.third,
             setValue: (value) => setValueCheckbox({ second: valueCheckbox.second, third: value, fourth: valueCheckbox.fourth }),
             gridXS: 12, gridMS: 12,

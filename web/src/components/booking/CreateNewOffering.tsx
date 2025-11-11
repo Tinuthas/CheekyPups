@@ -2,7 +2,7 @@ import { useState } from "react";
 import { CreateNewModal } from "../CreateNewModal";
 import dayjs from "dayjs";
 import { toast } from "react-toastify";
-import {api, getToken} from "../../lib/axios";
+import { api, getToken } from "../../lib/axios";
 import { AxiosError } from "axios";
 
 interface CreateNewOfferingProps {
@@ -38,8 +38,8 @@ export const CreateNewOffering = ({
     if (oldKey != null) {
       newList.push(oldKey)
     }
-    var index: number = newList.findIndex((i: any) => i.id === key.id);
- 
+    var index: number = newList.findIndex((i: any) => i.value === key.value);
+
     if (index > -1) {
       newList.splice(index, 1);
     }
@@ -58,14 +58,14 @@ export const CreateNewOffering = ({
             label: 'Search Owner/Phone/Dog',
             name: 'Search Owner/Phone/Dog',
             type: "select",
-            value: inputValue == null ? "": inputValue,
+            value: inputValue == null ? "" : inputValue,
             getDataSelect: (inputValue: string) => new Promise<any[]>((resolve, reject) => {
               api.get('booking/select', { params: { name: inputValue }, headers: { Authorization: getToken() } }).then(response => {
                 var data = response.data
                 var listData: any[] = []
-                listData.push({element: null, value: 0, label: `New Owner/Dog`})
+                listData.push({ element: null, value: 0, label: `New Owner/Dog` })
                 data.forEach((element: any) => {
-                  listData.push({ element: element, value: element.id, label: `${element.Owner.name} - ${element.Owner.phoneOne} - ${element.name} - ${element.breed}${element.Owner.type != null && element.Owner.type.toUpperCase().includes('D') ? ' - DC':''}` })
+                  listData.push({ element: element, value: element.id, label: `${element.Owner.name} - ${element.Owner.phoneOne} - ${element.name} - ${element.breed}${element.Owner.type != null && element.Owner.type.toUpperCase().includes('D') ? ' - DC' : ''}` })
                 });
                 resolve(listData)
               }).catch((err: AxiosError) => {
@@ -75,11 +75,11 @@ export const CreateNewOffering = ({
               })
             }),
             setValue: (value) => {
-              if(value.element == null) {
+              if (value.element == null) {
                 setOwnerName("")
                 setPhoneOwner("")
                 setOwnerId("")
-              }else{
+              } else {
                 setOwnerId(value.element.Owner.id)
                 setOwnerName(value.element.Owner.name)
                 setPhoneOwner(value.element.Owner.phoneOne)
@@ -137,7 +137,12 @@ export const CreateNewOffering = ({
             name: 'Second Dog',
             type: "checkbox",
             value: valueCheckbox.second,
-            setValue: (value) => setValueCheckbox({ second: value, third: valueCheckbox.third, fourth: valueCheckbox.fourth }),
+            setValue: (value) =>  {
+              setValueCheckbox({ second: value, third: valueCheckbox.third, fourth: valueCheckbox.fourth })
+              setSecondDog({ time: null })
+              setThirdDog({ time: null })
+              setFourthDog({ time: null })
+            },
             gridXS: 12, gridMS: 12,
           },
           {
@@ -163,7 +168,11 @@ export const CreateNewOffering = ({
             type: "checkbox",
             noShow: !valueCheckbox.second,
             value: valueCheckbox.third,
-            setValue: (value) => setValueCheckbox({ second: valueCheckbox.second, third: value, fourth: valueCheckbox.fourth }),
+            setValue: (value) => {
+              setValueCheckbox({ second: valueCheckbox.second, third: value, fourth: valueCheckbox.fourth })
+              setThirdDog({ time: null })
+              setFourthDog({ time: null })
+            },
             gridXS: 12, gridMS: 12,
           },
           {
@@ -190,7 +199,10 @@ export const CreateNewOffering = ({
             type: "checkbox",
             noShow: !valueCheckbox.second || !valueCheckbox.third,
             value: valueCheckbox.fourth,
-            setValue: (value) => setValueCheckbox({ second: valueCheckbox.second, third: valueCheckbox.third, fourth: value }),
+            setValue: (value) => {
+              setValueCheckbox({ second: valueCheckbox.second, third: valueCheckbox.third, fourth: value })
+              setFourthDog({ time: null })
+            },
             gridXS: 12, gridMS: 12,
           },
 

@@ -17,6 +17,7 @@ import { CreateFinish } from "./CreateFinish";
 import { PaysInfoListModal } from "../payment/PaysInfoListModal";
 import InfoItemButton from "../attendance/InfoItemButton";
 import { EditOwnerNotes } from "./EditOwnerNotesModal";
+import RemindersButton from "./RemindersButton";
 
 
 
@@ -111,7 +112,9 @@ export function ItemListField({ id, time, status, ownerId, dogId, ownerName, pho
             
           </div>
           <div className="w-[120px] ml-2 md:ml-6 self-center text-center">
-            <h5>{phone}</h5>
+            {ownerId!= null && ownerId != 0 && dogName != null && dogName != "" ? 
+              <RemindersButton children={<h5 className="p-5">{phone}</h5>} id={Number(ownerId)} bookingId={Number(id)} onClose={() => {}}/>
+            : <h5 className="">{phone}</h5>}
           </div>
           <div className="w-[120px] ml-2 md:ml-6 self-center text-center">
             <h5>{dogName}</h5>

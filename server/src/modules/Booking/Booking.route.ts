@@ -90,6 +90,13 @@ export async function bookingRoutes(app: FastifyInstance) {
     },
     preHandler: [app.authenticate]
   }, updateBookingEditNotesHandle)
+
+  app.get('/reminders', {
+    schema: {
+      querystring: $ref('reminderBody')
+    },
+    preHandler: [app.authenticate]
+  }, getBookingReminders)
 }
 
 async function getBookingByDate(request: FastifyRequest<{ Querystring: FilterBookingDateInput }>, reply: FastifyReply) {
@@ -785,6 +792,55 @@ async function updateBookingEditNotes(input: BookingEditInput, id:number) {
       }
     })
   return bookingResult
+}
+
+
+async function getBookingReminders(request: FastifyRequest<{ Querystring: {id:number, bookingId: number} }>, reply: FastifyReply) {
+  try {
+    return await getBookingsReminderId(request.query.id, request.query.bookingId)
+  } catch (err) {
+    reply.code(400).send('Error in get booking reminder')
+  }
+}
+
+async function getBookingsReminderId(id:number, bookingId:number) {
+
+  const booking = await prisma.booking.findUnique({
+    where: {
+      id: bookingId,
+    },
+    select: {
+      time: true,
+      dog: {
+        select: {
+          Owner: true
+        }
+      },
+    }
+  })
+
+  const bookingsCheck = await prisma.booking.findMany({
+    where: {
+      time: booking?.time,
+      dog: {
+        ownerId: id
+      }
+    }
+  })
+
+
+  var reminderFormat = ""
+  try{
+    const preferences = await prisma.preferences.findUnique({
+      where: {
+        key: "Reminders"
+      }
+    })
+
+    reminderFormat = preferences == undefined ? "" : preferences.value
+  }catch(e) {}
+
+  return {booking: booking, owner: booking?.dog?.Owner, dogsTime: bookingsCheck.length,reminder: reminderFormat}
 }
 
 
