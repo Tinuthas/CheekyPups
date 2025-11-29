@@ -408,7 +408,7 @@ export const PaysInfoListModal = ({
               open={openEditingBookModal}
               onClose={() => setOpenEditingBookModal(false)}
               onSubmit={(values) => updateBookingDataRow(values)}
-              ownerDog={{id: row.original.id, notes: row.original.notes}}
+              ownerDog={{id: row.original.id, notes: row.original.notes, job: 'FG'}}
             //name={row.original.name}
             />
             : null}

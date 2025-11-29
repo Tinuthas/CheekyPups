@@ -116,6 +116,7 @@ model Booking {
   day_booking_id Int
   dog_id         Int?
   offering_id    Int?
+  job            String?
   notes          String?
 
   dayBooking DayBooking @relation(fields: [day_booking_id], references: [id])

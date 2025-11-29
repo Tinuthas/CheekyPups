@@ -29,27 +29,35 @@ const createBookingNewCustomer = z.object({
   firstDogTime: z.string(),
   firstDogName: z.string(),
   firstDogBreed: z.string(),
+  firstDogJob: z.string(),
   secondDogTime: z.string().nullable(),
   secondDogName: z.string().nullable(),
   secondDogBreed: z.string().nullable(),
+  secondDogJob: z.string().nullable(),
   thirdDogTime: z.string().nullable(),
   thirdDogName: z.string().nullable(),
   thirdDogBreed: z.string().nullable(),
+  thirdDogJob: z.string().nullable(),
   fourthDogTime: z.string().nullable(),
   fourthDogName: z.string().nullable(),
-  fourthDogBreed: z.string().nullable()
+  fourthDogBreed: z.string().nullable(),
+  fourthDogJob: z.string().nullable(),
 })
 
 const createBookingExistedCustomer = z.object({
   notes: z.string().nullable(),
   firstDogTime: z.number(),
   firstDogId: z.number(),
+  firstDogJob: z.string().nullable(),
   secondDogTime: z.number().nullable(),
   secondDogId: z.number().nullable(),
+  secondDogJob: z.string().nullable(),
   thirdDogTime: z.number().nullable(),
   thirdDogId: z.number().nullable(),
+  thirdDogJob: z.string().nullable(),
   fourthDogTime: z.number().nullable(),
   fourthDogId: z.number().nullable(),
+  fourthDogJob: z.string().nullable(),
 })
 
 const createBookingOffering = z.object({
@@ -73,6 +81,7 @@ const createBookingConfirmedOffer = z.object({
   firstDogTime: z.string(),
   firstDogName: z.string(),
   firstDogBreed: z.string(),
+  firstDogJob: z.string(),
 })
 
 const createBookingFinish = z.object({
@@ -93,12 +102,14 @@ const createEditOwner = z.object({
   notes: z.string(),
   dogName: z.string(),
   dogBreed: z.string(),
+  job: z.string(),
   second: z.boolean(),
   secondOwner: z.string().nullable(),
   secondPhone: z.string().nullable()
 })
 
 const updateEditNotes = z.object({
+  job: z.string(),
   notes: z.string(),
 })
 

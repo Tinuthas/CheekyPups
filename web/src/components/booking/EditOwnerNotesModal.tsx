@@ -6,7 +6,7 @@ interface EditOwnerNotesProps {
   onClose: () => void;
   onSubmit: (values: any) => void;
   open: boolean;
-  ownerDog: { owner: string, phone: string, id: number, bookingId: number, dogName: string, breed: string, notes: string },
+  ownerDog: { owner: string, phone: string, id: number, bookingId: number, dogName: string, breed: string, job:string, notes: string },
 
 }
 
@@ -21,6 +21,7 @@ export const EditOwnerNotes = ({
   const [phoneOwner, setPhoneOwner] = useState(ownerDog.phone)
   const [dogName, setDogName] = useState(ownerDog.dogName)
   const [breed, setBreed] = useState(ownerDog.breed)
+  const [job, setJob] = useState(ownerDog.job)
   const [secondContact, setSecondContact] = useState(false)
   const [secondOwnerName, setSecondOwnerName] = useState("")
   const [secondPhone, setSecondPhone] = useState("")
@@ -103,6 +104,7 @@ export const EditOwnerNotes = ({
             gridXS: 12, gridMS: 4,
             marginGridTop: '20px'
           },
+          
           {
             accessorKey: 'secondOwner',
             label: 'Owner Name',
@@ -113,6 +115,7 @@ export const EditOwnerNotes = ({
             setValue: (value) => setSecondOwnerName(value),
             gridXS: 12, gridMS: 4,
           },
+          
           {
             accessorKey: 'secondPhone',
             label: 'Phone',
@@ -123,6 +126,21 @@ export const EditOwnerNotes = ({
             required: true,
             setValue: (value) => setSecondPhone(value),
             gridXS: 12, gridMS: 4,
+          },
+          {
+            accessorKey: 'job',
+            label: '',
+            name: '',
+            type: "radio",
+            value: job,            
+            radioListValues: [
+              { key: "fullGroom", value: "FG", label: "Full Groom" },
+              { key: "washDry", value: "WD", label: "Wash/Dry" },
+              { key: "tidyUp", value: "TU", label: "Tidy Up" },
+              { key: "nails", value: "N", label: "Nails" },
+            ],
+            setValue: (value) => setJob(value),
+            gridXS: 12, gridMS: 12,
           },
           {
             accessorKey: 'notes',

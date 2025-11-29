@@ -25,10 +25,10 @@ export const CreateExistedCustomer = ({
   const [ownerName, setOwnerName] = useState("")
   const [phoneOwner, setPhoneOwner] = useState("")
   const [valueCheckbox, setValueCheckbox] = useState<{ second: boolean, third: boolean, fourth: boolean }>({ second: false, third: false, fourth: false })
-  const [firstDog, setFirstDog] = useState<{ time: {} | null, name: string, breed: string, dogId:number }>({ time: null, name: "", breed: "", dogId: 0})
-  const [secondDog, setSecondDog] = useState<{ time: {} | null, name: string, breed: string, dogId:number }>({ time: null, name: "", breed: "", dogId: 0 })
-  const [thirdDog, setThirdDog] = useState<{ time: {} | null, name: string, breed: string, dogId:number }>({ time: null, name: "", breed: "", dogId: 0 })
-  const [fourthDog, setFourthDog] = useState<{ time: {} | null, name: string, breed: string, dogId:number }>({ time: null, name: "", breed: "", dogId: 0 })
+  const [firstDog, setFirstDog] = useState<{ time: {} | null, name: string, breed: string, dogId:number, job:string }>({ time: null, name: "", breed: "", dogId: 0, job:'FG'})
+  const [secondDog, setSecondDog] = useState<{ time: {} | null, name: string, breed: string, dogId:number, job:string }>({ time: null, name: "", breed: "", dogId: 0, job:'FG' })
+  const [thirdDog, setThirdDog] = useState<{ time: {} | null, name: string, breed: string, dogId:number, job:string }>({ time: null, name: "", breed: "", dogId: 0, job:'FG' })
+  const [fourthDog, setFourthDog] = useState<{ time: {} | null, name: string, breed: string, dogId:number, job:string }>({ time: null, name: "", breed: "", dogId: 0, job:'FG' })
   const [fifthDog, setFifthDog] = useState<{ time: {} | null, name: string, breed: string, dogId:number }>({ time: null, name: "", breed: "", dogId: 0 })
   const [valueListTimes, setValueListTimes] = useState<[{}]>(listTimes)
   const [valueListDogs, setValueListDogs] = useState<any[]>([])
@@ -88,7 +88,7 @@ export const CreateExistedCustomer = ({
             setValue: (value) => {
               setOwnerName(value.element.Owner.name)
               setPhoneOwner(value.element.Owner.phoneOne)
-              setFirstDog({time: firstDog.time, name: value.element.name, breed: value.element.breed, dogId: value.element.id})
+              setFirstDog({time: firstDog.time, name: value.element.name, breed: value.element.breed, dogId: value.element.id, job: firstDog.job})
               var dogs = value.element.Owner.dogs
               var listDogs: { value: any; label: string; element: any; }[] = []
               dogs.forEach((dog:any) => {
@@ -129,7 +129,7 @@ export const CreateExistedCustomer = ({
             }),
             setValue: (value) => {
               removeItemArrayTimes(value, firstDog.time)
-              setFirstDog({ time: value, breed: firstDog.breed, name: firstDog.name, dogId: firstDog.dogId })
+              setFirstDog({ time: value, breed: firstDog.breed, name: firstDog.name, dogId: firstDog.dogId, job: firstDog.job })
             },
             gridXS: 12, gridMS: 4,
           },
@@ -148,7 +148,6 @@ export const CreateExistedCustomer = ({
             name: '',
             type: "text",
             value: firstDog.name,
-            setValue: (value) => setFirstDog({ time: firstDog.time, breed: firstDog.breed, name: value, dogId: firstDog.dogId }),
             gridXS: 12, gridMS: 4,
             noEdit: true,
           },
@@ -158,9 +157,23 @@ export const CreateExistedCustomer = ({
             name: '',
             type: "text",
             value: firstDog.breed,
-            setValue: (value) => setFirstDog({ time: firstDog.time, breed: value, name: firstDog.name, dogId: firstDog.dogId }),
             gridXS: 12, gridMS: 4,
             noEdit: true,
+          },
+          {
+            accessorKey: 'firstDogJob',
+            label: '',
+            name: '',
+            type: "radio",
+            value: firstDog.job,
+            radioListValues: [
+              { key: "fullGroom", value: "FG", label: "Full Groom" },
+              { key: "washDry", value: "WD", label: "Wash/Dry" },
+              { key: "tidyUp", value: "TU", label: "Tidy Up" },
+              { key: "nails", value: "N", label: "Nails" },
+            ],
+            setValue: (value) => setFirstDog({ time: firstDog.time, breed: firstDog.breed, name: firstDog.name, dogId: firstDog.dogId, job: value }),
+            gridXS: 12, gridMS: 12,
           },
           {
             accessorKey: 'second',
@@ -183,7 +196,7 @@ export const CreateExistedCustomer = ({
               resolve(valueListDogs)
             }),
             setValue: (value) => {
-              setSecondDog({time: secondDog.time, name: value.element.name, breed: value.element.breed, dogId: value.element.id})
+              setSecondDog({time: secondDog.time, name: value.element.name, breed: value.element.breed, dogId: value.element.id, job: secondDog.job})
               removeItemArrayDogs(valueListDogs, value.element)
             },
             gridXS: 12, gridMS: 12,
@@ -200,7 +213,7 @@ export const CreateExistedCustomer = ({
             }),
             setValue: (value) => {
               removeItemArrayTimes(value, secondDog.time)
-              setSecondDog({ time: value, breed: secondDog.breed, name: secondDog.name, dogId: secondDog.dogId })
+              setSecondDog({ time: value, breed: secondDog.breed, name: secondDog.name, dogId: secondDog.dogId, job: secondDog.job })
             },
             gridXS: 12, gridMS: 4,
           },
@@ -220,7 +233,7 @@ export const CreateExistedCustomer = ({
             type: "text",
             noShow: !valueCheckbox.second,
             value: secondDog.name,
-            setValue: (value) => setSecondDog({ time: secondDog.time, breed: secondDog.breed, name: value, dogId: secondDog.dogId }),
+            setValue: (value) => setSecondDog({ time: secondDog.time, breed: secondDog.breed, name: value, dogId: secondDog.dogId, job: secondDog.job }),
             gridXS: 12, gridMS: 4,
             noEdit: true,
           },
@@ -231,16 +244,32 @@ export const CreateExistedCustomer = ({
             type: "text",
             noShow: !valueCheckbox.second,
             value: secondDog.breed,
-            setValue: (value) => setSecondDog({ time: secondDog.time, breed: value, name: secondDog.name, dogId: secondDog.dogId }),
+            setValue: (value) => setSecondDog({ time: secondDog.time, breed: value, name: secondDog.name, dogId: secondDog.dogId, job: secondDog.job }),
             gridXS: 12, gridMS: 4,
             noEdit: true,
+          },
+          {
+            accessorKey: 'secondDogJob',
+            label: '',
+            name: '',
+            type: "radio",
+            value: secondDog.job,
+            noShow: !valueCheckbox.second,
+            radioListValues: [
+              { key: "fullGroom", value: "FG", label: "Full Groom" },
+              { key: "washDry", value: "WD", label: "Wash/Dry" },
+              { key: "tidyUp", value: "TU", label: "Tidy Up" },
+              { key: "nails", value: "N", label: "Nails" },
+            ],
+            setValue: (value) => setSecondDog({ time: secondDog.time, breed: secondDog.breed, name: secondDog.name, dogId: secondDog.dogId, job: value }),
+            gridXS: 12, gridMS: 12,
           },
           {
             accessorKey: 'third',
             label: 'Third Dog',
             name: 'Third Dog',
             type: "checkbox",
-            noShow: !valueCheckbox.second || valueListDogs.length == 1,
+            noShow: !valueCheckbox.second || valueListDogs.length == 0,
             value: valueCheckbox.third,
             setValue: (value) => setValueCheckbox({ second: valueCheckbox.second, third: value, fourth: valueCheckbox.fourth }),
             gridXS: 12, gridMS: 12,
@@ -256,7 +285,7 @@ export const CreateExistedCustomer = ({
               resolve(valueListDogs)
             }),
             setValue: (value) => {
-              setThirdDog({time: thirdDog.time, name: value.element.name, breed: value.element.breed, dogId: value.element.id})
+              setThirdDog({time: thirdDog.time, name: value.element.name, breed: value.element.breed, dogId: value.element.id, job: thirdDog.job})
               removeItemArrayDogs(valueListDogs, value.element)
             },
             gridXS: 12, gridMS: 12,
@@ -273,7 +302,7 @@ export const CreateExistedCustomer = ({
             }),
             setValue: (value) => {
               removeItemArrayTimes(value, thirdDog.time)
-              setThirdDog({ time: value, breed: thirdDog.breed, name: thirdDog.name, dogId: thirdDog.dogId })
+              setThirdDog({ time: value, breed: thirdDog.breed, name: thirdDog.name, dogId: thirdDog.dogId, job: thirdDog.job })
             },
             gridXS: 12, gridMS: 4,
 
@@ -294,7 +323,7 @@ export const CreateExistedCustomer = ({
             type: "text",
             noShow: !valueCheckbox.second || !valueCheckbox.third,
             value: thirdDog.name,
-            setValue: (value) => setThirdDog({ time: thirdDog.time, breed: thirdDog.breed, name: value, dogId: thirdDog.dogId }),
+            setValue: (value) => setThirdDog({ time: thirdDog.time, breed: thirdDog.breed, name: value, dogId: thirdDog.dogId, job: thirdDog.job }),
             gridXS: 12, gridMS: 4,
             noEdit: true,
           },
@@ -305,10 +334,27 @@ export const CreateExistedCustomer = ({
             type: "text",
             noShow: !valueCheckbox.second || !valueCheckbox.third,
             value: thirdDog.breed,
-            setValue: (value) => setThirdDog({ time: thirdDog.time, breed: value, name: thirdDog.name, dogId: thirdDog.dogId }),
+            setValue: (value) => setThirdDog({ time: thirdDog.time, breed: value, name: thirdDog.name, dogId: thirdDog.dogId, job: thirdDog.job }),
             gridXS: 12, gridMS: 4,
             noEdit: true,
-          }, {
+          }, 
+          {
+            accessorKey: 'thirdDogJob',
+            label: '',
+            name: '',
+            type: "radio",
+            value: thirdDog.job,
+            noShow: !valueCheckbox.second || !valueCheckbox.third,
+            radioListValues: [
+              { key: "fullGroom", value: "FG", label: "Full Groom" },
+              { key: "washDry", value: "WD", label: "Wash/Dry" },
+              { key: "tidyUp", value: "TU", label: "Tidy Up" },
+              { key: "nails", value: "N", label: "Nails" },
+            ],
+            setValue: (value) => setThirdDog({ time: thirdDog.time, breed: thirdDog.breed, name: thirdDog.name, dogId: thirdDog.dogId, job: value }),
+            gridXS: 12, gridMS: 12,
+          },
+          {
             accessorKey: 'fourth',
             label: 'Fourth Dog',
             name: 'Fourth Dog',
@@ -329,7 +375,7 @@ export const CreateExistedCustomer = ({
               resolve(valueListDogs)
             }),
             setValue: (value) => {
-              setFourthDog({time: fourthDog.time, name: value.element.name, breed: value.element.breed, dogId: value.element.id})
+              setFourthDog({time: fourthDog.time, name: value.element.name, breed: value.element.breed, dogId: value.element.id, job: fourthDog.job})
               removeItemArrayDogs(valueListDogs, value.element)
             },
             gridXS: 12, gridMS: 12,
@@ -346,7 +392,7 @@ export const CreateExistedCustomer = ({
             }),
             setValue: (value) => {
               removeItemArrayTimes(value, fourthDog.time)
-              setFourthDog({ time: value, breed: fourthDog.breed, name: fourthDog.name, dogId: fourthDog.dogId })
+              setFourthDog({ time: value, breed: fourthDog.breed, name: fourthDog.name, dogId: fourthDog.dogId, job: fourthDog.job })
             },
             gridXS: 12, gridMS: 4,
 
@@ -367,7 +413,7 @@ export const CreateExistedCustomer = ({
             type: "text",
             noShow: !valueCheckbox.second || !valueCheckbox.third || !valueCheckbox.fourth,
             value: fourthDog.name,
-            setValue: (value) => setFourthDog({ time: fourthDog.time, breed: fourthDog.breed, name: value, dogId: fourthDog.dogId }),
+            setValue: (value) => setFourthDog({ time: fourthDog.time, breed: fourthDog.breed, name: value, dogId: fourthDog.dogId, job: fourthDog.job }),
             gridXS: 12, gridMS: 4,
             noEdit: true,
           },
@@ -378,9 +424,25 @@ export const CreateExistedCustomer = ({
             type: "text",
             noShow: !valueCheckbox.second || !valueCheckbox.third || !valueCheckbox.fourth,
             value: fourthDog.breed,
-            setValue: (value) => setFourthDog({ time: fourthDog.time, breed: value, name: fourthDog.name, dogId: fourthDog.dogId }),
+            setValue: (value) => setFourthDog({ time: fourthDog.time, breed: value, name: fourthDog.name, dogId: fourthDog.dogId, job: fourthDog.job }),
             gridXS: 12, gridMS: 4,
             noEdit: true,
+          },
+          {
+            accessorKey: 'fourthDogJob',
+            label: '',
+            name: '',
+            type: "radio",
+            value: fourthDog.job,
+            noShow: !valueCheckbox.second || !valueCheckbox.third || !valueCheckbox.fourth,
+            radioListValues: [
+              { key: "fullGroom", value: "FG", label: "Full Groom" },
+              { key: "washDry", value: "WD", label: "Wash/Dry" },
+              { key: "tidyUp", value: "TU", label: "Tidy Up" },
+              { key: "nails", value: "N", label: "Nails" },
+            ],
+            setValue: (value) => setFourthDog({ time: fourthDog.time, breed: fourthDog.breed, name: fourthDog.name, dogId: fourthDog.dogId, job: value }),
+            gridXS: 12, gridMS: 12,
           },
           {
             accessorKey: 'typeOffered',
@@ -388,6 +450,7 @@ export const CreateExistedCustomer = ({
             name: 'Type Offering',
             type: "radio",
             value: typeOfferedField,
+            noShow: true,
             radioListValues: [
               { key: "confirmed", value: "confirmed", label: "Confirmed" },
             ],

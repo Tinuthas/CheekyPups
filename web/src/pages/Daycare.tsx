@@ -119,12 +119,12 @@ export function Daycare() {
                     setOpenIndex(row.original.owner_id)
                   }}>
                     {row?.original?.['dates'].length >= 5 ?
-                      <div className=" bg-purple-300 rounded-full py-1 px-3">
-                        <span className="font-medium">{renderedCellValue}</span>
+                      <div className=" bg-purple-500 rounded-full py-1 px-3">
+                        <span className="font-medium text-white">{renderedCellValue}</span>
                       </div>
                       : row?.original?.['owner_dogs'] >= 2 ?
-                        <div className=" bg-lime-300 rounded-full py-1 px-3">
-                          <span className="font-medium">{renderedCellValue}</span>
+                        <div className=" bg-lime-500 rounded-full py-1 px-3">
+                          <span className="font-medium text-white">{renderedCellValue}</span>
                         </div>
                         :
                         <div className=" bg-stone-200 rounded-full py-1 px-3">

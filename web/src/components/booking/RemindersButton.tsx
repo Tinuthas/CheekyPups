@@ -52,11 +52,12 @@ export default function RemindersButton({children, id, bookingId, onClose}: Remi
     <div >
       <button
         ref={anchorRef}
-        id="composition-button"
+        id="reminder-button"
         aria-controls={open ? 'composition-menu' : undefined}
         aria-expanded={open ? 'true' : undefined}
         aria-haspopup="true"
-        onClick={handleToggle}
+        onDoubleClick={handleToggle}
+        className='select-text'
       >
         {children}
       </button>

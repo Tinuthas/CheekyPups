@@ -21,16 +21,19 @@ export const CancelModal = ({
           "& .MuiPaper-root": {
             width: "100%",
             margin: "auto",
-            maxWidth: "350px",  // Set your width here
+            maxWidth: "400px",  // Set your width here
           },
         },
       }}>
       <DialogTitle id="responsive-dialog-title">
-        {"Are you absolutely sure?"}
+        {"Deleting... Are you absolutely sure?"}
       </DialogTitle>
       <DialogContent>
         <DialogContentText>
-        This action cannot be undone.
+          This action cannot be undone.
+        </DialogContentText>
+        <DialogContentText>
+          To confirm, please click on DELETE.
         </DialogContentText>
       </DialogContent>
     <DialogActions>
@@ -38,7 +41,7 @@ export const CancelModal = ({
         Back
       </Button>
       <Button onClick={onSubmit} autoFocus>
-        Cancel
+        Delete
       </Button>
     </DialogActions>
   </Dialog>

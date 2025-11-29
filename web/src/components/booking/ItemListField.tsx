@@ -24,6 +24,7 @@ import RemindersButton from "./RemindersButton";
 export interface ItemListFieldProps {
   id: number
   time: string
+  job?: string
   status: string
   ownerId?: number
   ownerName?: string
@@ -43,7 +44,7 @@ export interface ItemListFieldProps {
   setLoadingMenuItem: (loading: number) => void
 }
 
-export function ItemListField({ id, time, status, ownerId, dogId, ownerName, phone, dogName, dogBread, notes, loadingMenuItem, listTimes, createRowOffered, setLoadingMenuItem, deleteRow, cancelBookingRow, finishRowBooking, editNotesBooking, date }: ItemListFieldProps) {
+export function ItemListField({ id, time, job, status, ownerId, dogId, ownerName, phone, dogName, dogBread, notes, loadingMenuItem, listTimes, createRowOffered, setLoadingMenuItem, deleteRow, cancelBookingRow, finishRowBooking, editNotesBooking, date }: ItemListFieldProps) {
 
   const [openDelete, setOpenDelete] = React.useState(false);
   const [createOfferedModalOpen, setCreateOfferedModalOpen] = React.useState(false);
@@ -80,6 +81,16 @@ export function ItemListField({ id, time, status, ownerId, dogId, ownerName, pho
     editNotesBooking(values)
   }
 
+  function getJobBooking(job?:string) {
+    return (
+      job == null || job == undefined ? <h5 className="bg-purple-500 text-white font-semibold rounded-3xl py-1 px-2 w-fit">Full Groom</h5> : 
+      job == 'FG' ? <h5 className="bg-purple-500 text-white font-semibold rounded-3xl py-1 px-2 w-fit">Full Groom</h5> : 
+      job == 'WD' ? <h5 className="bg-cyan-500 text-white font-semibold rounded-3xl py-1 px-2 w-fit">Wash/Dry</h5> : 
+      job == 'TU' ? <h5 className="bg-teal-500 text-white font-semibold rounded-3xl py-1 px-2 w-fit">Tidy Up</h5> : 
+      job == 'N' ? <h5 className="bg-amber-500 text-white font-semibold rounded-3xl py-1 px-2 w-fit">Nails</h5> : null
+    )
+  }
+
   return (
     <>
       <div key={String(id)} className={`group h-20 w-fit mt-4 shadow border border-neutral-300 rounded-xl text-neutral-800 flex flex-row self-center hover:border-neutral-400 sm::text-base md:text-base lg:text-base transition-all transition-discrete delay-150 duration-300 ease-in-out hover:-translate-y-1 hover:scale-[1.01] hover:shadow-xl ${!status.includes('empty') && notes!=null && notes!='' ? 'hover:h-32': ''}`}
@@ -95,21 +106,25 @@ export function ItemListField({ id, time, status, ownerId, dogId, ownerName, pho
                   <div className="bg-yellow-500 w-full h-full rounded-bl-xl rounded-tl-xl" />
                   : status.includes('done') ?
                     <div className="bg-[#0047AB] w-full h-full rounded-bl-xl rounded-tl-xl" />
-                    : null
+                    : status.includes('notPaid') ?
+                      <div className="bg-[#f98f16] w-full h-full rounded-bl-xl rounded-tl-xl" />
+                      : null
           }
         </span>
         <div>
 
         
         <div className="p-4 h-20 flex flex-row self-center">
-          <div className="self-center w-[100px]">
+          <div className="self-center w-[100px] font-medium">
             <h5>{time}</h5>
+          </div>
+          <div className="w-[100px] ml-2 md:ml-6 self-center text-center flex justify-center text-sm ">
+            {getJobBooking(job)}
           </div>
           <div className="w-[120px] ml-2 md:ml-6 self-center text-center">
             {ownerId!= null && ownerId != 0 ? 
               <InfoItemButton children={<h5 className="p-7">{ownerName}</h5>} id={Number(ownerId)} onClose={() => {}}/>
-            : <h5 className="p-10">{ownerName}</h5>}
-            
+            : <h5 className="p-10">{ownerName}</h5>}  
           </div>
           <div className="w-[120px] ml-2 md:ml-6 self-center text-center">
             {ownerId!= null && ownerId != 0 && dogName != null && dogName != "" ? 
@@ -218,6 +233,7 @@ export function ItemListField({ id, time, status, ownerId, dogId, ownerName, pho
                     bookingId: Number(id),
                     dogName: dogName != null && dogName != "" ? dogName : "",
                     breed: dogBread != null && dogBread != "" ? dogBread : "",
+                    job: job != null && job != "" ? job : "",
                     notes: "",
                   }} /> : null
               }

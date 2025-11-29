@@ -117,7 +117,7 @@ export function FilterDays({ onSubmitSearch, loading, dateEnd, dateStart, setDat
             }
 
           </div>
-          {loading ? <div className=" h-12 mb-1"><Loading pink={true} /></div> :
+          {loading ? null :
             <div className="flex flex-row justify-around w-auto h-14 mt-4 md:mt-0 md:ml-8 bg-white rounded-3xl p-3">
               <div className="mx-3 " onClick={onSubmitSearch}>
                 <SearchIcon sx={iconStyle} />

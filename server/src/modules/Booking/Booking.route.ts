@@ -123,6 +123,7 @@ async function getBookingsDate(input: FilterBookingDateInput) {
       time: true,
       status: true,
       notes: true,
+      job: true,
       dog: {
         select: {
           id: true,
@@ -145,11 +146,21 @@ async function getBookingsDate(input: FilterBookingDateInput) {
           phone: true,
           notes: true,
         }
+      },
+      extract: {
+        select: {
+          done: true
+        }
       }
     },
-    orderBy: {
-      time: 'asc'
-    }
+    orderBy: [
+      {
+        time: 'asc'
+      },
+      {
+        id: 'asc'
+      }
+    ]
   })
 
   const parsedDateStart = dayjs(date).subtract(1, 'month').toISOString()
@@ -465,7 +476,7 @@ async function addBookingConfirmedOfferHandle(request: FastifyRequest<{ Body: Bo
 }
 
 async function addBookingConfirmedOffer(input: BookingConfirmedOfferInput) {
-  const { bookingId, dogId, owner, phone, notes, firstDogTime, firstDogName, firstDogBreed } = input
+  const { bookingId, dogId, owner, phone, notes, firstDogTime, firstDogName, firstDogBreed, firstDogJob } = input
 
   const bookingOffer = await prisma.booking.findUnique({ where: { id: bookingId }, include: { offering: true } })
 
@@ -496,6 +507,7 @@ async function addBookingConfirmedOffer(input: BookingConfirmedOfferInput) {
     data: {
       notes: notes,
       status: 'confirmed',
+      job: firstDogJob,
       dog: {
         connectOrCreate: {
           where: {
@@ -536,27 +548,28 @@ async function addBookingNewCustomerHandle(request: FastifyRequest<{ Body: Booki
 }
 
 async function addBookingNewCustomer(input: BookingCreateNewCustomer) {
-  const { owner, phone, notes, firstDogTime, firstDogName, firstDogBreed, secondDogTime, secondDogName, secondDogBreed, thirdDogTime, thirdDogName, thirdDogBreed, fourthDogTime, fourthDogName, fourthDogBreed } = input
+  const { owner, phone, notes, firstDogTime, firstDogName, firstDogBreed, secondDogTime, secondDogName, secondDogBreed, thirdDogTime, thirdDogName, thirdDogBreed, fourthDogTime, fourthDogName, fourthDogBreed, firstDogJob, secondDogJob, thirdDogJob, fourthDogJob } = input
   var listBooking = []
-  const firstDog: any = await addBookingNewCustomerUpdate(0, owner, phone, notes, firstDogTime, firstDogName, firstDogBreed)
+  const firstDog: any = await addBookingNewCustomerUpdate(0, owner, phone, notes, firstDogTime, firstDogName, firstDogBreed, firstDogJob)
   listBooking.push(firstDog)
   if (secondDogTime != null && secondDogTime != "")
-    listBooking.push(await addBookingNewCustomerUpdate(firstDog.dog?.Owner.id, owner, phone, notes, secondDogTime, String(secondDogName), String(secondDogBreed)))
+    listBooking.push(await addBookingNewCustomerUpdate(firstDog.dog?.Owner.id, owner, phone, notes, secondDogTime, String(secondDogName), String(secondDogBreed), secondDogJob))
   if (thirdDogTime != null && thirdDogTime != "")
-    listBooking.push(await addBookingNewCustomerUpdate(firstDog.dog?.Owner.id, owner, phone, notes, thirdDogTime, String(thirdDogName), String(thirdDogBreed)))
+    listBooking.push(await addBookingNewCustomerUpdate(firstDog.dog?.Owner.id, owner, phone, notes, thirdDogTime, String(thirdDogName), String(thirdDogBreed), thirdDogJob))
   if (fourthDogTime != null && fourthDogTime != "")
-    listBooking.push(await addBookingNewCustomerUpdate(firstDog.dog?.Owner.id, owner, phone, notes, fourthDogTime, String(fourthDogName), String(fourthDogBreed)))
+    listBooking.push(await addBookingNewCustomerUpdate(firstDog.dog?.Owner.id, owner, phone, notes, fourthDogTime, String(fourthDogName), String(fourthDogBreed), fourthDogJob))
 
   return listBooking
 }
 
-async function addBookingNewCustomerUpdate(ownerId: number, owner: string, phone: string, notes: string | null, dogTime: string, dogName: string, dogBreed: string) {
+async function addBookingNewCustomerUpdate(ownerId: number, owner: string, phone: string, notes: string | null, dogTime: string, dogName: string, dogBreed: string, job: string | null) {
 
   const booking = await prisma.booking.update({
     where: { id: Number(dogTime) },
     data: {
       notes: notes,
       status: 'confirmed',
+      job: job,
       dog: {
         create: {
           name: dogName,
@@ -598,27 +611,28 @@ async function addBookingExistedCustomerHandle(request: FastifyRequest<{ Body: B
 }
 
 async function addBookingExistedCustomer(input: BookingCreateExistedCustomer) {
-  const { notes, firstDogTime, firstDogId, secondDogTime, secondDogId, thirdDogTime, thirdDogId, fourthDogTime, fourthDogId } = input
+  const { notes, firstDogTime, firstDogId, secondDogTime, secondDogId, thirdDogTime, thirdDogId, fourthDogTime, fourthDogId, firstDogJob, secondDogJob, thirdDogJob, fourthDogJob } = input
 
   var listBooking = []
-  listBooking.push(await addBookingExitedCustomerUpdate(firstDogId, firstDogTime, notes))
+  listBooking.push(await addBookingExitedCustomerUpdate(firstDogId, firstDogTime, notes, firstDogJob))
   if (secondDogId != null && secondDogId != 0)
-    listBooking.push(await addBookingExitedCustomerUpdate(secondDogId, Number(secondDogTime), notes))
+    listBooking.push(await addBookingExitedCustomerUpdate(secondDogId, Number(secondDogTime), notes, secondDogJob))
   if (thirdDogId != null && thirdDogId != 0)
-    listBooking.push(await addBookingExitedCustomerUpdate(thirdDogId, Number(thirdDogTime), notes))
+    listBooking.push(await addBookingExitedCustomerUpdate(thirdDogId, Number(thirdDogTime), notes, thirdDogJob))
   if (fourthDogId != null && fourthDogId != 0)
-    listBooking.push(await addBookingExitedCustomerUpdate(fourthDogId, Number(fourthDogTime), notes))
+    listBooking.push(await addBookingExitedCustomerUpdate(fourthDogId, Number(fourthDogTime), notes, fourthDogJob))
 
   return listBooking
 }
 
-async function addBookingExitedCustomerUpdate(dogId: number, timeId: number, notes: string | null) {
+async function addBookingExitedCustomerUpdate(dogId: number, timeId: number, notes: string | null, job: string | null) {
 
   const booking = await prisma.booking.update({
     where: { id: timeId },
     data: {
       notes: notes,
       status: 'confirmed',
+      job: job,
       dog: {
         connect: {
           id: dogId,
@@ -718,7 +732,7 @@ async function addBookingEditOwnerHandle(request: FastifyRequest<{ Body: Booking
 }
 
 async function addBookingEditOwner(input: BookingEditInput) {
-  const { dogId, bookingId, notes, owner, phone, dogName, dogBreed, second, secondOwner, secondPhone } = input
+  const { dogId, bookingId, notes, owner, phone, dogName, dogBreed, second, secondOwner, secondPhone, job } = input
 
   let ownerResult = null
   if (second) {
@@ -762,6 +776,7 @@ async function addBookingEditOwner(input: BookingEditInput) {
     },
     data: {
       notes: notes,
+      job: job,
     }
   })
 
@@ -781,14 +796,15 @@ async function updateBookingEditNotesHandle(request: FastifyRequest<{ Body: Book
 }
 
 async function updateBookingEditNotes(input: BookingEditInput, id:number) {
-  const {notes } = input
+  const {notes, job } = input
 
   let bookingResult = await prisma.booking.update({
       where: {
         id: id
       },
       data: {
-        notes: notes
+        notes: notes,
+        job: job,
       }
     })
   return bookingResult

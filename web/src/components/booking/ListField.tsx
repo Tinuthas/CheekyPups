@@ -56,6 +56,7 @@ export function ListField({ date, setDate, loading, setLoading }: ListFieldProps
     }).then(response => {
       var data = response.data
       var listData = JSON.parse(JSON.stringify(data));
+      console.log(listData)
       setBookings(listData.bookings)
       setCalendar(listData.calendar)
       var emptyBooking:Array<{}> = new Array()
@@ -98,7 +99,8 @@ export function ListField({ date, setDate, loading, setLoading }: ListFieldProps
       key={String(booking.id)} 
       id={booking.id} 
       time={dayjs(booking.time).format('hh:mm A')} 
-      status={booking.status} 
+      job={booking.dog == null ? "" : booking.job}
+      status={booking.status.includes('done') && booking.extract != null && !booking.extract.done ? 'notPaid' : booking.status} 
       ownerId={booking.status.includes('offered') ? Object(booking.offering)['ownerId']: (booking.dog == null ? null : booking.dog.Owner.id)}
       ownerName={booking.status.includes('offered') ? Object(booking.offering)['owner']: (booking.dog == null ? "" : booking.dog.Owner.name)} 
       phone={booking.status.includes('offered') ? Object(booking.offering)['phone'] : (booking.dog == null ? "" : booking.dog.Owner.phoneOne)} 
@@ -345,7 +347,7 @@ export function ListField({ date, setDate, loading, setLoading }: ListFieldProps
       </div>
       <div className="w-full md:px-4 my-4 flex justify-center">
         {loading ? <div className="w-full flex justify-center"><Loading /> </div> :
-          <div className=" h-full min-h-[500px] w-fit bg-white border rounded p-4 pb-5 overflow-auto">
+          <div className=" h-full min-h-[500px] w-fit bg-white border rounded p-5 pt-4 pb-6 overflow-auto">
             <ItemListColumnsField />
             {listItem}
           </div>

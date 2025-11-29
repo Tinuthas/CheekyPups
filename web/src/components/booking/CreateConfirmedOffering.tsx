@@ -24,7 +24,7 @@ export const CreateConfirmedOffering = ({
   const [ownerSelectInput, setOwnerSelectInput] = useState(ownerSearch.search)
   const [ownerName, setOwnerName] = useState(ownerSearch.owner)
   const [phoneOwner, setPhoneOwner] = useState(ownerSearch.phone)
-  const [firstDog, setFirstDog] = useState<{ time: {} | null, name: string, breed: string, id:string }>({ time: ownerSearch.time, name: "", breed: "", id: ""})
+  const [firstDog, setFirstDog] = useState<{ time: {} | null, name: string, breed: string, id:string, job:string }>({ time: ownerSearch.time, name: "", breed: "", id: "", job: "FG"})
   const [valueListTimes, setValueListTimes] = useState<[{}]>(listTimes)
   const [notes, setNotes] = useState(ownerSearch.notes)
 
@@ -62,12 +62,12 @@ export const CreateConfirmedOffering = ({
               if(value.element == null) {
                 setOwnerName("")
                 setPhoneOwner("")
-                setFirstDog({ time: firstDog.time, name: "", breed: "", id: ""})
+                setFirstDog({ time: firstDog.time, name: "", breed: "", id: "", job: "FG"})
               }else{
-                setFirstDog({ time: firstDog.time, name: value.element.name, breed: value.element.breed, id: value.element.id})
+                setFirstDog({ time: firstDog.time, name: value.element.name, breed: value.element.breed, id: value.element.id, job: firstDog.job})
                 setOwnerName(value.element.Owner.name)
                 setPhoneOwner(value.element.Owner.phoneOne)
-                setFirstDog({ time: firstDog.time, name: value.element.name, breed: value.element.breed, id: value.element.id})
+                setFirstDog({ time: firstDog.time, name: value.element.name, breed: value.element.breed, id: value.element.id, job: firstDog.job})
                 
               }
             },
@@ -128,7 +128,7 @@ export const CreateConfirmedOffering = ({
             type: "text",
             value: firstDog.name,
             required: true,
-            setValue: (value) => setFirstDog({ time: firstDog.time, breed: firstDog.breed, name: value, id: firstDog.id}),
+            setValue: (value) => setFirstDog({ time: firstDog.time, breed: firstDog.breed, name: value, id: firstDog.id, job: firstDog.job}),
             gridXS: 12, gridMS: 4,
           },
           {
@@ -138,8 +138,23 @@ export const CreateConfirmedOffering = ({
             type: "text",
             value: firstDog.breed,
             required: true,
-            setValue: (value) => setFirstDog({ time: firstDog.time, breed: value, name: firstDog.name, id: firstDog.id }),
+            setValue: (value) => setFirstDog({ time: firstDog.time, breed: value, name: firstDog.name, id: firstDog.id, job: firstDog.job }),
             gridXS: 12, gridMS: 4,
+          },
+          {
+            accessorKey: 'firstDogJob',
+            label: '',
+            name: '',
+            type: "radio",
+            value: firstDog.job,
+            radioListValues: [
+              { key: "fullGroom", value: "FG", label: "Full Groom" },
+              { key: "washDry", value: "WD", label: "Wash/Dry" },
+              { key: "tidyUp", value: "TU", label: "Tidy Up" },
+              { key: "nails", value: "N", label: "Nails" },
+            ],
+            setValue: (value) => setFirstDog({ time: firstDog.time, breed: firstDog.breed, name: firstDog.name, id: firstDog.id, job: value }),
+            gridXS: 12, gridMS: 12,
           },
           {
             accessorKey: 'notes',

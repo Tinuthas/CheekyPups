@@ -11,6 +11,8 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { ThemeProvider } from "@mui/material";
 import { theme, iconStyle, iconSmallStyle } from "../../lib/theme";
+import isTomorrow from 'dayjs/plugin/isTomorrow'
+dayjs.extend(isTomorrow)
 
 
 interface RemindersModalProps {
@@ -54,7 +56,7 @@ export const RemindersModal = ({
           var formatedReminder: string = listResponde.reminder
           formatedReminder = formatedReminder.replaceAll('\\n', '\n')
           formatedReminder = formatedReminder.replaceAll('[dog]', listResponde.dogsTime > 1 ? 'dogs are' : 'dog is')
-          formatedReminder = formatedReminder.replaceAll('[time]', `on ${dayjs(listResponde.booking.time).format('dddd DD MMM')} at ${dayjs(listResponde.booking.time).format('hh:mm A')}`)
+          formatedReminder = formatedReminder.replaceAll('[time]', `${dayjs(listResponde.booking.time).isTomorrow() ? 'tomorrow ':''}on ${dayjs(listResponde.booking.time).format('dddd DD MMM')} at ${dayjs(listResponde.booking.time).format('hh:mm A')}`)
 
           setReminder(formatedReminder)
         } catch (e) {
