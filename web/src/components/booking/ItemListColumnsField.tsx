@@ -6,22 +6,22 @@ export function ItemListColumnsField() {
       <div className="self-center w-[100px] ml-[16px]">
         <h5>Time</h5>
       </div>
-      <div className="w-[100px] ml-2 md:ml-6 self-center text-center">
+      <div className="w-[140px] ml-2 self-center text-center">
         <h5>Job</h5>
       </div>
-      <div className="w-[120px] ml-2 md:ml-6 self-center text-center">
+      <div className="w-[120px] ml-2 self-center text-center">
         <h5>Owner</h5>
       </div>
-      <div className="w-[120px] ml-2 md:ml-6 self-center text-center">
+      <div className="w-[120px] ml-2 self-center text-center">
         <h5>Phone</h5>
       </div>
-      <div className="w-[120px] ml-2 md:ml-6 self-center text-center">
+      <div className="w-[120px] ml-2 self-center text-center">
         <h5>Dog</h5>
       </div>
-      <div className="w-[120px] ml-2 md:ml-6 self-center text-center">
+      <div className="w-[120px] ml-2 self-center text-center">
         <h5>Bread</h5>
       </div>
-      <div className="w-[100px] ml-2 md:ml-6 self-center text-center">
+      <div className="w-[100px] ml-2 self-center text-center">
         <h5>Menu</h5>
       </div>
     </div>

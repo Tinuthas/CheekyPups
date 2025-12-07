@@ -18,6 +18,7 @@ import { PaysInfoListModal } from "../payment/PaysInfoListModal";
 import InfoItemButton from "../attendance/InfoItemButton";
 import { EditOwnerNotes } from "./EditOwnerNotesModal";
 import RemindersButton from "./RemindersButton";
+import { boolean } from "zod";
 
 
 
@@ -33,6 +34,7 @@ export interface ItemListFieldProps {
   dogName?: string
   dogBread?: string
   notes?: string
+  daycare?: boolean
   loadingMenuItem: number
   listTimes: [{}]
   date:string
@@ -44,7 +46,7 @@ export interface ItemListFieldProps {
   setLoadingMenuItem: (loading: number) => void
 }
 
-export function ItemListField({ id, time, job, status, ownerId, dogId, ownerName, phone, dogName, dogBread, notes, loadingMenuItem, listTimes, createRowOffered, setLoadingMenuItem, deleteRow, cancelBookingRow, finishRowBooking, editNotesBooking, date }: ItemListFieldProps) {
+export function ItemListField({ id, time, job, status, ownerId, dogId, ownerName, phone, dogName, dogBread, notes, daycare,loadingMenuItem, listTimes, createRowOffered, setLoadingMenuItem, deleteRow, cancelBookingRow, finishRowBooking, editNotesBooking, date }: ItemListFieldProps) {
 
   const [openDelete, setOpenDelete] = React.useState(false);
   const [createOfferedModalOpen, setCreateOfferedModalOpen] = React.useState(false);
@@ -81,7 +83,16 @@ export function ItemListField({ id, time, job, status, ownerId, dogId, ownerName
     editNotesBooking(values)
   }
 
-  function getJobBooking(job?:string) {
+  function getJobBooking(job?:string, daycare?: boolean) {
+    if(daycare!= null && daycare) {
+      return (
+        job == null || job == undefined ?<div className="text-white font-semibold w-full flex flex-row justify-around"><h5 className="bg-green-500 rounded-3xl py-1 px-2 w-fit">DC</h5><h5 className="bg-purple-500 rounded-3xl py-1 px-2 w-fit">Full Groom</h5></div>  : 
+        job == 'FG' ? <div className="text-white font-semibold w-full flex flex-row justify-around"><h5 className="bg-green-500 rounded-3xl py-1 px-2 w-fit">DC</h5><h5 className="bg-purple-500 rounded-3xl py-1 px-2 w-fit">Full Groom</h5></div> : 
+        job == 'WD' ? <div className="text-white font-semibold w-full flex flex-row justify-around"><h5 className="bg-green-500 rounded-3xl py-1 px-2 w-fit">DC</h5><h5 className="bg-cyan-500 text-white font-semibold rounded-3xl py-1 px-2 w-fit">Wash/Dry</h5> </div>: 
+        job == 'TU' ? <div className="text-white font-semibold w-full flex flex-row justify-around"><h5 className="bg-green-500 rounded-3xl py-1 px-2 w-fit">DC</h5><h5 className="bg-teal-500 text-white font-semibold rounded-3xl py-1 px-2 w-fit">Tidy Up</h5></div>: 
+        job == 'N' ? <div className="text-white font-semibold w-full flex flex-row justify-around"><h5 className="bg-green-500 rounded-3xl py-1 px-2 w-fit">DC</h5><h5 className="bg-amber-500 text-white font-semibold rounded-3xl py-1 px-2 w-fit">Nails</h5></div>: null
+      )
+    }
     return (
       job == null || job == undefined ? <h5 className="bg-purple-500 text-white font-semibold rounded-3xl py-1 px-2 w-fit">Full Groom</h5> : 
       job == 'FG' ? <h5 className="bg-purple-500 text-white font-semibold rounded-3xl py-1 px-2 w-fit">Full Groom</h5> : 
@@ -118,26 +129,26 @@ export function ItemListField({ id, time, job, status, ownerId, dogId, ownerName
           <div className="self-center w-[100px] font-medium">
             <h5>{time}</h5>
           </div>
-          <div className="w-[100px] ml-2 md:ml-6 self-center text-center flex justify-center text-sm ">
-            {getJobBooking(job)}
+          <div className="w-[140px] ml-2  self-center text-center flex justify-center text-sm ">
+            {getJobBooking(job, daycare)}
           </div>
-          <div className="w-[120px] ml-2 md:ml-6 self-center text-center">
+          <div className="w-[120px] ml-2  self-center text-center">
             {ownerId!= null && ownerId != 0 ? 
               <InfoItemButton children={<h5 className="p-7">{ownerName}</h5>} id={Number(ownerId)} onClose={() => {}}/>
             : <h5 className="p-10">{ownerName}</h5>}  
           </div>
-          <div className="w-[120px] ml-2 md:ml-6 self-center text-center">
+          <div className="w-[120px] ml-2  self-center text-center">
             {ownerId!= null && ownerId != 0 && dogName != null && dogName != "" ? 
               <RemindersButton children={<h5 className="p-5">{phone}</h5>} id={Number(ownerId)} bookingId={Number(id)} onClose={() => {}}/>
             : <h5 className="">{phone}</h5>}
           </div>
-          <div className="w-[120px] ml-2 md:ml-6 self-center text-center">
+          <div className="w-[120px] ml-2  self-center text-center">
             <h5>{dogName}</h5>
           </div>
-          <div className="w-[120px] ml-2 md:ml-6 self-center text-center">
+          <div className="w-[120px] ml-2  self-center text-center">
             <h5>{dogBread}</h5>
           </div>
-          <div className="w-[100px] ml-2 md:ml-6 self-center ">
+          <div className="w-[100px] ml-2  self-center ">
             <ThemeProvider theme={theme} >
               <div className="flex flex-row justify-around">
 
