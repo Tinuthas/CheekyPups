@@ -1,6 +1,5 @@
 import dayjs from 'dayjs';
 import axios from "axios";
-import ApiCalendar from "react-google-calendar-api";
 
 const CALENDAR_API_KEY = import.meta.env.VITE_CALENDAR_API_KEY
 const CALENDAR_BOARDING = import.meta.env.VITE_CALENDAR_BOARDING
