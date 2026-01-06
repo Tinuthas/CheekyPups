@@ -331,6 +331,7 @@ export function Dogs() {
               headers={headers}
               createData={columnHeaders}
               hideColumns={hideColumns}
+              pageSize={25}
               createRow={(data) => createNewRow(data)}
               updateRow={(data) => updateDataRow(data)}
               deleteRow={(id) => deleteDataRow(id)}

@@ -90,7 +90,8 @@ export function ItemListField({ id, time, job, status, ownerId, dogId, ownerName
         job == 'FG' ? <div className="text-white font-semibold w-full flex flex-row justify-around"><h5 className="bg-green-500 rounded-3xl py-1 px-2 w-fit">DC</h5><h5 className="bg-purple-500 rounded-3xl py-1 px-2 w-fit">Full Groom</h5></div> : 
         job == 'WD' ? <div className="text-white font-semibold w-full flex flex-row justify-around"><h5 className="bg-green-500 rounded-3xl py-1 px-2 w-fit">DC</h5><h5 className="bg-cyan-500 text-white font-semibold rounded-3xl py-1 px-2 w-fit">Wash/Dry</h5> </div>: 
         job == 'TU' ? <div className="text-white font-semibold w-full flex flex-row justify-around"><h5 className="bg-green-500 rounded-3xl py-1 px-2 w-fit">DC</h5><h5 className="bg-teal-500 text-white font-semibold rounded-3xl py-1 px-2 w-fit">Tidy Up</h5></div>: 
-        job == 'N' ? <div className="text-white font-semibold w-full flex flex-row justify-around"><h5 className="bg-green-500 rounded-3xl py-1 px-2 w-fit">DC</h5><h5 className="bg-amber-500 text-white font-semibold rounded-3xl py-1 px-2 w-fit">Nails</h5></div>: null
+        job == 'N' ? <div className="text-white font-semibold w-full flex flex-row justify-around"><h5 className="bg-green-500 rounded-3xl py-1 px-2 w-fit">DC</h5><h5 className="bg-amber-500 text-white font-semibold rounded-3xl py-1 px-2 w-fit">Nails</h5></div>: 
+        job.includes('offered') ? <div className="text-white font-semibold w-full flex flex-row justify-around"><h5 className="bg-green-500 rounded-3xl py-1 px-2 w-fit">DC</h5><h5 className="bg-yellow-500 text-white font-semibold rounded-3xl py-1 px-2 w-fit">{offeredJobStatus(job)}</h5></div>:null
       )
     }
     return (
@@ -98,8 +99,17 @@ export function ItemListField({ id, time, job, status, ownerId, dogId, ownerName
       job == 'FG' ? <h5 className="bg-purple-500 text-white font-semibold rounded-3xl py-1 px-2 w-fit">Full Groom</h5> : 
       job == 'WD' ? <h5 className="bg-cyan-500 text-white font-semibold rounded-3xl py-1 px-2 w-fit">Wash/Dry</h5> : 
       job == 'TU' ? <h5 className="bg-teal-500 text-white font-semibold rounded-3xl py-1 px-2 w-fit">Tidy Up</h5> : 
-      job == 'N' ? <h5 className="bg-amber-500 text-white font-semibold rounded-3xl py-1 px-2 w-fit">Nails</h5> : null
+      job == 'N' ? <h5 className="bg-amber-500 text-white font-semibold rounded-3xl py-1 px-2 w-fit">Nails</h5> :
+      job.includes('offered') ? <h5 className="bg-yellow-500 text-white font-semibold rounded-3xl py-1 px-2 w-fit">{offeredJobStatus(job)}</h5> : null
     )
+  }
+
+  function offeredJobStatus(job:string) {
+    var offered = job.replace('offered', '')
+    if(offered.includes('WA'))
+      return 'WhatsApp'
+    else
+      return offered
   }
 
   return (

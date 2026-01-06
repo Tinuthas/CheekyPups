@@ -315,6 +315,7 @@ export function Owners() {
               setData={(data) => setOwners(data)}
               titleCreate="Add New Owner"
               title="Owners"
+              pageSize={25}
               updateRow={(data) => updateDataRow(data)}
               createData={columnHeaders}
               createRow={(data) => createNewRow(data)}

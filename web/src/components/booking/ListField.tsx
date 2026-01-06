@@ -19,6 +19,7 @@ import { CreateNewCustomer } from "./CreateNewCustomer";
 import { CreateExistedCustomer } from "./CreateExistedCustomer";
 import { CreateNewOffering } from "./CreateNewOffering";
 import { SearchAddBooking } from "./SearchAddBookingModal";
+import { getCalendarListEvents } from "../../lib/calendar";
 
 interface ListFieldProps {
   date: Date
@@ -38,33 +39,38 @@ export function ListField({ date, setDate, loading, setLoading }: ListFieldProps
   const [emptyBooking, setEmptyBooking] = useState<any>([])
   const [loadingMenuItem, setLoadingMenuItem] = useState(-1);
 
+  const [holidaysCalendar, setHolidaysCalendar] = useState<any>(null)
+  const [staffCalendar, setStaffCalendar] = useState<any>(null)
+  const [holidayDay, setHolidayDay] = useState<any>(null)
+  const [staffDay, setStaffDay] = useState<any>(null)
 
   useEffect(() => {
     getBookingFromDate()
+    checkEventsList()
   }, [date])
 
   function getBookingFromDate() {
     try{
     setLoading(true)
-    api.get('booking', {
-      params: {
-        date: date
-      },
-      headers: {
-        Authorization: getToken()
-      }
-    }).then(response => {
-      var data = response.data
-      var listData = JSON.parse(JSON.stringify(data));
-      console.log(listData)
-      setBookings(listData.bookings)
-      setCalendar(listData.calendar)
-      var emptyBooking:Array<{}> = new Array()
-      listData.bookings.forEach((time: any) => {
-        if((time.status as string).includes('empty')){
-          emptyBooking.push({value: time.id, label: dayjs(time.time).format('hh:mm A')})
+      api.get('booking', {
+        params: {
+          date: date
+        },
+        headers: {
+          Authorization: getToken()
         }
-      });
+      }).then(response => {
+        var data = response.data
+        var listData = JSON.parse(JSON.stringify(data));
+        console.log(listData)
+        setBookings(listData.bookings)
+        setCalendar(listData.calendar)
+        var emptyBooking:Array<{}> = new Array()
+        listData.bookings.forEach((time: any) => {
+          if((time.status as string).includes('empty')){
+            emptyBooking.push({value: time.id, label: dayjs(time.time).format('hh:mm A')})
+          }
+        });
       setEmptyBooking(emptyBooking)
       setLoading(false)
     }).catch((err: AxiosError) => {
@@ -75,7 +81,82 @@ export function ListField({ date, setDate, loading, setLoading }: ListFieldProps
     }catch(e:any){
       toast.error('Unidentified error: '+e.message, { position: "top-center", autoClose: 5000, })
     }
-    
+  }
+
+  function checkEventsList() {
+    if(holidaysCalendar == null && staffCalendar == null) {
+      getCalendarListEvents().then((result) => {
+        setHolidaysCalendar(result?.holidays)
+        setStaffCalendar(result?.staffDays)
+        checkDaysTitles(result?.holidays, result?.staffDays)
+      }).catch(err => {
+        console.log(err)
+      }) 
+    }else{
+      checkDaysTitles(null, null)
+    }
+  }
+
+  function checkDaysTitles(calendarH:any, calendarS:any) {
+    var calendar1 = holidaysCalendar
+    if(calendarH != null) 
+      calendar1 = calendarH
+    var calendar2 = staffCalendar
+    if(calendarS != null) 
+      calendar2 = calendarS
+    try{
+      var checkDate = dayjs(date)
+      var checkDateString = dayjs(date).format('YYYY-MM-DD')
+      var bankHoliday: any = null
+      if(calendar1 != null) {
+        calendar1.forEach((day:any) => {
+          if(day.start.includes(checkDateString.slice(0,4))) {
+            var startDay = dayjs(day.start)
+            if(checkDate.isSame(startDay)) {
+              bankHoliday = isAlreadyFilled(bankHoliday, day.name)
+            }else if(checkDate.isAfter(startDay)) {
+              var endDay = dayjs(day.end)
+              if(checkDate.isSame(endDay)) {
+                bankHoliday = isAlreadyFilled(bankHoliday, day.name)
+              }else if(checkDate.isBefore(endDay)) {
+                bankHoliday = isAlreadyFilled(bankHoliday, day.name)
+              }
+            }
+          }
+        });
+      }
+      
+      var staffDay: any = null
+      if(calendar2 != null) {
+        calendar2.forEach((day:any) => {
+          if(day.start.includes(checkDateString.slice(0,4))) {
+            var startDay = dayjs(day.start)
+            if(checkDate.isSame(startDay)) {
+              staffDay = isAlreadyFilled(staffDay, day.name)
+            }else if(checkDate.isAfter(startDay)) {
+              var endDay = dayjs(day.end)
+              if(checkDate.isSame(endDay)) {
+                staffDay = isAlreadyFilled(staffDay, day.name)
+              }else if(checkDate.isBefore(endDay)) {
+                staffDay = isAlreadyFilled(staffDay, day.name)
+              }
+            }
+          }
+        });
+      }
+      setHolidayDay(bankHoliday)
+      setStaffDay(staffDay)
+    }catch(err) {
+      console.log(err)
+    }
+  }
+
+  function isAlreadyFilled(text:any, newText:string) {
+    if(text == null )
+      text = newText
+    else
+      text = text + ' | ' + newText
+    return text
   }
 
   function addEventClick() {
@@ -99,7 +180,7 @@ export function ListField({ date, setDate, loading, setLoading }: ListFieldProps
       key={String(booking.id)} 
       id={booking.id} 
       time={dayjs(booking.time).format('hh:mm A')} 
-      job={booking.dog == null ? "" : booking.job}
+      job={booking.status.includes('offered') ? booking.status : booking.dog == null ? "" : booking.job}
       status={booking.status.includes('done') && booking.extract != null && !booking.extract.done ? 'notPaid' : booking.status} 
       ownerId={booking.status.includes('offered') ? Object(booking.offering)['ownerId']: (booking.dog == null ? null : booking.dog.Owner.id)}
       ownerName={booking.status.includes('offered') ? Object(booking.offering)['owner']: (booking.dog == null ? "" : booking.dog.Owner.name)} 
@@ -346,15 +427,28 @@ export function ListField({ date, setDate, loading, setLoading }: ListFieldProps
         <h3 className="font-medium text-4xl md:text-5xl lg:text-6xl text-pinkBackground font-borsok md:mr-6 text-center mt-2 md:mt-0">{date.toLocaleString(undefined, { weekday: "long", day: "numeric", month: 'long', year: 'numeric' })}</h3>
         <FilterDateBooking date={date} setDate={setDate} calendar={calendar} loading={loading} setLoading={setLoading} onPreviousDate={onPreviousDate} onNextDate={onNextDate} addEventClick={addEventClick} addFillClick={() => setFillSpacesModalOpen(true)} searchAddBooking={()=> setSearchAddBookingModalOpen(true)}/>
       </div>
-      <div className="w-full md:px-4 my-4 flex justify-center">
-        {loading ? <div className="w-full flex justify-center"><Loading /> </div> :
+     
+      {loading ? <div className="w-full flex justify-center"><Loading /> </div> :
+      <>
+        <div className="flex flex-col md:flex-row justify-center items-center">
+          {holidayDay != null ? 
+            <div className="mt-4 mx-3 py-1 px-4 bg-red-500 rounded-3xl shadow"><span className="font-semibold text-white text-lg">{holidayDay}</span></div>
+          : null}
+          {staffDay != null ? 
+            <div className="mt-4 mx-3 py-1 px-4 bg-purple-600 rounded-3xl shadow"><span className="font-semibold text-white text-lg">{staffDay}</span></div>
+          : null}
+        </div>
+
+        <div className="w-full md:px-4 my-4 flex justify-center">
           <div className=" h-full min-h-[500px] w-fit bg-white border rounded p-5 pt-4 pb-6 overflow-auto">
             <ItemListColumnsField />
             {listItem}
           </div>
-        }
-
-      </div>
+        </div>
+      </>
+      }
+     
+     
       <ThemeProvider theme={theme}>
         {createEventModalOpen ?
           <CreateNewModal

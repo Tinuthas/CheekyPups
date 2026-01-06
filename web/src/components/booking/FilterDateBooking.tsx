@@ -33,7 +33,7 @@ export function FilterDateBooking({ date, setDate, calendar, loading, setLoading
   return (
     <div className="md:flex justify-center items-center md:mt-4">
       <ThemeProvider theme={theme}>
-        <div className="flex justify-center items-center bg-white rounded-3xl">
+        <div className="flex justify-center items-center bg-white rounded-3xl shadow">
           <div className="border-2 rounded-full border-neutral-500 mx-3 hover:border-pinkBackground" onClick={onPreviousDate}>
             <PreviousIcon sx={iconStyle} />
           </div>
@@ -42,7 +42,7 @@ export function FilterDateBooking({ date, setDate, calendar, loading, setLoading
             <NextIcon sx={iconStyle} />
           </div>
         </div>
-        <div className="flex flex-row justify-around w-auto h-14 mt-4 md:mt-0 md:ml-8 bg-white rounded-3xl p-3">
+        <div className="flex flex-row justify-around w-auto h-14 mt-4 md:mt-0 md:ml-8 bg-white rounded-3xl p-3 shadow">
           <div className="mx-3 " onClick={addEventClick}>
             <AccessAlarmRoundedIcon sx={iconStyle}/>
           </div>

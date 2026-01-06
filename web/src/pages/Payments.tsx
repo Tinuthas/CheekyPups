@@ -395,6 +395,7 @@ export function Payments() {
               searchCalendar={(data) => changeCalendarDates(data)}
               calendarData={[startDate, endDate, selectDateType]}
               disableActions={true}
+              pageSize={50}
               titleCreate="Add New Payment"
             />
           </div>
