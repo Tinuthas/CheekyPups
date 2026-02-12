@@ -368,7 +368,7 @@ async function getSearchExistedHandle(request: FastifyRequest<{ Querystring: Fil
 
 async function getSearchByName(name: string) {
   const result = await prisma.dog.findMany({
-    take: 7,
+    take: 12,
     where: {
       OR: [
         {

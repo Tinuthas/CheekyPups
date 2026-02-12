@@ -40,7 +40,8 @@ export function SelectInput({getData, onChangeSelect, inputValue}:SelectInputPro
   return(
     <AsyncSelect 
       cacheOptions 
-      defaultOptions 
+      defaultOptions
+      maxMenuHeight={200}
       loadOptions={promiseOptions}
       onChange={handleChange}
       onBlur={handleBlue}
