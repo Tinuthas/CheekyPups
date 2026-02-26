@@ -3,7 +3,6 @@ import { MRT_ColumnDef } from "material-react-table"
 import { useEffect, useState } from "react"
 import { toast } from "react-toastify"
 import DataTableCustom from "../components/DataTableCustom"
-import { DialogListModal } from "../components/payment/PaymentsListModal"
 import { api, getToken } from "../lib/axios"
 import { Loading } from "../components/Loading";
 import { ButtonGroupList } from "../components/ButtonGroupList"
@@ -13,6 +12,7 @@ import { theme, iconStyle, iconSmallStyle } from "../lib/theme";
 import { PaymentAllModal } from "../components/payment/PaymentAllModal"
 import { PaysInfoListModal } from "../components/payment/PaysInfoListModal"
 import {Helmet} from "react-helmet";
+import InfoItemButton from "../components/attendance/InfoItemButton"
 
 const selectPromise = (inputValue: string) => new Promise<any[]>((resolve, reject) => {
   api.get('owners/select', { params: { name: inputValue }, headers: { Authorization: getToken() } }).then(response => {
@@ -34,13 +34,9 @@ const selectPromise = (inputValue: string) => new Promise<any[]>((resolve, rejec
 export function Payments() {
 
   const [payments, setPayments] = useState([{}])
-  const [extracts, setExtracts] = useState([{}])
-  const [ownerExtract, setOwnerExtract] = useState<any>({})
   const [openIndex, setOpenIndex] = useState(-1)
-  const [openListModal, setOpenListModal] = useState(false)
   const [openPayingModal, setOpenPayingModal] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [loadingModal, setLoadingModal] = useState(false)
   const [searchButton, setSearchButton] = useState('O')
   const [endDate, setEndDate] = useState<Date>(dayjs().toDate());
   const [startDate, setStartDate] = useState<Date>(dayjs().subtract(1, 'month').toDate());
@@ -49,8 +45,6 @@ export function Payments() {
   const [salesField, setSalesField] = useState("")
   const [paidField, setPaidField] = useState(false)
   const [newCustomerField, setNewCustomerField] = useState(false)
-  const [customerName, setCustomerName] = useState("")
-  const [customerPhone, setCustomerPhone] = useState("")
   const [valuePaidField, setValuePaidField] = useState("")
 
 
@@ -122,35 +116,26 @@ export function Payments() {
 
   const headers: MRT_ColumnDef<any>[] = [
     {
+      accessorKey: 'dogsName',
+      header: 'Dogs',
+      size: 180,Cell: ({ renderedCellValue, row }) => (
+        <>
+          <InfoItemButton children={<span className="font-base">{renderedCellValue}</span>} id={Number(row.original.id)} onClose={() => {}}/>
+        </>
+      )
+    },
+    {
       accessorKey: 'name',
       header: 'Name',
       size: 180,
       Cell: ({ renderedCellValue, row }) => (
-      <>
-        <div className="w-full cursor-pointer" onClick={() => {
-          setOpenListModal(true)
-          setOpenIndex(row.original.id)
-        }}>
+        <>
           <span className="font-base">{renderedCellValue}</span>
-        </div>
         </>
       )
     },
-    {
-      accessorKey: 'dogsName',
-      header: 'Dogs',
-      size: 180,Cell: ({ renderedCellValue, row }) => (
-      <>
-        <div className="w-full cursor-pointer" onClick={() => {
-          setOpenListModal(true)
-          setOpenIndex(row.original.id)
-        }}>
-          <span className="font-base">{renderedCellValue}</span>
-        </div>
-        </>
-      )
-    },
-    {
+    
+    /*{
       accessorKey: 'extracts',
       header: 'Items',
       size: 100,
@@ -160,7 +145,7 @@ export function Payments() {
             setOpenListModal(true)
             setOpenIndex(row.original.id)
           }}>
-            <span className="font-semibold">{renderedCellValue}</span>
+            <span className="font-semibold">Test {row.original.extracts}</span>
           </div>
           {row.original.id == openIndex && openListModal ?
             <PaysInfoListModal
@@ -174,19 +159,29 @@ export function Payments() {
             : null}
         </>
       )
+    },*/
+    {
+      accessorKey: 'type',
+      header: 'Local',
+      size: 60,
+      Cell: ({ renderedCellValue, row }) => (
+        <>
+          {renderedCellValue == 'D' ?
+            <h5 className="bg-green-500 text-white text-xs font-semibold rounded-3xl py-1 px-2 w-fit">DC</h5> : renderedCellValue == 'G' ?
+            <h5 className="bg-orange-500 text-white text-xs font-semibold rounded-3xl py-1 px-2 w-fit">G</h5> : null
+          }
+        </>
+      )
     },
     {
       accessorKey: 'value',
       header: 'Sales',
       size: 100,
       Cell: ({ renderedCellValue, row }) => (
-        <div className="w-full cursor-pointer" onClick={() => {
-          setOpenListModal(true)
-          setOpenIndex(row.original.id)
-        }}>
+        <>
           <span className="font-semibold">{'€ '}</span>
           <span className="text-green-600 font-semibold">{renderedCellValue}</span>
-        </div>
+        </>
       )
     },
     {
@@ -194,35 +189,26 @@ export function Payments() {
       header: 'Paid',
       size: 100,
       Cell: ({ renderedCellValue, row }) => (
-        <div className="w-full cursor-pointer" onClick={() => {
-          setOpenListModal(true)
-          setOpenIndex(row.original.id)
-        }}>
-          {(renderedCellValue == null) ? null :
-            <>
-              <span className="font-semibold">{'€ '}</span>
-              <span className="text-green-600 font-semibold">{renderedCellValue}</span>
-            </>
-          }
-        </div>
+        <>
+          <span className="font-semibold">{'€ '}</span>
+          <span className="text-green-600 font-semibold">{renderedCellValue}</span>
+        </>
       )
     },
+    
     {
       accessorKey: 'totalValue',
       header: 'Owed',
       size: 100,
       Cell: ({ renderedCellValue, row }) => (
-        <div className="w-full cursor-pointer" onClick={() => {
-          setOpenListModal(true)
-          setOpenIndex(row.original.id)
-        }}>
-          <span className="font-semibold">{'€ '}</span>
-          {Number(renderedCellValue) > 0 ?
-            <span className="text-red-600 font-semibold">{renderedCellValue}</span>
-            :
-            <span className="text-green-600 font-semibold">{renderedCellValue}</span>
-          }
-        </div>
+          <>
+            <span className="font-semibold">{'€ '}</span>
+            {Number(renderedCellValue) > 0 ?
+              <span className="text-red-600 font-semibold">{renderedCellValue}</span>
+              :
+              <span className="text-green-600 font-semibold">{renderedCellValue}</span>
+            }
+          </>
       )
     }, 
     {
@@ -236,6 +222,7 @@ export function Payments() {
             setOpenIndex(row.original.id)
           }}>
             <PaidIcon sx={iconSmallStyle} />
+            {/*<span className="h-5 font-medium bg-neutral-500 py-[2px] px-[6px] rounded-full text-white text-[12px]">{row.original.extracts}</span>*/}
           </div>
           {row.original.id == openIndex && openPayingModal ?
             <PaymentAllModal
@@ -246,6 +233,7 @@ export function Payments() {
             //name={row.original.name}
             />
             : null}
+            
         </>
       )
     }
@@ -358,7 +346,15 @@ export function Payments() {
           Authorization: getToken()
         }
       }).then(response => {
-        toast.success(`Payments done`, { position: "top-center", autoClose: 1000, })
+        try{
+          var change = Number(response.data)
+          if(change == 0) 
+            toast.success(`Payments Done: no change`, { position: "top-center", autoClose: 1000, })
+          else
+            toast.success(`Return Change: €${change}`, { position: "top-center", autoClose: 3000, })
+        }catch(err) {
+          toast.success(`Payments Done`, { position: "top-center", autoClose: 1000, })
+        }
         handlePayments('O')
         setLoading(false)
       }).catch((err: AxiosError) => {
