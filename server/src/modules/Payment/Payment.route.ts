@@ -186,23 +186,25 @@ async function filterAllExtracts(pays: any[]) {
       dogs: {
         select: {
           name: true,
+          nickname: true
         }
       }
     }
   })
 
-  var listPayments: { id: number; name: string; dogsName: string, extracts: number; value: Decimal | null; paidValue: Decimal | null; totalValue: Decimal | null; }[] = []
+  var listPayments: { id: number; name: string; dogsName: string, extracts: number; value: Decimal | null; paidValue: Decimal | null; totalValue: Decimal | null; type: string | null}[] = []
   payments.forEach((element, index) => {
     const pay = pays.find(p => p.ownerId === element.id) ?? null;
     if (pay != null) {
       listPayments.push({
         id: element.id,
         name: element.name,
-        dogsName: element.dogs.map(dog => dog.name).join(' - '),
+        dogsName: element.dogs.map(dog => dog.nickname != undefined && dog.nickname != null  && dog.nickname.trim() != "" ? dog.nickname : dog.name).join(' - '),
         extracts: pay._count.id,
         value: pay._sum.value,
         paidValue: pay._sum.paidValue,
         totalValue: pay._sum.totalValue,
+        type: element.type,
       })
     }
   })
@@ -671,8 +673,10 @@ async function deletePayment(id: number) {
 
 
 async function ownerPayingAllHandle(request: FastifyRequest<{ Body: CreatePaymentOwnerAllInput }>, reply: FastifyReply) {
-  try {
-    return await ownerPayingAll(request.body)
+  try { 
+    //Paying list owed
+    var moneyReturned = await ownerPayingAll(request.body)
+    return reply.code(200).send(moneyReturned)
   } catch (err) {
     console.log(err)
     reply.code(400).send('Error in payment')
@@ -682,10 +686,18 @@ async function ownerPayingAllHandle(request: FastifyRequest<{ Body: CreatePaymen
 async function ownerPayingAll(input: CreatePaymentOwnerAllInput) {
   const { ownerId, salesValue, paidValue, typePaid } = input
 
-  if (paidValue < salesValue) {
+  /*if (paidValue < salesValue) {
     return new Error('Paid value needs to be bigger than the sales value')
+  }*/
+  if (paidValue == 0) {
+    return new Error('Paid value needs to be bigger than zero')
   }
-
+  if(typePaid.toUpperCase() != 'CASH'){
+    if (paidValue > salesValue) {
+      return new Error('Card or Rev: Paid value needs to be less or the same than the sales value')
+    }
+  }
+  
   const owner = await prisma.owner.findUnique({
     where: {
       id: ownerId
@@ -702,6 +714,7 @@ async function ownerPayingAll(input: CreatePaymentOwnerAllInput) {
     }
   })
   var date = dayjs().toISOString()
+  var sumPaids = 0
   var paidValues = paidValue
   for (let index = 0; index < extracts.length; index++) {
     if (Number(extracts[index].value) <= paidValues) {
@@ -756,10 +769,12 @@ async function ownerPayingAll(input: CreatePaymentOwnerAllInput) {
         })
       }
       paidValues = paidValues - Number(extracts[index].value)
+      sumPaids = sumPaids + Number(extracts[index].value)
     }
   }
-  await updateTillHandle(owner?.type == null ? 'D' : owner.type, typePaid, salesValue, paidValue)
-
+  if(sumPaids <= 0) 
+    await updateTillHandle(owner?.type == null ? 'D' : owner.type, typePaid, salesValue, sumPaids)
+  return paidValues
 }
 
 

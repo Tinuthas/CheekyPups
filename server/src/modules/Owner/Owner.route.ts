@@ -138,7 +138,7 @@ async function getSearchOwnerType(type: string) {
 }
 
 async function updateOwner(input: UpdateOwnerInput, id: number) {
-  const {phoneOne, phoneTwo, type, emailAddress, name, address} = input
+  const {phoneOne, phoneTwo, type, emailAddress, name, address, notes, secondOwner} = input
   
   let owner = await prisma.owner.update({
     where: {
@@ -150,7 +150,9 @@ async function updateOwner(input: UpdateOwnerInput, id: number) {
       type,
       emailAddress,
       name,
-      address
+      address,
+      notes,
+      secondOwner
     }
   })
 

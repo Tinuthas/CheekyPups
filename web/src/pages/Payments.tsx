@@ -166,8 +166,7 @@ export function Payments() {
       size: 60,
       Cell: ({ renderedCellValue, row }) => (
         <>
-          {renderedCellValue}
-          {renderedCellValue != undefined && renderedCellValue != null && String(renderedCellValue).trim().includes('D') ?
+          {String(row.original.type).trim().includes('D') ?
             <h5 className="bg-green-500 text-white text-xs font-semibold rounded-3xl py-1 px-2 w-fit">DC</h5> : renderedCellValue == 'G' ?
             <h5 className="bg-orange-500 text-white text-xs font-semibold rounded-3xl py-1 px-2 w-fit">G</h5> : null
           }
