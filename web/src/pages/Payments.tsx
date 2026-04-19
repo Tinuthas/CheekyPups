@@ -126,7 +126,7 @@ export function Payments() {
     },
     {
       accessorKey: 'name',
-      header: 'Name',
+      header: 'Owner/Name',
       size: 180,
       Cell: ({ renderedCellValue, row }) => (
         <>
@@ -388,8 +388,8 @@ export function Payments() {
               createData={columnHeadersPayment}
               hideColumns={searchButton != 'O' ? {action: false} : null}
               createRow={(data) => createNewRow(data)}
-              searchCalendar={(data) => changeCalendarDates(data)}
-              calendarData={[startDate, endDate, selectDateType]}
+              //searchCalendar={(data) => changeCalendarDates(data)}
+              //calendarData={[startDate, endDate, selectDateType]}
               disableActions={true}
               pageSize={50}
               titleCreate="Add New Payment"

@@ -192,7 +192,7 @@ async function filterAllExtracts(pays: any[]) {
     }
   })
 
-  var listPayments: { id: number; name: string; dogsName: string, extracts: number; value: Decimal | null; paidValue: Decimal | null; totalValue: Decimal | null; type: string | null}[] = []
+  var listPayments: { id: number; name: string; dogsName: string, extracts: number; value: Decimal | null; paidValue: Decimal | null; totalValue: Decimal | null; type: string | null; }[] = []
   payments.forEach((element, index) => {
     const pay = pays.find(p => p.ownerId === element.id) ?? null;
     if (pay != null) {

@@ -54,7 +54,18 @@ export async function ownerRoutes(app: FastifyInstance) {
 }
 
 async function getAllOwners() {
-  var owners = await prisma.owner.findMany()
+  var owners = await prisma.owner.findMany({
+    include: {
+      dogs: {
+        select: {
+          name: true,
+          nickname: true
+        }
+      }
+    }
+  })
+
+  
   return owners
 }
 
@@ -132,6 +143,14 @@ async function getSearchOwnerType(type: string) {
         type: {
           contains: type
         }
+      },
+      include: {
+        dogs: {
+        select: {
+          name: true,
+          nickname: true
+        }
+      }
       }
     })
     return result

@@ -96,19 +96,19 @@ export function Owners() {
       size: 200,
       Cell: ({ renderedCellValue, row }) => (
         <>
-          <InfoItemButton children={
-            <div className="flex flex-row justify-center align-baseline cursor-pointer" onClick={() => {
-              setOpenListModal(true)
-              setOpenIndex(row.original.id)
-            }}>
-              <span>{renderedCellValue}</span>
-            </div>
-          } id={row.original.id} onClose={() => {
-            setOpenListModal(false)
-            getAllOwnersFilter(searchButton)
-          }} />
-          
-
+          <InfoItemButton children={<span className="font-base">{renderedCellValue}</span>} id={Number(row.original.id)} onClose={() => {}}/>
+        </>
+      )
+    },
+    {
+      accessorKey: 'dogs',
+      header: 'Dogs',
+      size: 180,Cell: ({ renderedCellValue, row }) => (
+        <>
+          <InfoItemButton 
+            children={<span className="font-base">{row.original.dogs != undefined ? row.original.dogs.map((dog:any) => dog.nickname != undefined && dog.nickname != null  && dog.nickname.trim() != "" ? dog.nickname : dog.name).join(' - ') : null}</span>} 
+            id={Number(row.original.id)} 
+            onClose={() => {}}/>
         </>
       )
     },
@@ -124,8 +124,16 @@ export function Owners() {
     },
     {
       accessorKey: 'type',
-      header: 'D/G',
-      size: 80,
+      header: 'DC/G',
+      size: 90,
+      Cell:({renderedCellValue, row}) => (
+        <>
+          {String(row.original.type).trim().includes('D') ?
+            <h5 className="bg-green-500 text-white text-xs font-semibold rounded-3xl py-1 px-2 w-fit">DC</h5> : renderedCellValue == 'G' ?
+            <h5 className="bg-orange-500 text-white text-xs font-semibold rounded-3xl py-1 px-2 w-fit">G</h5> : null
+          }
+        </>
+      )
     },
     {
       accessorKey: 'secondOwner',
@@ -139,7 +147,7 @@ export function Owners() {
     },
     {
       accessorKey: 'address',
-      header: 'Address'
+      header: 'Address',
     },
     {
       accessorKey: 'notes',
@@ -315,7 +323,8 @@ export function Owners() {
               setData={(data) => setOwners(data)}
               titleCreate="Add New Owner"
               title="Owners"
-              pageSize={25}
+              pageSize={50}
+              hideColumns={{address: false, notes: false}}
               updateRow={(data) => updateDataRow(data)}
               createData={columnHeaders}
               createRow={(data) => createNewRow(data)}
