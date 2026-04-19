@@ -844,13 +844,22 @@ async function updateBookingEditTimeHandle(request: FastifyRequest<{ Body: Booki
 
 async function updateBookingEditTime(input: BookingUpdateTime, id: number) {
   const { date } = input
+  const stringDate = dayjs(date).toISOString()
+  var conversedDateZeros = dayjs(date).set('hour', 0).set('second', 0).millisecond(0).set('minutes', 0)
+  var conversedDate = conversedDateZeros.set('minute', dayjs(conversedDateZeros).utcOffset())
+  const parsedDate = conversedDate.toISOString()
 
   let bookingResult = await prisma.booking.update({
       where: {
         id: id
       },
       data: {
-        time: dayjs(date).toISOString()
+        dayBooking: {
+          connect: {
+            date: parsedDate
+          }
+        },
+        time: stringDate
       }
     })
   return bookingResult
