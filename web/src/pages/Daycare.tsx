@@ -87,7 +87,7 @@ export function Daycare() {
       var att = response.data
       if (att.length != 0) {
         var rows: any[] = []
-        const dates = new Set<string>();
+        var dates = new Set<string>();
         var marginDates = 0
         att.map((item, index) => {
           var listDates: any = {}
@@ -100,10 +100,11 @@ export function Daycare() {
             //listDates['paid'] = item.paids[i] ? listDates['paid'] + 1 : listDates['paid']
           }
           //marginDates = listDates['total'] > marginDates ? listDates['total'] : marginDates
-
+       
           var obj = Object.assign({}, item, listDates);
           rows.push(obj)
         })
+        dates = sortDatesList(dates.values().toArray())
         setMarginTable(-1)
         setAttendances(rows)
         if (rows.length != 0) {
@@ -137,6 +138,7 @@ export function Daycare() {
 
               </>
             ),
+            Header: ({ }) => <div className=""><div>Dog Name</div><div className="mt-2">Total</div><div className="mt-2">D½</div><div className="mt-2">Paid</div></div>,
             Footer: ({ }) => <div className=""><div>Total</div><div className="mt-2">D½</div><div className="mt-2">Paid</div></div>
           }]
           for (const item of Array.from(dates)) {
@@ -294,6 +296,20 @@ export function Daycare() {
                     <span>{renderedCellValue}</span>
                   </Box> */}
 
+
+function sortDatesList(dates: Array<string>): any {
+  var newListDates = []
+  for (let index = 0; index < dates.length; index++) {
+    newListDates.push(dayjs(dates[index], 'DD/MM/YYYY').toDate())
+  }
+  newListDates.sort((a,b) => a.getTime() - b.getTime());
+  var stringDateList = new Set<string>();
+  for (let index = 0; index < newListDates.length; index++) {
+    stringDateList.add(dayjs(newListDates[index]).format('DD/MM/YYYY'));
+  }
+  return stringDateList
+
+}
 //Adding Paid and Total columns 
 /* 
             {

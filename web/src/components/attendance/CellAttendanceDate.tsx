@@ -299,7 +299,8 @@ export function cellComponent(item: string, onSubmit: () => Promise<boolean>, to
   var column: MRT_ColumnDef<any> = {
     accessorKey: item,
     header: dayjs(item, 'DD/MM/YYYY').format('ddd DD'),
-    Header: ({ column }) => <div className="w-[90px] p-0 text-center">{column.columnDef.header}</div>,
+    //Header: ({ column }) => <div className="w-[90px] p-0 text-center">{column.columnDef.header}</div>,
+    Header: ({ column }) => <div className="w-[90px] p-0 text-center text-neutral-600 flex justify-center"><div className="text-center"><div className="text-neutral-800">{column.columnDef.header}</div><div className="mt-2 bg-neutral-200 rounded-3xl px-3">{totalSumDays}</div><div className="mt-2 bg-neutral-200 rounded-3xl px-3">{totalHalfDays}</div><div className="mt-2 bg-green-500 text-white rounded-3xl px-3">{totalPaid}</div></div></div>,
     Cell: ({ renderedCellValue, row }) => (
       <div className="w-[133.055px]">
         {renderedCellValue != null ?
