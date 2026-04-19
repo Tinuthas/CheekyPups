@@ -113,6 +113,10 @@ const updateEditNotes = z.object({
   notes: z.string(),
 })
 
+const updateEditTime = z.object({
+  date: z.string(),
+})
+
 const reminderBody = z.object({
   id: z.number(),
   bookingId: z.number()
@@ -129,6 +133,7 @@ export type BookingConfirmedOfferInput = z.infer<typeof createBookingConfirmedOf
 export type BookingFinishInput = z.infer<typeof createBookingFinish>
 export type BookingEditInput = z.infer<typeof createEditOwner>
 export type BookingUpdateNotes = z.infer<typeof updateEditNotes>
+export type BookingUpdateTime = z.infer<typeof updateEditTime>
 
 export const {schemas: bookingSchemas, $ref} = buildJsonSchemas({
   createBookingBody,
@@ -142,6 +147,7 @@ export const {schemas: bookingSchemas, $ref} = buildJsonSchemas({
   createBookingFinish,
   createEditOwner,
   updateEditNotes,
+  updateEditTime,
   updateBookingId,
   reminderBody
 }, { $id: "BookingSchemas" })

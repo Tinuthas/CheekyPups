@@ -62,7 +62,6 @@ export function ListField({ date, setDate, loading, setLoading }: ListFieldProps
       }).then(response => {
         var data = response.data
         var listData = JSON.parse(JSON.stringify(data));
-        console.log(listData)
         setBookings(listData.bookings)
         setCalendar(listData.calendar)
         var emptyBooking:Array<{}> = new Array()
@@ -198,6 +197,7 @@ export function ListField({ date, setDate, loading, setLoading }: ListFieldProps
       createRowOffered={(values) => handleOfferedConfirmedCustomer(values)}
       finishRowBooking={(values) => handleFinishRowBooking(values)}
       editNotesBooking={(values) => handleEditNotesBooking(values)}
+      changeTimeValue={(values) => handleChangeTimeValue(values)}
       cancelBookingRow={(id) => handleCancel(id)}
       />
   )
@@ -219,7 +219,7 @@ export function ListField({ date, setDate, loading, setLoading }: ListFieldProps
         Authorization: getToken()
       }
     }).then(response => {
-      toast.success(`Time Created: ${values.time}`, { position: "top-center", autoClose: 1000, })
+      toast.success(`Created new booking space: ${values.time}`, { position: "top-center", autoClose: 1000, })
       setDate(date)
       getBookingFromDate()
       setLoading(false)
@@ -238,7 +238,7 @@ export function ListField({ date, setDate, loading, setLoading }: ListFieldProps
         Authorization: getToken()
       }
     }).then(response => {
-      toast.success(`Times Created`, { position: "top-center", autoClose: 1000, })
+      toast.success(`Times for the day created`, { position: "top-center", autoClose: 1000, })
       setDate(date)
       getBookingFromDate()
       setLoading(false)
@@ -261,7 +261,7 @@ export function ListField({ date, setDate, loading, setLoading }: ListFieldProps
           Authorization: getToken()
         }
       }).then(response => {
-        toast.success(`Time deleted`, { position: "top-center", autoClose: 1000, })
+        toast.success(`Deleted booking space`, { position: "top-center", autoClose: 1000, })
         getBookingFromDate()
         setLoading(false)
       }).catch((err: AxiosError) => {
@@ -407,7 +407,34 @@ export function ListField({ date, setDate, loading, setLoading }: ListFieldProps
           Authorization: getToken()
         }
       }).then(response => {
-        toast.success(`Booking edit`, { position: "top-center", autoClose: 1000, })
+        toast.success(`Booking edited`, { position: "top-center", autoClose: 1000, })
+        getBookingFromDate()
+        setLoading(false)
+      }).catch((err: AxiosError) => {
+        const data = err.response?.data as { message: string }
+        toast.error(`${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
+      })
+     setLoading(false)
+    } catch (e) {
+      toast.error(`Unidentified error`, { position: "top-center", autoClose: 5000, })
+    }
+  }
+
+  function handleChangeTimeValue(values:any) {
+    try{
+      setLoading(true)
+      var newDate = dayjs(values.date).toDate()
+      newDate.setSeconds(0)
+      newDate.setMilliseconds(0)
+      api.put('booking/edit/time', {date: newDate}, {
+        params: {
+          id: values.id,
+        },
+        headers: {
+          Authorization: getToken()
+        }
+      }).then(response => {
+        toast.success(`Booking edited`, { position: "top-center", autoClose: 1000, })
         getBookingFromDate()
         setLoading(false)
       }).catch((err: AxiosError) => {

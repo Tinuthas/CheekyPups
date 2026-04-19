@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { prisma } from "../../lib/prisma";
-import { $ref, BookingInput, FilterBookingDateInput, DateFillSpacesBodyInput, FilterSearchingInput, BookingOfferingInput, BookingConfirmedOfferInput, BookingCreateNewCustomer, BookingCreateExistedCustomer, BookingFinishInput, BookingEditInput } from "./Booking.schema";
+import { $ref, BookingInput, FilterBookingDateInput, DateFillSpacesBodyInput, FilterSearchingInput, BookingOfferingInput, BookingConfirmedOfferInput, BookingCreateNewCustomer, BookingCreateExistedCustomer, BookingFinishInput, BookingEditInput, BookingUpdateTime } from "./Booking.schema";
 import { includes } from "lodash";
 import { updateTillHandle } from "../Payment/Payment.route";
 import { Offering, Owner } from "@prisma/client";
@@ -91,6 +91,15 @@ export async function bookingRoutes(app: FastifyInstance) {
     preHandler: [app.authenticate]
   }, updateBookingEditNotesHandle)
 
+  app.put('/edit/time', {
+    schema: {
+          body: $ref('updateEditTime'),
+          querystring: $ref('updateBookingId'),
+    },
+    preHandler: [app.authenticate]
+  }, updateBookingEditTimeHandle)
+
+
   app.get('/reminders', {
     schema: {
       querystring: $ref('reminderBody')
@@ -109,8 +118,9 @@ async function getBookingByDate(request: FastifyRequest<{ Querystring: FilterBoo
 
 async function getBookingsDate(input: FilterBookingDateInput) {
   const { date } = input
-  const parsedDate = dayjs(date).set('hour', 0).set('minute', 0).set('second', 0).millisecond(0).toISOString()
-
+  var conversedDateZeros = dayjs(date).set('hour', 0).set('second', 0).millisecond(0).set('minutes', 0)
+  var conversedDate = conversedDateZeros.set('minute', dayjs(conversedDateZeros).utcOffset())
+  const parsedDate = conversedDate.toISOString()
   //return await prisma.booking.findMany()
   const bookings = await prisma.booking.findMany({
     where: {
@@ -163,8 +173,13 @@ async function getBookingsDate(input: FilterBookingDateInput) {
     ]
   })
 
-  const parsedDateStart = dayjs(date).subtract(1, 'month').toISOString()
-  const parsedDateEnd = dayjs(date).add(2, 'month').toISOString()
+  var startConversedDate = conversedDateZeros.subtract(1, 'month')
+  startConversedDate = startConversedDate.set('minute', startConversedDate.utcOffset())
+  const parsedDateStart = startConversedDate.toISOString()
+
+  var endConversedDate = conversedDateZeros.add(3, 'month')
+  endConversedDate = endConversedDate.set('minute', endConversedDate.utcOffset())
+  const parsedDateEnd = endConversedDate.toISOString()
 
 
   const calendar = await prisma.booking.findMany({
@@ -205,8 +220,12 @@ async function addBookingSpaceHandle(request: FastifyRequest<{ Body: BookingInpu
 }
 async function addBookingSpace(input: BookingInput) {
   const { date, status } = input
-  const parsedTime = dayjs(date).toISOString()
-  const parsedDate = dayjs(date).set('hour', 0).set('minute', 0).set('second', 0).millisecond(0).toISOString()
+
+  var conversedDate = dayjs(date).millisecond(0)
+  const parsedTime = conversedDate.toISOString()
+  var conversedDateZeros = conversedDate.set('hour', 0).set('second', 0).millisecond(0).set('minutes', conversedDate.utcOffset())
+  const parsedDate = conversedDateZeros.toISOString()
+
   let booking = await prisma.booking.create({
     data: {
       time: parsedTime,
@@ -237,7 +256,9 @@ async function addBookingFillSpaceHandle(request: FastifyRequest<{ Body: DateFil
 
 async function addBookingFillSpaces(input: DateFillSpacesBodyInput) {
   const { date } = input
-  const parsedDate = dayjs(date).set('hour', 0).set('minute', 0).set('second', 0).millisecond(0).toISOString()
+  var conversedDate = dayjs(date).set('hour', 0).set('second', 0).millisecond(0)
+  conversedDate = conversedDate.set('minutes', conversedDate.utcOffset())
+  const parsedDate = conversedDate.toISOString()
 
   let times = await prisma.preferences.findUnique({
     where: {
@@ -805,6 +826,31 @@ async function updateBookingEditNotes(input: BookingEditInput, id:number) {
       data: {
         notes: notes,
         job: job,
+      }
+    })
+  return bookingResult
+}
+
+
+
+async function updateBookingEditTimeHandle(request: FastifyRequest<{ Body: BookingUpdateTime, Querystring: {id:number} }>, reply: FastifyReply) {
+  try {
+    return await updateBookingEditTime(request.body, request.query.id)
+  } catch (err) {
+    console.log(err)
+    reply.code(400).send('Error in editing booking')
+  }
+}
+
+async function updateBookingEditTime(input: BookingUpdateTime, id: number) {
+  const { date } = input
+
+  let bookingResult = await prisma.booking.update({
+      where: {
+        id: id
+      },
+      data: {
+        time: dayjs(date).toISOString()
       }
     })
   return bookingResult

@@ -23,12 +23,10 @@ dayjs.updateLocale("en", {
   weekStart: 1
 });
 
-export function ChooseDateButton({ label, date, setDate, calendar }: ChooseDateButtonProps) {
-
-  const [highlightedDays, setHighlitedDays] = useState(calendar != undefined ? calendar : []);
-  
+export function ChooseDateButton({ label, date, setDate, calendar }: ChooseDateButtonProps) {  
   return (
     <div className="h-10 my-2 ">
+   
       <ThemeProvider theme={theme}>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <DatePicker
@@ -36,8 +34,10 @@ export function ChooseDateButton({ label, date, setDate, calendar }: ChooseDateB
             value={date}
             renderDay={(day, _value, DayComponentProps) => {
               let selectDay:any|null = null
+              var dayNow = dayjs(day)
+              var stringDay = dayNow.set('minute', dayNow.utcOffset()).toISOString()
               calendar.map((hightlighed) => {
-                if(hightlighed.dayBooking.date.includes(dayjs(day).toISOString())){
+                if(hightlighed.dayBooking.date.includes(stringDay)){
                   selectDay = hightlighed
                   //return hightlighed
                 }

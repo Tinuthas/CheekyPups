@@ -19,6 +19,8 @@ import InfoItemButton from "../attendance/InfoItemButton";
 import { EditOwnerNotes } from "./EditOwnerNotesModal";
 import RemindersButton from "./RemindersButton";
 import { boolean } from "zod";
+import {TimeBookingModal} from "./TimeBookingModal";
+import TimeBookingButton from "./TimeBookingButton";
 
 
 
@@ -43,19 +45,18 @@ export interface ItemListFieldProps {
   createRowOffered: (values: any) => void
   finishRowBooking: (values: any) => void
   editNotesBooking: (values: any) => void
+  changeTimeValue: (values: any) => void
   setLoadingMenuItem: (loading: number) => void
 }
 
-export function ItemListField({ id, time, job, status, ownerId, dogId, ownerName, phone, dogName, dogBread, notes, daycare,loadingMenuItem, listTimes, createRowOffered, setLoadingMenuItem, deleteRow, cancelBookingRow, finishRowBooking, editNotesBooking, date }: ItemListFieldProps) {
+export function ItemListField({ id, time, job, status, ownerId, dogId, ownerName, phone, dogName, dogBread, notes, daycare,loadingMenuItem, listTimes, createRowOffered, setLoadingMenuItem, deleteRow, cancelBookingRow, finishRowBooking, editNotesBooking, changeTimeValue, date }: ItemListFieldProps) {
 
   const [openDelete, setOpenDelete] = React.useState(false);
   const [createOfferedModalOpen, setCreateOfferedModalOpen] = React.useState(false);
   const [cancelModalOpen, setCancelModalOpen] = React.useState(false);
   const [finishModalOpen, setFinishModalOpen] = React.useState(false);
   const [editNotesModalOpen, setEditNotesModalOpen] = React.useState(false);
-
-  const [openIndex, setOpenIndex] = React.useState(-1)
-  const [openListModal, setOpenListModal] = React.useState(false)
+  const [editTimeModalOpen, setEditTimeModalOpen] = React.useState(false);
 
 
   const handleDeleteClose = (event: Event | React.SyntheticEvent) => {
@@ -82,6 +83,12 @@ export function ItemListField({ id, time, job, status, ownerId, dogId, ownerName
     setEditNotesModalOpen(false)
     editNotesBooking(values)
   }
+
+  const handleChangeTimeValue = (values: any) => {
+    setEditTimeModalOpen(false)
+    changeTimeValue(values)
+  }
+
 
   function getJobBooking(job?:string, daycare?: boolean) {
     if(daycare!= null && daycare) {
@@ -112,6 +119,7 @@ export function ItemListField({ id, time, job, status, ownerId, dogId, ownerName
       return offered
   }
 
+
   return (
     <>
       <div key={String(id)} className={`group h-20 w-fit mt-4 shadow border border-neutral-300 rounded-xl text-neutral-800 flex flex-row self-center hover:border-neutral-400 sm::text-base md:text-base lg:text-base transition-all transition-discrete delay-150 duration-300 ease-in-out hover:-translate-y-1 hover:scale-[1.01] hover:shadow-xl ${!status.includes('empty') && notes!=null && notes!='' ? 'hover:h-32': ''}`}
@@ -137,7 +145,19 @@ export function ItemListField({ id, time, job, status, ownerId, dogId, ownerName
         
         <div className="p-4 h-20 flex flex-row self-center">
           <div className="self-center w-[100px] font-medium">
-            <h5>{time}</h5>
+            
+            {!status.includes('done') || !status.includes('cancelled') ? 
+              <TimeBookingButton 
+                children={<h5 className="">{time}</h5>} 
+                bookingId={Number(id)} 
+                time={date} 
+                key={"NewOfferedCustomerKey"}
+                onClose={() => {
+                  setCreateOfferedModalOpen(false);
+                }}
+                onSubmit={(values:any) => handleChangeTimeValue(values)}
+                />   
+            : <h5 className="">{time}</h5>} 
           </div>
           <div className="w-[140px] ml-2  self-center text-center flex justify-center text-sm ">
             {getJobBooking(job, daycare)}
