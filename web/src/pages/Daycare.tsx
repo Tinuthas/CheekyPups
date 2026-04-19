@@ -104,7 +104,12 @@ export function Daycare() {
           var obj = Object.assign({}, item, listDates);
           rows.push(obj)
         })
-        dates = sortDatesList(dates.values().toArray())
+        const iterator = dates.values();
+        const arrayDates = [];
+        for (const value of iterator) {
+            arrayDates.push(value);
+        }
+        dates = sortDatesList(arrayDates)
         setMarginTable(-1)
         setAttendances(rows)
         if (rows.length != 0) {
