@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider        = "prisma-client-js"
   previewFeatures = ["fullTextSearch", "filteredRelationCount"]
@@ -20,11 +17,11 @@ model Dog {
   colour       String?
   breed        String
   avatarUrl    String?
+  ownerId      Int
   daysDog      Attendance[]
   daysBooking  Booking[]
-  vaccines     Vaccine[]
   Owner        Owner        @relation(fields: [ownerId], references: [id])
-  ownerId      Int
+  vaccines     Vaccine[]
 
   @@map("dogs")
 }
@@ -57,43 +54,40 @@ model Vaccine {
 
 model Day {
   id      Int          @id @default(autoincrement())
-  date    DateTime
+  date    DateTime     @unique
   dayDogs Attendance[]
 
-  @@unique([date])
   @@map("days")
 }
 
 model Attendance {
-  id         Int     @id @default(autoincrement())
+  id         Int      @id @default(autoincrement())
   typeDay    String
   paid       Boolean
   day_id     Int
   dog_id     Int
   extract_id Int?
-
-  day     Day      @relation(fields: [day_id], references: [id])
-  dog     Dog      @relation(fields: [dog_id], references: [id])
-  extract Extract?
+  day        Day      @relation(fields: [day_id], references: [id])
+  dog        Dog      @relation(fields: [dog_id], references: [id])
+  extract    Extract?
 
   @@map("attendances")
 }
 
 model Extract {
-  id          Int       @id @default(autoincrement())
-  value       Decimal
-  paidValue   Decimal?
-  totalValue  Decimal
-  description String?
-  done        Boolean
-  date        DateTime?
-  type        String?
-
+  id           Int         @id @default(autoincrement())
+  value        Decimal
+  paidValue    Decimal?
+  totalValue   Decimal
+  description  String?
+  done         Boolean
+  date         DateTime?
+  type         String?
   attendanceId Int?        @unique
   bookingId    Int?        @unique
   ownerId      Int
-  booking      Booking?    @relation(fields: [bookingId], references: [id], onDelete: Cascade)
   attendance   Attendance? @relation(fields: [attendanceId], references: [id], onDelete: Cascade)
+  booking      Booking?    @relation(fields: [bookingId], references: [id], onDelete: Cascade)
   Owner        Owner       @relation(fields: [ownerId], references: [id])
 
   @@map("extracts")
@@ -101,40 +95,37 @@ model Extract {
 
 model DayBooking {
   id          Int       @id @default(autoincrement())
-  date        DateTime
+  date        DateTime  @unique
   notes       String?
   daysBooking Booking[]
 
-  @@unique([date])
   @@map("daysBooking")
 }
 
 model Booking {
-  id             Int      @id @default(autoincrement())
+  id             Int        @id @default(autoincrement())
   time           DateTime
   status         String
   day_booking_id Int
   dog_id         Int?
+  notes          String?
   offering_id    Int?
   job            String?
-  notes          String?
-
-  dayBooking DayBooking @relation(fields: [day_booking_id], references: [id])
-  dog        Dog?       @relation(fields: [dog_id], references: [id])
-  extract    Extract?
-  offering   Offering?  @relation(fields: [offering_id], references: [id])
+  dayBooking     DayBooking @relation(fields: [day_booking_id], references: [id])
+  dog            Dog?       @relation(fields: [dog_id], references: [id])
+  offering       Offering?  @relation(fields: [offering_id], references: [id])
+  extract        Extract?
 
   @@map("bookings")
 }
 
 model Offering {
-  id      Int     @id @default(autoincrement())
-  owner   String?
-  phone   String?
-  ownerId Int?
-  type    String?
-  notes   String?
-
+  id       Int       @id @default(autoincrement())
+  owner    String?
+  phone    String?
+  ownerId  Int?
+  type     String?
+  notes    String?
   bookings Booking[]
 
   @@map("offering")
