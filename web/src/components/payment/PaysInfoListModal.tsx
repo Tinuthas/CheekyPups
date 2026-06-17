@@ -539,30 +539,63 @@ export const PaysInfoListModal = ({
                       </div> 
                   </div>
                 : null}
-                <div className="md:flex bg-white w-full mt-6 rounded">
-                  <DataTableCustom
-                    headers={headersExtracts}
-                    titleCreate=""
-                    disableActions={true}
-                    data={extracts}
-                    setData={(data: any) => setExtracts(data)}
-                    title={"Last Payments"}
-                    deleteRow={id => deleteDataRow(id)}
-                    searchCalendar={(data) => changeCalendarDates(data)}
-                    calendarData={[dateStart, dateEnd, selectDateType]}
-                    updateRow={data => updateDataRow(data)} />
-                </div>
-                <div className="md:flex bg-white w-full mt-6 rounded">
-                  <DataTableCustom
-                    headers={headersBookings}
-                    titleCreate=""
-                    disableActions={true}
-                    data={bookings}
-                    setData={(data: any) => setBookings(data)}
-                    title={"Booking Appointments"}
-                    deleteRow={id => deleteDataRow(id)}
-                    updateRow={data => updateDataRow(data)} />
-                </div>
+                
+              {owner != null && owner.type != null && owner.type != undefined && owner.type == 'D'?
+                <>
+                  <div className="md:flex bg-white w-full mt-6 rounded">
+                    <DataTableCustom
+                      headers={headersExtracts}
+                      titleCreate=""
+                      disableActions={true}
+                      data={extracts}
+                      setData={(data: any) => setExtracts(data)}
+                      title={"Last Payments"}
+                      deleteRow={id => deleteDataRow(id)}
+                      searchCalendar={(data) => changeCalendarDates(data)}
+                      calendarData={[dateStart, dateEnd, selectDateType]}
+                      updateRow={data => updateDataRow(data)} />
+                  </div>
+                  <div className="md:flex bg-white w-full mt-6 rounded">
+                    <DataTableCustom
+                      headers={headersBookings}
+                      titleCreate=""
+                      disableActions={true}
+                      data={bookings}
+                      setData={(data: any) => setBookings(data)}
+                      title={"Booking Appointments"}
+                      deleteRow={id => deleteDataRow(id)}
+                      updateRow={data => updateDataRow(data)} />
+                  </div>
+                </>
+                :
+                <>
+                  
+                  <div className="md:flex bg-white w-full mt-6 rounded">
+                    <DataTableCustom
+                      headers={headersBookings}
+                      titleCreate=""
+                      disableActions={true}
+                      data={bookings}
+                      setData={(data: any) => setBookings(data)}
+                      title={"Booking Appointments"}
+                      deleteRow={id => deleteDataRow(id)}
+                      updateRow={data => updateDataRow(data)} />
+                  </div>
+                  <div className="md:flex bg-white w-full mt-6 rounded">
+                    <DataTableCustom
+                      headers={headersExtracts}
+                      titleCreate=""
+                      disableActions={true}
+                      data={extracts}
+                      setData={(data: any) => setExtracts(data)}
+                      title={"Last Payments"}
+                      deleteRow={id => deleteDataRow(id)}
+                      searchCalendar={(data) => changeCalendarDates(data)}
+                      calendarData={[dateStart, dateEnd, selectDateType]}
+                      updateRow={data => updateDataRow(data)} />
+                  </div>
+                </> 
+                }
               </>
             }
           </DialogContent>
