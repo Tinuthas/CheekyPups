@@ -231,6 +231,7 @@ async function getAllExtractByOwner(request: FastifyRequest<{ Querystring: { id:
 
 async function getAllExtractByOwnerAll(id: number, startDate: string, endDate: string) {
   const extracts = await prisma.extract.findMany({
+    take: 100,
     where: {
       ownerId: Number(id),
       date: {
@@ -276,6 +277,7 @@ async function getAllExtractByOwnerAll(id: number, startDate: string, endDate: s
 
 async function getAllExtractByOwnerDone(done: boolean, id: number) {
   const extracts = await prisma.extract.findMany({
+    take: 100,
     where: {
       ownerId: Number(id),
       done,
@@ -318,6 +320,7 @@ async function getAllExtractByOwnerDone(done: boolean, id: number) {
 
 async function getAllExtractByOwnerDoneDate(done: boolean, id: number, startDate: string, endDate: string) {
   const extracts = await prisma.extract.findMany({
+    take: 100,
     where: {
       ownerId: Number(id),
       done,
@@ -385,6 +388,7 @@ async function filterAllExtractByOwner(extracts: any[], ownerId: number, startDa
   })
 
   const bookings = await prisma.booking.findMany({
+    take: 30,
     where: {
       dog: {
         ownerId: ownerId
