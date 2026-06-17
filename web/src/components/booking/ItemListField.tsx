@@ -21,6 +21,7 @@ import RemindersButton from "./RemindersButton";
 import { boolean } from "zod";
 import {TimeBookingModal} from "./TimeBookingModal";
 import TimeBookingButton from "./TimeBookingButton";
+import { EditCancel } from "./EditCancelModal";
 
 
 
@@ -69,9 +70,9 @@ export function ItemListField({ id, time, job, status, ownerId, dogId, ownerName
     createRowOffered(values)
   }
 
-  const handleCancelClose = (event: Event | React.SyntheticEvent) => {
+  const handleCancelClose = (values: any) => {
     setCancelModalOpen(false)
-    cancelBookingRow(id)
+    cancelBookingRow(values)
   }
 
   const handleFinishBooking = (values: any) => {
@@ -234,12 +235,15 @@ export function ItemListField({ id, time, job, status, ownerId, dogId, ownerName
                 /> : null
               }
               {cancelModalOpen ?
-                <CancelModal
-                  open={cancelModalOpen}
-                  onClose={() => setCancelModalOpen(false)}
-                  onSubmit={handleCancelClose}
-                /> : null}
-
+                <EditCancel
+                    open={cancelModalOpen}
+                    onClose={() => setCancelModalOpen(false)}
+                    onSubmit={(values) => handleCancelClose(values)}
+                    ownerDog={{
+                      id: id,
+                      notes: notes != null && notes != "" ? notes : "",
+                    }}/> : null
+              }
               {finishModalOpen ?
                 <CreateFinish
                   key={"BookingFinishKey"}

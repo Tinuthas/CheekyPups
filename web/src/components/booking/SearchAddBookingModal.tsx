@@ -14,6 +14,7 @@ import { theme, iconStyle } from "../../lib/theme";
 import AddCircleRoundedIcon from '@mui/icons-material/AddCircleRounded';
 import PersonSearchRoundedIcon from '@mui/icons-material/PersonSearchRounded';
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
+import InfoItemButton from "../attendance/InfoItemButton";
 
 
 interface SearchAddBookingProps {
@@ -83,14 +84,16 @@ export const SearchAddBooking = ({
           <div className="flex flex-row h-10">
             {
               owner == null ? null :
-                <div className="mt-5">
-                  <span className="mr-2"><CheckCircleIcon color="success" /></span>
-                  <span className="mr-4 font-medium">Info:</span>
-                  <span className="mr-4">{owner.name}</span>
-                  <span className="mr-4">{owner.phone}</span>
-                  <span className="mr-4">{owner.dogName}</span>
-                  <span className="">{owner.breed}</span>
-                </div>
+                <InfoItemButton children={
+                  <div className="mt-5">
+                    <span className="mr-2"><CheckCircleIcon color="success" /></span>
+                    <span className="mr-4 font-medium">Info:</span>
+                    <span className="mr-4">{owner.name}</span>
+                    <span className="mr-4">{owner.phone}</span>
+                    <span className="mr-4">{owner.dogName}</span>
+                    <span className="">{owner.breed}</span>
+                  </div>
+                 } id={Number(owner.id)} onClose={() => {}}/>
             }
           </div>
           <div className="mt-8 flex flex-row justify-around text-center align-middle font-medium">

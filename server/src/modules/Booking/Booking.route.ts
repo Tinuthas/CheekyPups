@@ -39,7 +39,12 @@ export async function bookingRoutes(app: FastifyInstance) {
 
   app.delete('/', { preHandler: [app.authenticate] }, deleteBookingHandler)
 
-  app.put('/cancel', { preHandler: [app.authenticate] }, cancelBookingHandler)
+  app.put('/cancel', { 
+    schema: {
+      body: $ref('updateCancelBooking'),
+    },
+    preHandler: [app.authenticate] 
+  }, cancelBookingHandler)
 
   app.post('/newCustomer', {
     schema: {
@@ -356,21 +361,23 @@ async function deleteBooking(id: number) {
   return deleted
 }
 
-async function cancelBookingHandler(request: FastifyRequest<{ Querystring: { id: number } }>, reply: FastifyReply) {
+async function cancelBookingHandler(request: FastifyRequest<{ Body: BookingOfferingInput }>, reply: FastifyReply) {
   try {
-    return await cancelBooking(request.query.id)
+    return await cancelBooking(request.body)
   } catch (err) {
     console.log(err)
     reply.code(400).send('Error in cancel booking')
   }
 }
 
-async function cancelBooking(id: number) {
+async function cancelBooking(body:any) {
 
+  const {id, notes} = body
   const booking = await prisma.booking.update({
     where: { id: Number(id) },
     data: {
-      status: 'cancelled'
+      status: 'cancelled',
+      notes: notes
     }
   })
 

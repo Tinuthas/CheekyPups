@@ -198,7 +198,7 @@ export function ListField({ date, setDate, loading, setLoading }: ListFieldProps
       finishRowBooking={(values) => handleFinishRowBooking(values)}
       editNotesBooking={(values) => handleEditNotesBooking(values)}
       changeTimeValue={(values) => handleChangeTimeValue(values)}
-      cancelBookingRow={(id) => handleCancel(id)}
+      cancelBookingRow={(values) => handleCancel(values)}
       />
   )
 
@@ -273,13 +273,10 @@ export function ListField({ date, setDate, loading, setLoading }: ListFieldProps
     }
   }
 
-  function handleCancel(id: number) {
+  function handleCancel(cancellation:any) {
     try {
       setLoading(true)
-      api.put('booking/cancel', {}, {
-        params: {
-          id,
-        },
+      api.put('booking/cancel', cancellation, {
         headers: {
           Authorization: getToken()
         }
