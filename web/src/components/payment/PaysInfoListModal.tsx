@@ -490,9 +490,9 @@ export const PaysInfoListModal = ({
                                 <span className="font-semibold">Breed: </span>
                                 <span>{dog.breed}</span>
                               </div>
-                              <div className="md:ml-5 md:w-60 mt-1">
+                              <div className="md:ml-5 md:w-70 mt-1">
                                 <span className="font-semibold">Birthday: </span>
-                                <span>{dog.birthdayDate != null && dog.birthdayDate != ""? dayjs(dog.birthdayDate).format('DD/MM/YYYY'):""}</span>
+                                <span>{dog.birthdayDate != null && dog.birthdayDate != ""? `${dayjs(dog.birthdayDate).format('DD/MM/YYYY')} ${dayjs().diff(dayjs(dog.birthdayDate), 'years')} yrs ${(dayjs().diff(dayjs(dog.birthdayDate), 'months', true) % 12).toFixed(2)} mon`:""}</span>
                               </div>
                             </div>
                             <div className="flex flex-col md:flex-row mt-1">
@@ -569,7 +569,6 @@ export const PaysInfoListModal = ({
                 </>
                 :
                 <>
-                  
                   <div className="md:flex bg-white w-full mt-6 rounded">
                     <DataTableCustom
                       headers={headersBookings}
