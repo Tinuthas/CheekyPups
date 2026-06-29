@@ -115,6 +115,7 @@ model Booking {
   dog            Dog?       @relation(fields: [dog_id], references: [id])
   offering       Offering?  @relation(fields: [offering_id], references: [id])
   extract        Extract?
+  dateUpdated    DateTime?
 
   @@map("bookings")
 }

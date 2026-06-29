@@ -87,6 +87,7 @@ export async function attendanceRoutes(app: FastifyInstance) {
     var dateParts: any[] = date.split('/')
     var dateObject = new Date(+dateParts[2], dateParts[1] - 1, +dateParts[0])
     var parsedDate = dayjs(dateObject).startOf('day').toISOString()
+    var timeDate = dayjs().toISOString()
 
 
     var restPaidValue = null
@@ -100,19 +101,19 @@ export async function attendanceRoutes(app: FastifyInstance) {
     }
 
     var listAtt: any[] = []
-    var [att1, paidValue1, paidAtt1]: any = await checkPaidAttendance(parsedDate, firstDogId, firstDogTypeDay, booleanPaid, restPaidValue, String(typePaid), firstDogValue, descriptionValue)
+    var [att1, paidValue1, paidAtt1]: any = await checkPaidAttendance(parsedDate, firstDogId, firstDogTypeDay, booleanPaid, restPaidValue, String(typePaid), firstDogValue, descriptionValue, timeDate)
     restPaidValue = paidValue1
     booleanPaid = paidAtt1
     att1 != null ? listAtt.push(att1) : null
-    var [att2, paidValue2, paidAtt2]: any = await checkPaidAttendance(parsedDate, Number(secondDogId), String(secondDogTypeDay), booleanPaid, restPaidValue, String(typePaid), Number(secondDogValue), descriptionValue)
+    var [att2, paidValue2, paidAtt2]: any = await checkPaidAttendance(parsedDate, Number(secondDogId), String(secondDogTypeDay), booleanPaid, restPaidValue, String(typePaid), Number(secondDogValue), descriptionValue, timeDate)
     restPaidValue = paidValue2
     booleanPaid = paidAtt2
     att2 != null ? listAtt.push(att2) : null
-    var [att3, paidValue3, paidAtt3]: any = await checkPaidAttendance(parsedDate, Number(thirdDogId), String(thirdDogTypeDay), booleanPaid, restPaidValue, String(typePaid), Number(thirdDogValue), descriptionValue)
+    var [att3, paidValue3, paidAtt3]: any = await checkPaidAttendance(parsedDate, Number(thirdDogId), String(thirdDogTypeDay), booleanPaid, restPaidValue, String(typePaid), Number(thirdDogValue), descriptionValue, timeDate)
     restPaidValue = paidValue3
     booleanPaid = paidAtt3
     att3 != null ? listAtt.push(att3) : null
-    var [att4, paidValue4, paidAtt4]: any = await checkPaidAttendance(parsedDate, Number(fourthDogId), String(fourthDogTypeDay), booleanPaid, restPaidValue, String(typePaid), Number(fourthDogValue), descriptionValue)
+    var [att4, paidValue4, paidAtt4]: any = await checkPaidAttendance(parsedDate, Number(fourthDogId), String(fourthDogTypeDay), booleanPaid, restPaidValue, String(typePaid), Number(fourthDogValue), descriptionValue, timeDate)
     restPaidValue = paidValue4
     booleanPaid = paidAtt4
     att4 != null ? listAtt.push(att4) : null
@@ -120,7 +121,7 @@ export async function attendanceRoutes(app: FastifyInstance) {
     return listAtt
   }
 
-  async function addingAttendanceDog(date: string, dogId: number, typeDay: string, paid: boolean, paidValue: number | null, typePaid: string, value: number, descriptionValue: string) {
+  async function addingAttendanceDog(date: string, dogId: number, typeDay: string, paid: boolean, paidValue: number | null, typePaid: string, value: number, descriptionValue: string, timedate: string) {
 
     let dog = await prisma.dog.findUnique({
       where: {
@@ -174,7 +175,7 @@ export async function attendanceRoutes(app: FastifyInstance) {
             create: {
               value,
               description: descriptionValue,
-              date: dayjs().toISOString(),
+              date: timedate,
               type: typePad,
               done: paid,
               paidValue: paidVal,
@@ -393,6 +394,8 @@ export async function attendanceRoutes(app: FastifyInstance) {
     let paidVal = paid ? (Number(paidValue) > value ? value : (paidValue)) : 0
     let typePad = paid ? typePaid : null
 
+    var date = dayjs().toISOString()
+
     let attOld = await prisma.attendance.findFirst({
       where:{
         id: Number(id),
@@ -426,7 +429,7 @@ export async function attendanceRoutes(app: FastifyInstance) {
             totalValue,
             done: paid,
             type: typePad,
-            date: dayjs().toISOString(),
+            date: date,
           }
         }
       }
@@ -498,6 +501,8 @@ export async function attendanceRoutes(app: FastifyInstance) {
       }
     })
 
+    var date = dayjs().toISOString()
+
     let updAtt = await prisma.attendance.update({
       where: {
         id: Number(id)
@@ -507,7 +512,7 @@ export async function attendanceRoutes(app: FastifyInstance) {
         extract: {
           update: {
             description: descriptionValue,
-            date: dayjs().toISOString(),
+            date: date,
             done,
             paidValue: paidVal,
             totalValue,
@@ -553,6 +558,7 @@ export async function attendanceRoutes(app: FastifyInstance) {
 
     var restPaidValue = null
     var booleanPaid = paid
+    var timeDate = dayjs().toISOString()
 
     if (paidValue != null && Number(paidValue) >= 0) {
       restPaidValue = Number(paidValue)
@@ -564,23 +570,23 @@ export async function attendanceRoutes(app: FastifyInstance) {
     }
 
     var listAtt: any[] = []
-    var [att1, paidValue1, paidAtt1]: any = await checkPaidAttendance(parseDate(String(firstDayDate)), dogId, String(firstDayTypeDay), booleanPaid, restPaidValue, String(typePaid), Number(firstDayValue), String(firstDayDescription))
+    var [att1, paidValue1, paidAtt1]: any = await checkPaidAttendance(parseDate(String(firstDayDate)), dogId, String(firstDayTypeDay), booleanPaid, restPaidValue, String(typePaid), Number(firstDayValue), String(firstDayDescription), timeDate)
     restPaidValue = paidValue1
     booleanPaid = paidAtt1
     att1 != null ? listAtt.push(att1) : null
-    var [att2, paidValue2, paidAtt2]: any = await checkPaidAttendance(parseDate(String(secondDayDate)), dogId, String(secondDayTypeDay), booleanPaid, restPaidValue, String(typePaid), Number(secondDayValue), String(secondDayDescription))
+    var [att2, paidValue2, paidAtt2]: any = await checkPaidAttendance(parseDate(String(secondDayDate)), dogId, String(secondDayTypeDay), booleanPaid, restPaidValue, String(typePaid), Number(secondDayValue), String(secondDayDescription), timeDate)
     restPaidValue = paidValue2
     booleanPaid = paidAtt2
     att2 != null ? listAtt.push(att2) : null
-    var [att3, paidValue3, paidAtt3]: any = await checkPaidAttendance(parseDate(String(thirdDayDate)), dogId, String(thirdDayTypeDay), booleanPaid, restPaidValue, String(typePaid), Number(thirdDayValue), String(thirdDayDescription))
+    var [att3, paidValue3, paidAtt3]: any = await checkPaidAttendance(parseDate(String(thirdDayDate)), dogId, String(thirdDayTypeDay), booleanPaid, restPaidValue, String(typePaid), Number(thirdDayValue), String(thirdDayDescription), timeDate)
     restPaidValue = paidValue3
     booleanPaid = paidAtt3
     att3 != null ? listAtt.push(att3) : null
-    var [att4, paidValue4, paidAtt4]: any = await checkPaidAttendance(parseDate(String(fourthDayDate)), dogId, String(fourthDayTypeDay), booleanPaid, restPaidValue, String(typePaid), Number(fourthDayValue), String(fourthDayDescription))
+    var [att4, paidValue4, paidAtt4]: any = await checkPaidAttendance(parseDate(String(fourthDayDate)), dogId, String(fourthDayTypeDay), booleanPaid, restPaidValue, String(typePaid), Number(fourthDayValue), String(fourthDayDescription), timeDate)
     restPaidValue = paidValue4
     booleanPaid = paidAtt4
     att4 != null ? listAtt.push(att4) : null
-    var [att5, paidValue5, paidAtt5]: any = await checkPaidAttendance(parseDate(String(fifthDayDate)), dogId, String(fifthDayTypeDay), booleanPaid, restPaidValue, String(typePaid), Number(fifthDayValue), String(fifthDayDescription))
+    var [att5, paidValue5, paidAtt5]: any = await checkPaidAttendance(parseDate(String(fifthDayDate)), dogId, String(fifthDayTypeDay), booleanPaid, restPaidValue, String(typePaid), Number(fifthDayValue), String(fifthDayDescription), timeDate)
     restPaidValue = paidValue5
     booleanPaid = paidAtt5
     att5 != null ? listAtt.push(att5) : null
@@ -588,12 +594,12 @@ export async function attendanceRoutes(app: FastifyInstance) {
     return listAtt
   }
 
-  async function checkPaidAttendance(date: string, dogId: number, typeDay: string, paid: boolean, paidValue: number | null, typePaid: string, value: number, descriptionValue: string) {
+  async function checkPaidAttendance(date: string, dogId: number, typeDay: string, paid: boolean, paidValue: number | null, typePaid: string, value: number, descriptionValue: string, timedate: string) {
 
     var att = null
     if(String(typeDay) != "") {
       if (value != null && value >= 0 && dogId != 0)
-        att = await addingAttendanceDog(date, dogId, typeDay, paid, paidValue, String(typePaid), value, descriptionValue)
+        att = await addingAttendanceDog(date, dogId, typeDay, paid, paidValue, String(typePaid), value, descriptionValue, timedate)
 
       if (paidValue != null && value != null) {
         paidValue = (paidValue - value)

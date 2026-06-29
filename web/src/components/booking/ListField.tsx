@@ -189,6 +189,7 @@ export function ListField({ date, setDate, loading, setLoading }: ListFieldProps
       dogBread={booking.dog == null ? "" : booking.dog.breed} 
       notes={booking.status.includes('offered') ? Object(booking.offering)['notes']: (booking.notes == null ? null : booking.notes)}
       daycare={booking.dog != null && booking.dog.Owner.type != null && booking.dog.Owner.type.toUpperCase().includes('D')}
+      dateUpdated={(booking.dateUpdated != null && booking.dateUpdated != undefined) ? dayjs(booking.dateUpdated).format('DD/MM/YYYY hh:mm A') : undefined}
       date={booking.time}
       loadingMenuItem={loadingMenuItem} 
       setLoadingMenuItem={(value) => setLoadingMenuItem(value)} 
@@ -464,7 +465,7 @@ export function ListField({ date, setDate, loading, setLoading }: ListFieldProps
         </div>
 
         <div className="w-full md:px-4 my-4 flex justify-center">
-          <div className=" h-full min-h-[500px] w-fit bg-white border rounded p-5 pt-4 pb-6 overflow-auto">
+          <div className=" h-full min-h-[500px] w-fit bg-white border rounded-md shadow p-5 pt-4 pb-6 overflow-auto">
             <ItemListColumnsField />
             {listItem}
           </div>

@@ -88,6 +88,13 @@ export async function paymentRoutes(app: FastifyInstance) {
     preHandler: [app.authenticate]
   }, changingNewTillChangeHandle)
 
+  app.get('/previous', {
+    schema: {
+      querystring: $ref('previousInfo'),
+    },
+    preHandler: [app.authenticate]
+  }, getLastPreviousPaymentHandle)
+
 }
 
 async function getAllPayments(request: FastifyRequest<{ Querystring: { all: boolean, done: boolean, startDate: string, endDate: string } }>, reply: FastifyReply) {
@@ -371,7 +378,7 @@ async function filterAllExtractByOwner(extracts: any[], ownerId: number, startDa
     id,
     description,
     value,
-    date: dayjs(date).format('DD/MM/YYYY HH:mm'),
+    date: date,
     attendanceId,
     paidValue,
     totalValue,
@@ -404,6 +411,7 @@ async function filterAllExtractByOwner(extracts: any[], ownerId: number, startDa
       time: true,
       status: true,
       notes: true,
+      dateUpdated: true,
       dog: {
         select: {
           name: true,
@@ -418,12 +426,13 @@ async function filterAllExtractByOwner(extracts: any[], ownerId: number, startDa
     },
   })
 
-  const filterBookings = bookings.map(({ id, time, status, dog, notes, extract }) => ({
+  const filterBookings = bookings.map(({ id, time, status, dog, notes, extract, dateUpdated }) => ({
     id,
     date: dayjs(time).format('DD/MM/YYYY HH:mm'),
     dogName: dog != null ? dog.name : "",
     status: status,
     notes: notes,
+    dateUpdated: dateUpdated != undefined && dateUpdated != null ? dayjs(dateUpdated).format('DD/MM/YYYY HH:mm') : "",
     sales: extract != null ? extract.value : ""
   }));
 
@@ -983,4 +992,93 @@ export async function updateTillHandle(typeTill: string, type: string, value: nu
   } catch (e: any) {
     throw new Error('Error in updating till: ' + e.message)
   }
+}
+
+async function getLastPreviousPaymentHandle(request: FastifyRequest<{Querystring: { all: boolean, done: boolean, skip: number, }}>, reply: FastifyReply) {
+  try {
+    return await getLastPreviousPayment(request, reply)
+  } catch (err) {
+    console.log(err)
+    reply.code(400).send('Error in getting last payments')
+  }
+}
+
+async function getLastPreviousPayment(request: FastifyRequest<{ Querystring: { all: boolean, done: boolean, skip: number } }>, reply: FastifyReply) {
+
+  const { all, done, skip } = request.query
+
+  var lastPayments = null
+  if(all == true) {
+    lastPayments = await prisma.extract.groupBy({
+      by: ['date', "ownerId"],
+      orderBy: {
+        date: "desc",
+      }, 
+      _count: {id: true},
+      _sum: {
+          value: true,
+          paidValue: true,
+          totalValue: true
+      },
+      take: 100,
+      skip: skip
+    })
+  }else{
+    lastPayments = await prisma.extract.groupBy({
+      by: ['date', "ownerId"],
+      orderBy: {
+        date: "desc",
+      },
+      where: {
+        done: done
+      }, 
+      _count: {id: true},
+      _sum: {
+          value: true,
+          paidValue: true,
+          totalValue: true
+      },
+      take: 100,
+      skip: skip
+    })
+  }
+  
+
+  let ownerIds = lastPayments.map(pay => pay.ownerId);
+
+  var pays = await prisma.owner.findMany({
+    where: {
+      id: {
+        in: ownerIds
+      }
+    },
+    include: {
+      dogs: {
+        select: {
+          name: true,
+          nickname: true
+        }
+      }
+    }
+  })
+
+  var listPayments: { id: number; date: string; name: string; dogsName: string, extracts: number; value: Decimal | null; paidValue: Decimal | null; totalValue: Decimal | null; type: string | null; }[] = []
+  lastPayments.forEach((element, index) => {
+    const pay = pays.find(p => p.id === element.ownerId) ?? null;
+    if (pay != null) {
+      listPayments.push({
+        id: pay.id,
+        date: dayjs(element.date).toISOString(),
+        name: pay.name,
+        dogsName: pay.dogs.map(dog => dog.nickname != undefined && dog.nickname != null  && dog.nickname.trim() != "" ? dog.nickname : dog.name).join(' - '),
+        extracts: element._count.id,
+        value: element._sum.value,
+        paidValue: element._sum.paidValue,
+        totalValue: element._sum.totalValue,
+        type: pay.type,
+      })
+    }
+  })
+
+  return listPayments;
 }

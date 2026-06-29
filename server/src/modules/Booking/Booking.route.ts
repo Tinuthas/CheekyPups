@@ -139,6 +139,7 @@ async function getBookingsDate(input: FilterBookingDateInput) {
       status: true,
       notes: true,
       job: true,
+      dateUpdated: true,
       dog: {
         select: {
           id: true,
@@ -377,6 +378,7 @@ async function cancelBooking(body:any) {
     where: { id: Number(id) },
     data: {
       status: 'cancelled',
+      dateUpdated: dayjs().toISOString(),
       notes: notes
     }
   })
@@ -450,16 +452,17 @@ async function addBookingOffering(input: BookingOfferingInput) {
   const { ownerId, owner, phone, typeOffered, notes, firstDogTime, secondDogTime, thirdDogTime, fourthDogTime } = input
 
   var offers = []
+  var updatedDate = dayjs().toISOString()
 
   const offering = await creatingOfferingBody(owner, phone, ownerId, notes, typeOffered)
   if (firstDogTime != null && firstDogTime != "")
-    offers.push(await creatingOffering(firstDogTime, typeOffered, offering))
+    offers.push(await creatingOffering(firstDogTime, typeOffered, offering, updatedDate))
   if (secondDogTime != null && secondDogTime != "")
-    offers.push(await creatingOffering(secondDogTime, typeOffered, offering))
+    offers.push(await creatingOffering(secondDogTime, typeOffered, offering, updatedDate))
   if (thirdDogTime != null && thirdDogTime != "")
-    offers.push(await creatingOffering(thirdDogTime, typeOffered, offering))
+    offers.push(await creatingOffering(thirdDogTime, typeOffered, offering, updatedDate))
   if (fourthDogTime != null && fourthDogTime != "")
-    offers.push(await creatingOffering(fourthDogTime, typeOffered, offering))
+    offers.push(await creatingOffering(fourthDogTime, typeOffered, offering, updatedDate))
   return offers
 }
 
@@ -476,7 +479,7 @@ async function creatingOfferingBody(owner: string | null, phone: string | null, 
   return offering
 }
 
-async function creatingOffering(time: string, status: string, offer:Offering) {
+async function creatingOffering(time: string, status: string, offer:Offering, updatedDate: string | null) {
 
   let offering = await prisma.booking.update({
     where: {
@@ -484,6 +487,7 @@ async function creatingOffering(time: string, status: string, offer:Offering) {
     },
     data: {
       status,
+      dateUpdated: updatedDate,
       offering: {
         connect: {
           id: offer.id
@@ -507,7 +511,7 @@ async function addBookingConfirmedOffer(input: BookingConfirmedOfferInput) {
   const { bookingId, dogId, owner, phone, notes, firstDogTime, firstDogName, firstDogBreed, firstDogJob } = input
 
   const bookingOffer = await prisma.booking.findUnique({ where: { id: bookingId }, include: { offering: true } })
-
+  var updatedDate = dayjs().toISOString()
   var ownerId = bookingOffer?.offering?.ownerId
   if(ownerId == null|| ownerId == 0) {
     const ownerObj = await prisma.owner.create({
@@ -536,6 +540,7 @@ async function addBookingConfirmedOffer(input: BookingConfirmedOfferInput) {
       notes: notes,
       status: 'confirmed',
       job: firstDogJob,
+      dateUpdated: updatedDate,
       dog: {
         connectOrCreate: {
           where: {
@@ -578,19 +583,20 @@ async function addBookingNewCustomerHandle(request: FastifyRequest<{ Body: Booki
 async function addBookingNewCustomer(input: BookingCreateNewCustomer) {
   const { owner, phone, notes, firstDogTime, firstDogName, firstDogBreed, secondDogTime, secondDogName, secondDogBreed, thirdDogTime, thirdDogName, thirdDogBreed, fourthDogTime, fourthDogName, fourthDogBreed, firstDogJob, secondDogJob, thirdDogJob, fourthDogJob } = input
   var listBooking = []
-  const firstDog: any = await addBookingNewCustomerUpdate(0, owner, phone, notes, firstDogTime, firstDogName, firstDogBreed, firstDogJob)
+  const updatedDate = dayjs().toISOString()
+  const firstDog: any = await addBookingNewCustomerUpdate(0, owner, phone, notes, firstDogTime, firstDogName, firstDogBreed, firstDogJob, updatedDate)
   listBooking.push(firstDog)
   if (secondDogTime != null && secondDogTime != "")
-    listBooking.push(await addBookingNewCustomerUpdate(firstDog.dog?.Owner.id, owner, phone, notes, secondDogTime, String(secondDogName), String(secondDogBreed), secondDogJob))
+    listBooking.push(await addBookingNewCustomerUpdate(firstDog.dog?.Owner.id, owner, phone, notes, secondDogTime, String(secondDogName), String(secondDogBreed), secondDogJob, updatedDate))
   if (thirdDogTime != null && thirdDogTime != "")
-    listBooking.push(await addBookingNewCustomerUpdate(firstDog.dog?.Owner.id, owner, phone, notes, thirdDogTime, String(thirdDogName), String(thirdDogBreed), thirdDogJob))
+    listBooking.push(await addBookingNewCustomerUpdate(firstDog.dog?.Owner.id, owner, phone, notes, thirdDogTime, String(thirdDogName), String(thirdDogBreed), thirdDogJob, updatedDate))
   if (fourthDogTime != null && fourthDogTime != "")
-    listBooking.push(await addBookingNewCustomerUpdate(firstDog.dog?.Owner.id, owner, phone, notes, fourthDogTime, String(fourthDogName), String(fourthDogBreed), fourthDogJob))
+    listBooking.push(await addBookingNewCustomerUpdate(firstDog.dog?.Owner.id, owner, phone, notes, fourthDogTime, String(fourthDogName), String(fourthDogBreed), fourthDogJob, updatedDate))
 
   return listBooking
 }
 
-async function addBookingNewCustomerUpdate(ownerId: number, owner: string, phone: string, notes: string | null, dogTime: string, dogName: string, dogBreed: string, job: string | null) {
+async function addBookingNewCustomerUpdate(ownerId: number, owner: string, phone: string, notes: string | null, dogTime: string, dogName: string, dogBreed: string, job: string | null, updatedDate: string | null) {
 
   const booking = await prisma.booking.update({
     where: { id: Number(dogTime) },
@@ -598,6 +604,7 @@ async function addBookingNewCustomerUpdate(ownerId: number, owner: string, phone
       notes: notes,
       status: 'confirmed',
       job: job,
+      dateUpdated: updatedDate,
       dog: {
         create: {
           name: dogName,
@@ -642,18 +649,19 @@ async function addBookingExistedCustomer(input: BookingCreateExistedCustomer) {
   const { notes, firstDogTime, firstDogId, secondDogTime, secondDogId, thirdDogTime, thirdDogId, fourthDogTime, fourthDogId, firstDogJob, secondDogJob, thirdDogJob, fourthDogJob } = input
 
   var listBooking = []
-  listBooking.push(await addBookingExitedCustomerUpdate(firstDogId, firstDogTime, notes, firstDogJob))
+  const updatedDate = dayjs().toISOString()
+  listBooking.push(await addBookingExitedCustomerUpdate(firstDogId, firstDogTime, notes, firstDogJob, updatedDate))
   if (secondDogId != null && secondDogId != 0)
-    listBooking.push(await addBookingExitedCustomerUpdate(secondDogId, Number(secondDogTime), notes, secondDogJob))
+    listBooking.push(await addBookingExitedCustomerUpdate(secondDogId, Number(secondDogTime), notes, secondDogJob, updatedDate))
   if (thirdDogId != null && thirdDogId != 0)
-    listBooking.push(await addBookingExitedCustomerUpdate(thirdDogId, Number(thirdDogTime), notes, thirdDogJob))
+    listBooking.push(await addBookingExitedCustomerUpdate(thirdDogId, Number(thirdDogTime), notes, thirdDogJob, updatedDate))
   if (fourthDogId != null && fourthDogId != 0)
-    listBooking.push(await addBookingExitedCustomerUpdate(fourthDogId, Number(fourthDogTime), notes, fourthDogJob))
+    listBooking.push(await addBookingExitedCustomerUpdate(fourthDogId, Number(fourthDogTime), notes, fourthDogJob, updatedDate))
 
   return listBooking
 }
 
-async function addBookingExitedCustomerUpdate(dogId: number, timeId: number, notes: string | null, job: string | null) {
+async function addBookingExitedCustomerUpdate(dogId: number, timeId: number, notes: string | null, job: string | null, updatedDate: string | null) {
 
   const booking = await prisma.booking.update({
     where: { id: timeId },
@@ -661,6 +669,7 @@ async function addBookingExitedCustomerUpdate(dogId: number, timeId: number, not
       notes: notes,
       status: 'confirmed',
       job: job,
+      dateUpdated: updatedDate,
       dog: {
         connect: {
           id: dogId,
@@ -722,6 +731,7 @@ async function addBookingFinishCustomer(input: BookingFinishInput) {
     data: {
       status: 'done',
       notes: notes,
+      dateUpdated: date,
       extract: {
         create: {
           value: salesValue,

@@ -37,6 +37,7 @@ export interface ItemListFieldProps {
   dogName?: string
   dogBread?: string
   notes?: string
+  dateUpdated?: string
   daycare?: boolean
   loadingMenuItem: number
   listTimes: [{}]
@@ -50,7 +51,7 @@ export interface ItemListFieldProps {
   setLoadingMenuItem: (loading: number) => void
 }
 
-export function ItemListField({ id, time, job, status, ownerId, dogId, ownerName, phone, dogName, dogBread, notes, daycare,loadingMenuItem, listTimes, createRowOffered, setLoadingMenuItem, deleteRow, cancelBookingRow, finishRowBooking, editNotesBooking, changeTimeValue, date }: ItemListFieldProps) {
+export function ItemListField({ id, time, job, status, ownerId, dogId, ownerName, phone, dogName, dogBread, notes, daycare, dateUpdated,loadingMenuItem, listTimes, createRowOffered, setLoadingMenuItem, deleteRow, cancelBookingRow, finishRowBooking, editNotesBooking, changeTimeValue, date }: ItemListFieldProps) {
 
   const [openDelete, setOpenDelete] = React.useState(false);
   const [createOfferedModalOpen, setCreateOfferedModalOpen] = React.useState(false);
@@ -123,7 +124,7 @@ export function ItemListField({ id, time, job, status, ownerId, dogId, ownerName
 
   return (
     <>
-      <div key={String(id)} className={`group h-20 w-fit mt-4 shadow border border-neutral-300 rounded-xl text-neutral-800 flex flex-row self-center hover:border-neutral-400 sm::text-base md:text-base lg:text-base transition-all transition-discrete delay-150 duration-300 ease-in-out hover:-translate-y-1 hover:scale-[1.01] hover:shadow-xl ${!status.includes('empty') && notes!=null && notes!='' ? 'hover:h-32': ''}`}
+      <div key={String(id)} className={`group h-20 w-fit mt-4 shadow border border-neutral-300 rounded-xl text-neutral-800 flex flex-row self-center hover:border-neutral-400 sm::text-base md:text-base lg:text-base transition-all transition-discrete delay-150 duration-300 ease-in-out hover:-translate-y-1 hover:scale-[1.01] hover:shadow-xl ${status.includes('empty') ? '' : notes!=null && notes!='' && dateUpdated!= undefined ? 'hover:h-40':  notes!=null && notes!='' ? 'hover:h-32' :  dateUpdated!= undefined ? 'hover:h-32' :''}`}
         onClick={() => setLoadingMenuItem(id)}>
         <span className="w-[16px] h-full ">
           {status === 'empty' ?
@@ -285,8 +286,18 @@ export function ItemListField({ id, time, job, status, ownerId, dogId, ownerName
             </ThemeProvider>
           </div>
         </div>
+        {status !== 'empty' && dateUpdated!=undefined ?
+          <div className="text-sm pb-2 px-4 flex flex-row max-w-[820px] self-center group-hover:transition-all group-hover:delay-300 ease-in invisible group-hover:visible">
+            <div className="self-center mr-2 ">
+              <h5 className="">Last Update:</h5>
+            </div>
+            <div className="">
+              <h5 className="">{dateUpdated}</h5>
+            </div>
+        </div>
+        : null}
         {status !== 'empty' && notes!=null && notes!='' ?
-          <div className="px-4 flex flex-row max-w-[820px] self-center group-hover:transition-all group-hover:delay-300 ease-in invisible group-hover:visible">
+          <div className="text-sm px-4 flex flex-row max-w-[820px] self-center group-hover:transition-all group-hover:delay-300 ease-in invisible group-hover:visible">
             <div className="self-center mr-5">
               <h5 className="">Notes:</h5>
             </div>

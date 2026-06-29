@@ -17,6 +17,7 @@ import { Users } from './pages/Users';
 import { Summary } from './pages/Summary';
 import { TillMoney } from './pages/TillMoney';
 import Calendar from './pages/Calendar';
+import { PreviousPay } from './pages/PreviousPay';
 
 function App() {
 
@@ -35,6 +36,7 @@ function App() {
           <Route path='Summary' element={<Summary />} />
           <Route path='TillMoney' element={<TillMoney />} />
           <Route path='Calendar' element={<Calendar />} />
+          <Route path='PreviousPay' element={<PreviousPay />} />
         </Route>
         <Route path='app/login' element={<Login/>} />
         

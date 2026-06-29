@@ -53,7 +53,7 @@ export default function TimeBookingButton({children, bookingId, time, onSubmit, 
         aria-controls={open ? 'composition-menu' : undefined}
         aria-expanded={open ? 'true' : undefined}
         aria-haspopup="true"
-        onDoubleClick={handleToggle}
+        onClick={handleToggle}
         className='select-text'
       >
         {children}

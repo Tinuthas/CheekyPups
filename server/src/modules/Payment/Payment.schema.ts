@@ -56,6 +56,12 @@ const statusDone = z.object({
   endDate: z.string()
 })
 
+const previousInfo = z.object({
+  all: z.boolean(),
+  done: z.boolean(),
+  skip: z.number(),
+})
+
 const statusDoneExtracts = z.object({
   id: z.number(),
   all: z.boolean(),
@@ -102,6 +108,7 @@ export const {schemas: paymentSchemas, $ref} = buildJsonSchemas({
   updatePaymentId,
   statusDone,
   statusDoneExtracts,
+  previousInfo,
   createPaymentOwnerAll,
   createTillNewDate,
   changingLastTill

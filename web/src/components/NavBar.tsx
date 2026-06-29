@@ -40,6 +40,9 @@ export function NavBar() {
           name: "Orders", path: "Payments",
         },
         {
+          name: "Previous", path: "PreviousPay",
+        },
+        {
           name: "Till Money", path: "TillMoney",
         },
         {

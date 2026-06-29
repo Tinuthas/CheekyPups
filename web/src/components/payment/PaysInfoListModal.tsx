@@ -199,6 +199,15 @@ export const PaysInfoListModal = ({
       header: 'Date',
       size: 130,
       enableEditing: false,
+      Cell: ({ renderedCellValue, row }) => (
+        <>
+          <span>
+            {renderedCellValue != null && renderedCellValue != undefined ?
+              dayjs(String(renderedCellValue)).format('DD/MM/YYYY HH:mm')
+            : ""}
+          </span>
+        </>
+      )
     },
     {
       accessorKey: 'dogName',
@@ -336,7 +345,7 @@ export const PaysInfoListModal = ({
   const headersBookings: MRT_ColumnDef<any>[] = [
     {
       accessorKey: 'date',
-      header: 'Date',
+      header: 'Appointments',
       size: 130,
       enableEditing: false,
     },
@@ -385,13 +394,19 @@ export const PaysInfoListModal = ({
     {
       accessorKey: 'notes',
       header: 'Notes',
-      size: 300,
+      size: 250,
+      enableEditing: false,
+    },
+    {
+      accessorKey: 'dateUpdated',
+      header: 'Last Updated',
+      size: 130,
       enableEditing: false,
     },
     {
       accessorKey: 'actionCol',
       header: 'Actions',
-      size: 110,
+      size: 80,
       Cell: ({ renderedCellValue, row }) => (
         <>
           <div className="flex flex-row justify-between">
