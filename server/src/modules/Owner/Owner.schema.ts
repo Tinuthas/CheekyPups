@@ -70,6 +70,12 @@ const createOwnerDogsSchema = z.object({
   secondBreed: z.string().nullable()
 })
 
+const ownerTranferingData = z.object({
+  fromOwnerId: z.number(),
+  toOwnerId: z.number()
+})
+
+
 export type UpdateOwnerInput = z.infer<typeof updateOwnerBody>
 
 export type CreateOwnerInput = z.infer<typeof createOwnerSchema>
@@ -80,6 +86,8 @@ export type FilterOwnerTypeInput = z.infer<typeof filterTypeOwner>
 
 export type OwnerDogsCreateInput = z.infer<typeof createOwnerDogsSchema>
 
+export type OwnerTranferingData = z.infer<typeof ownerTranferingData>
+
 export const {schemas: ownerSchemas, $ref} = buildJsonSchemas({
   createOwnerSchema,
   createOwnerResponseSchema,
@@ -87,5 +95,6 @@ export const {schemas: ownerSchemas, $ref} = buildJsonSchemas({
   updateOwnerId,
   filterOwnerName,
   filterTypeOwner,
-  createOwnerDogsSchema
+  createOwnerDogsSchema,
+  ownerTranferingData
 }, { $id: "OwnerSchemas" })

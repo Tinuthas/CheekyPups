@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { string } from "zod";
 import { prisma } from "../../lib/prisma";
-import { $ref, CreateOwnerInput, FilterOwnerInput, FilterOwnerTypeInput, OwnerDogsCreateInput, UpdateOwnerInput } from "./Owner.schema";
+import { $ref, CreateOwnerInput, FilterOwnerInput, FilterOwnerTypeInput, OwnerDogsCreateInput, OwnerTranferingData, UpdateOwnerInput } from "./Owner.schema";
 
 export async function ownerRoutes(app: FastifyInstance) {
   
@@ -51,6 +51,13 @@ export async function ownerRoutes(app: FastifyInstance) {
     },
     preHandler: [app.authenticate]
   }, createOwnerDogsHandle)
+
+   app.post('/transfering', {
+    schema: {
+      body: $ref('ownerTranferingData')
+    },
+    preHandler: [app.authenticate]
+  }, tranferingDataOwnerHandle)
 }
 
 async function getAllOwners() {
@@ -128,7 +135,9 @@ async function getSearchByName(name:string) {
     select: {
       id: true,
       name: true,
-      phoneOne: true
+      phoneOne: true,
+      type: true,
+      emailAddress: true,
     },
     orderBy: {
       id: "desc",
@@ -271,4 +280,90 @@ async function createOwnerDogs(input: OwnerDogsCreateInput) {
  
 
   return firstDog
+}
+
+async function tranferingDataOwnerHandle(request: FastifyRequest<{Body: OwnerTranferingData}>, reply: FastifyReply) {
+  try{
+    return await tranferingDataOwner(request.body)
+  }catch(err) {
+    console.log(err)
+    reply.code(400).send('Error in transfering data owners')
+  }
+}
+
+async function tranferingDataOwner(input: OwnerTranferingData) {
+  let {fromOwnerId, toOwnerId} = input
+ 
+  const fromOwner = await prisma.owner.findUnique({
+    where: {
+      id: fromOwnerId
+    },
+    include: {
+      extracts: true,
+      dogs: {
+        include: {
+          daysDog: true,
+          daysBooking: true
+        }
+      }
+    }
+  })
+
+  const toOwner = await prisma.owner.findUnique({
+    where: {
+      id: toOwnerId
+    },
+    include: {
+      dogs: true
+    }
+  })
+  var toDogId:any = null
+  if(toOwner?.dogs != null && toOwner?.dogs != undefined && toOwner?.dogs.length > 0) {
+    toDogId = toOwner?.dogs[0].id
+  }
+
+  
+    fromOwner?.extracts.forEach(async (extract) => {
+      await prisma.extract.update({
+        where: {
+          id: extract.id,
+        },
+        data: {
+          ownerId: toOwner?.id,
+        },
+      });
+    });
+
+    if(toDogId != null) {
+      fromOwner?.dogs.forEach(async (dogs) => {
+        dogs.daysBooking.forEach(async (booking) => {
+          await prisma.booking.update({
+            where: {
+              id: booking.id,
+            },
+            data: {
+              dog_id: toDogId,
+            },
+          });
+        });
+        dogs.daysDog.forEach(async (daycare) => {
+          await prisma.attendance.update({
+            where: {
+              id: daycare.id,
+            },
+            data: {
+              dog_id: toDogId,
+            },
+          });
+        });
+      });
+    }
+
+  const fromUpdatedOwner = await prisma.owner.findUnique({
+    where: {
+      id: fromOwnerId
+    },
+  })
+
+  return fromUpdatedOwner
 }

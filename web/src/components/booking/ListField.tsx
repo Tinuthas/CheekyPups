@@ -191,6 +191,8 @@ export function ListField({ date, setDate, loading, setLoading }: ListFieldProps
       daycare={booking.dog != null && booking.dog.Owner.type != null && booking.dog.Owner.type.toUpperCase().includes('D')}
       dateUpdated={(booking.dateUpdated != null && booking.dateUpdated != undefined) ? dayjs(booking.dateUpdated).format('DD/MM/YYYY hh:mm A') : undefined}
       date={booking.time}
+      secondOwner={(booking.dog != null && booking.dog.Owner != null ? booking.dog.Owner.secondOwner : null )}
+      secondPhone={(booking.dog != null && booking.dog.Owner != null ? booking.dog.Owner.phoneTwo : null )}
       loadingMenuItem={loadingMenuItem} 
       setLoadingMenuItem={(value) => setLoadingMenuItem(value)} 
       deleteRow={(id)=>handleDelete(id) } 

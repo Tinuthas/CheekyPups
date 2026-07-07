@@ -5,6 +5,13 @@ import { api, getToken } from "../lib/axios"
 import { AxiosError } from "axios"
 import { toast } from "react-toastify"
 import {Helmet} from "react-helmet";
+import { theme, iconStyle } from "../lib/theme";
+import MergeIcon from '@mui/icons-material/Merge';
+import { ThemeProvider } from "@mui/material";
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { CreateMergeOwners } from "../components/users/CreateMergeOwners"
+
 
 const headers = [
   {
@@ -84,6 +91,8 @@ export function Users() {
   const [users, setUsers] = useState([{}])
   const [settings, setSettings] = useState([{}])
   const [loading, setLoading] = useState(false)
+  const [createMergeModalOpen, setCreateMergeModalOpen] = useState(false);
+
 
   useEffect(() => {
       getAllUsers()
@@ -264,14 +273,52 @@ export function Users() {
     return promise
   }
 
+  const handleMergeOwners = (values: any) => {
+      setLoading(true)
+  
+      api.post('owners/transfering', values, {
+        headers: {
+          Authorization: getToken()
+        }
+      }).then(response => {
+        toast.success(`Merged Owners!`, { position: "top-center", autoClose: 1000, })
+        getAllSettings()
+      }).catch((err: AxiosError) => {
+        const data = err.response?.data as { message: string }
+        toast.error(`${data.message || err.response?.data || err.message}`, { position: "top-center", autoClose: 5000, })
+        setLoading(false)
+      })
+    };
+
   return(
     <div className="md:p-10 pt-4 h-full flex flex-col items-center">
       <Helmet>
         <title>Users & Services</title>
       </Helmet>
+      <ThemeProvider theme={theme}>
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
       <h3 className="font-medium text-3xl md:text-5xl text-pinkBackground font-borsok">Settings</h3>
       { loading ? <div className="w-full flex justify-center"><Loading /> </div> :
         <>
+        
+        <div className="flex flex-row justify-around w-auto h-10 mt-4 md:mt-0 bg-white rounded-3xl p-1">
+          <div className="mx-3 " onClick={() => setCreateMergeModalOpen(true)}>
+            <MergeIcon sx={iconStyle} />
+          </div>
+          
+          {/* 
+          <div className="mx-3 " onClick={() => setCreateOwnerDogModalOpen(true)}>
+            <PersonAddAltRoundedIcon sx={iconStyle} />
+          </div>
+          <div className="mx-3 " onClick={() => setCreateWeekModalOpen(true)}>
+            <ViewWeekIcon sx={iconStyle} />
+          </div>
+          <div className="mx-3 " onClick={() => setCreateRowModalOpen(true)}>
+            <AddCircleOutlineOutlinedIcon sx={iconStyle} />
+          </div>
+          **/}
+        </div>
+          
         <div className="md:flex bg-white w-full mt-4 rounded">
           <DataTableCustom 
             headers={headers} 
@@ -298,8 +345,18 @@ export function Users() {
               deleteRow={(id) => deleteDataRowSetting(id)}
             />
           </div>
+
+           {createMergeModalOpen ?
+              <CreateMergeOwners
+                open={createMergeModalOpen}
+                onClose={() => setCreateMergeModalOpen(false)}
+                onSubmit={(values) => handleMergeOwners(values)}
+              />
+            : null}
         </>
       }   
+       </LocalizationProvider>
+      </ThemeProvider>
     </div>
   )
 }

@@ -39,6 +39,8 @@ export interface ItemListFieldProps {
   notes?: string
   dateUpdated?: string
   daycare?: boolean
+  secondOwner?: string
+  secondPhone?: string
   loadingMenuItem: number
   listTimes: [{}]
   date:string
@@ -51,7 +53,7 @@ export interface ItemListFieldProps {
   setLoadingMenuItem: (loading: number) => void
 }
 
-export function ItemListField({ id, time, job, status, ownerId, dogId, ownerName, phone, dogName, dogBread, notes, daycare, dateUpdated,loadingMenuItem, listTimes, createRowOffered, setLoadingMenuItem, deleteRow, cancelBookingRow, finishRowBooking, editNotesBooking, changeTimeValue, date }: ItemListFieldProps) {
+export function ItemListField({ id, time, job, status, ownerId, dogId, ownerName, phone, dogName, dogBread, notes, daycare, dateUpdated, secondOwner, secondPhone,loadingMenuItem, listTimes, createRowOffered, setLoadingMenuItem, deleteRow, cancelBookingRow, finishRowBooking, editNotesBooking, changeTimeValue, date }: ItemListFieldProps) {
 
   const [openDelete, setOpenDelete] = React.useState(false);
   const [createOfferedModalOpen, setCreateOfferedModalOpen] = React.useState(false);
@@ -288,17 +290,38 @@ export function ItemListField({ id, time, job, status, ownerId, dogId, ownerName
         </div>
         {status !== 'empty' && dateUpdated!=undefined ?
           <div className="text-sm pb-2 px-4 flex flex-row max-w-[820px] self-center group-hover:transition-all group-hover:delay-300 ease-in invisible group-hover:visible">
-            <div className="self-center mr-2 ">
+            <div className="self-center mr-2 font-medium">
               <h5 className="">Last Update:</h5>
             </div>
-            <div className="">
+            <div className="mr-5">
               <h5 className="">{dateUpdated}</h5>
             </div>
+            {secondOwner != null && secondOwner != ''?
+              <>
+                <div className="self-center mr-2 font-medium">
+                  <h5 className="">2nd Owner:</h5>
+                </div>
+                <div className="mr-5">
+                  <h5 className="">{secondOwner}</h5>
+                </div>
+              </>
+            : null}
+            {secondPhone != null && secondPhone!='' ?
+              <>
+                <div className="self-center mr-2 font-medium">
+                  <h5 className="">2nd Phone:</h5>
+                </div>
+                <div className="mr-5">
+                  <h5 className="">{secondPhone}</h5>
+                </div>
+              </>
+            : null}
+            
         </div>
         : null}
         {status !== 'empty' && notes!=null && notes!='' ?
           <div className="text-sm px-4 flex flex-row max-w-[820px] self-center group-hover:transition-all group-hover:delay-300 ease-in invisible group-hover:visible">
-            <div className="self-center mr-5">
+            <div className="self-center mr-2 font-medium">
               <h5 className="">Notes:</h5>
             </div>
             <div className="">

@@ -150,6 +150,8 @@ async function getBookingsDate(input: FilterBookingDateInput) {
               id: true,
               name: true,
               phoneOne: true,
+              secondOwner: true,
+              phoneTwo: true,
               type: true
             }
           }
