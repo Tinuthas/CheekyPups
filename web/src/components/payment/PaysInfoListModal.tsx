@@ -40,6 +40,7 @@ export const PaysInfoListModal = ({
   const [owner, setOwner] = useState<any>(null)
   const [bookings, setBookings] = useState([])
   const [totalPays, setTotalPays] = useState([])
+  const [todayAttendance, setTodayAttendance] = useState(null)
   const [openPayingModal, setOpenPayingModal] = useState(false)
   const [openEditingModal, setOpenEditingModal] = useState(false)
   const [openEditingBookModal, setOpenEditingBookModal] = useState(false)
@@ -74,6 +75,7 @@ export const PaysInfoListModal = ({
       setOwner(listResponde.owner)
       setBookings(listResponde.bookings)
       setTotalPays(listResponde.totalPays)
+      setTodayAttendance(listResponde.todayAttendance)
       setLoading(false)
     }).catch((err: AxiosError) => {
       const data = err.response?.data as { message: string }
@@ -540,6 +542,12 @@ export const PaysInfoListModal = ({
                             <span className="">{'€ '}</span>
                             <span className="">{(totalPays[0] as {totalValue:string}).totalValue}</span>
                           </button>
+                          {todayAttendance != null && todayAttendance!= undefined ? 
+                            <button className="bg-white text-pinkBackground ml-3 p-1 px-5 font-semibold hover:bg-white hover:text-pinkBackground hover:border hover:border-pinkBackground">
+                              <span>Hrs: </span>
+                              <span>{todayAttendance}</span>
+                            </button>
+                          :null}
 
                           {openTotalPayingModal ?
                               <PaymentAllModal

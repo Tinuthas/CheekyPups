@@ -488,7 +488,28 @@ async function filterAllExtractByOwner(extracts: any[], ownerId: number, startDa
   })
 
 
-  return { extracts: filterExtracts, owner: ownerInfo, bookings: filterBookings, totalPays: totalPays }
+  var todayAttendance:any = await prisma.extract.findFirst({
+    where: {
+      ownerId: ownerId,
+      date: {
+          lte: dayjs().set('hour', 23).toISOString(),
+          gte: dayjs().set('hour', 1).toISOString()
+      },
+      NOT: {
+        attendance: null
+      }
+    },
+    select: {
+      date: true
+    }
+  })
+
+  if(todayAttendance != null && todayAttendance != undefined) {
+    todayAttendance = dayjs().diff(dayjs(todayAttendance.date), 'hour', true).toFixed(2) 
+  }
+
+
+  return { extracts: filterExtracts, owner: ownerInfo, bookings: filterBookings, totalPays: totalPays, todayAttendance: todayAttendance }
 }
 
 async function getTotalHandle(request: FastifyRequest<{ Querystring: TotalOwnerInput }>, reply: FastifyReply) {
