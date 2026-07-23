@@ -629,8 +629,6 @@ export async function attendanceRoutes(app: FastifyInstance) {
     const parsedDateStart = dayjs(dateStart).startOf('day').toISOString()
     const parsedDateEnd = dayjs(dateEnd).startOf('day').toISOString()
 
-   
-        
 
     const daycare = await prisma.extract.groupBy({
       by: ['type'],

@@ -874,8 +874,13 @@ async function updateBookingEditTime(input: BookingUpdateTime, id: number) {
       },
       data: {
         dayBooking: {
-          connect: {
-            date: parsedDate
+          connectOrCreate: {
+            where: {
+              date: parsedDate,
+            },
+            create: {
+              date: parsedDate,
+            }
           }
         },
         time: stringDate

@@ -19,9 +19,9 @@ import InfoItemButton from "../attendance/InfoItemButton";
 import { EditOwnerNotes } from "./EditOwnerNotesModal";
 import RemindersButton from "./RemindersButton";
 import { boolean } from "zod";
-import {TimeBookingModal} from "./TimeBookingModal";
 import TimeBookingButton from "./TimeBookingButton";
 import { EditCancel } from "./EditCancelModal";
+import dayjs from "dayjs";
 
 
 
@@ -89,6 +89,13 @@ export function ItemListField({ id, time, job, status, ownerId, dogId, ownerName
   }
 
   const handleChangeTimeValue = (values: any) => {
+    console.log(values)
+    var conversedDateZeros = dayjs(values.date).set('second', 0).millisecond(0).set('minutes', 0)
+    console.log(conversedDateZeros)
+    var conversedDate = conversedDateZeros.set('minute', dayjs(conversedDateZeros).utcOffset())
+     console.log(conversedDate)
+    const parsedDate = conversedDate.toISOString()
+     console.log(parsedDate)
     setEditTimeModalOpen(false)
     changeTimeValue(values)
   }

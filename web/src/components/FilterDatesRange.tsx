@@ -8,6 +8,7 @@ import { theme, iconStyle } from "../lib/theme";
 import dayjs from "dayjs";
 import NextIcon from '@mui/icons-material/SkipNextRounded';
 import PreviousIcon from '@mui/icons-material/SkipPreviousRounded';
+import SearchIcon from '@mui/icons-material/SearchRounded';
 
 interface FilterDatesRangeProps {
   data: Array<any>
@@ -130,6 +131,16 @@ export const FilterDatesRange = ({
     onSubmit(d1, d2)
   }
 
+  function onSearch() {
+    var d1 = dayjs(startDate).set('hour', 0).set('minute', 0).toDate()
+    var d2 = dayjs(endDate).set('hour', 0).set('minute', 0).toDate()
+
+    setStartDate(d1)
+    setEndDate(d2)
+    onSubmit(d1, d2)
+  }
+
+
   return (
     <>
       <div className="flex mt-3 w-full justify-center text-center text-lg md:text-xl font-borsok text-neutral-600">
@@ -138,7 +149,7 @@ export const FilterDatesRange = ({
       <div className="flex mt-5 w-full">
         <ThemeProvider theme={theme}>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <div className="border rounded-full border-neutral-600 hover:border-pinkBackground mx-3 h-[36px] my-[10px] justify-center" onClick={onPrevious}>
+            <div className="border rounded-full border-neutral-500 hover:border-pinkBackground mx-3 h-[36px] my-[10px] justify-center" onClick={onPrevious}>
               <PreviousIcon sx={iconStyle} />
             </div>
             <div className="mr-2 md:mr-6">
@@ -167,8 +178,11 @@ export const FilterDatesRange = ({
                 renderInput={(params) => <TextField {...params} />}
               />
             </div>
-            <div className="border rounded-full border-neutral-600 hover:border-pinkBackground mx-3 h-[36px] my-[10px] justify-center" onClick={onNext}>
+            <div className="border rounded-full border-neutral-500 hover:border-pinkBackground mx-3 h-[36px] my-[10px] justify-center" onClick={onNext}>
               <NextIcon sx={iconStyle} />
+            </div>
+            <div className="border rounded-full border-neutral-500 hover:border-pinkBackground mr-3 h-[36px] my-[10px] justify-center" onClick={onSearch}>
+              <SearchIcon sx={iconStyle} />
             </div>
           </LocalizationProvider>
         </ThemeProvider>
