@@ -520,7 +520,7 @@ export const PaysInfoListModal = ({
                             open={openTotalPayingModal}
                             onClose={() => setOpenTotalPayingModal(false)}
                             onSubmit={(values) => handlePayingAllRow(values)}
-                            ownerDog={{ owner: owner.name, id: (totalPays[0] as { id: number }).id, sales: Number((totalPays[0] as { totalValue: string }).totalValue) }}
+                            ownerDog={{ owner: owner.name, id: (totalPays as any).owner.id, sales: Number((totalPays as any).total) }}
                           />
                           : null}
                       </div>
