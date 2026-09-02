@@ -12,6 +12,7 @@ import { attendanceSchemas } from "./modules/Attendance/Attendance.schema";
 import { paymentSchemas } from "./modules/Payment/Payment.schema";
 import { bookingSchemas } from "./modules/Booking/Booking.schema";
 import { preferenceSchemas } from "./modules/Preferences/Preferences.schema";
+import { infoSchemas } from "./modules/Info/Info.schema";
 
 
 
@@ -89,7 +90,7 @@ app.addSchema({
 })
 
 //Schemas
-for(const schemas of [...userSchemas, ...ownerSchemas, ...dogSchemas, ...vaccinesSchemas, ...attendanceSchemas, ...paymentSchemas, ...bookingSchemas, ...preferenceSchemas]) { app.addSchema(schemas)}
+for(const schemas of [...userSchemas, ...ownerSchemas, ...dogSchemas, ...vaccinesSchemas, ...attendanceSchemas, ...paymentSchemas, ...bookingSchemas, ...preferenceSchemas, ...infoSchemas]) { app.addSchema(schemas)}
 
 app.register(require('@fastify/jwt'), { secret: process.env.SECRET_JWT })
 

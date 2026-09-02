@@ -18,6 +18,7 @@ import { Summary } from './pages/Summary';
 import { TillMoney } from './pages/TillMoney';
 import Calendar from './pages/Calendar';
 import { PreviousPay } from './pages/PreviousPay';
+import { CustomerInfo } from './pages/CustomerInfo';
 
 function App() {
 
@@ -39,6 +40,8 @@ function App() {
           <Route path='PreviousPay' element={<PreviousPay />} />
         </Route>
         <Route path='app/login' element={<Login/>} />
+        <Route path='app/login' element={<Login/>} />
+        <Route path='info-customer/*' element={<CustomerInfo/>} />
         
       </Routes>
     </div>

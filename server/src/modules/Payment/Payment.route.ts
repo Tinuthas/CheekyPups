@@ -206,7 +206,7 @@ async function filterAllExtracts(pays: any[]) {
       listPayments.push({
         id: element.id,
         name: element.name,
-        dogsName: element.dogs.map(dog => dog.nickname != undefined && dog.nickname != null  && dog.nickname.trim() != "" ? dog.nickname : dog.name).join(' - '),
+        dogsName: element.dogs.map(dog => dog.nickname != undefined && dog.nickname != null && dog.nickname.trim() != "" ? dog.nickname : dog.name).join(' - '),
         extracts: pay._count.id,
         value: pay._sum.value,
         paidValue: pay._sum.paidValue,
@@ -436,26 +436,33 @@ async function filterAllExtractByOwner(extracts: any[], ownerId: number, startDa
     sales: extract != null ? extract.value : ""
   }));
 
-  var pays:any = null
+  var pays: any = null
   if (startDate == null || endDate || null) {
-    pays = await prisma.extract.groupBy({
-      by: ['ownerId'],
+    pays = await prisma.extract.findMany({
       where: {
         ownerId: ownerId,
         done: false,
       },
-      _count: {
-        id: true,
-      },
-      _sum: {
+      select: {
         value: true,
-        paidValue: true,
-        totalValue: true
-      },
+        attendance: {
+          select: {
+            typeDay: true
+          }
+        },
+        booking: {
+          select: {
+            extract: {
+              select: {
+                value: true
+              }
+            }
+          }
+        }
+      }
     })
   } else {
-    pays = await prisma.extract.groupBy({
-      by: ['ownerId'],
+    pays = await prisma.extract.findMany({
       where: {
         ownerId: ownerId,
         done: false,
@@ -464,36 +471,71 @@ async function filterAllExtractByOwner(extracts: any[], ownerId: number, startDa
           gte: startDate
         }
       },
-      _count: {
-        id: true,
-      },
-      _sum: {
+      select: {
         value: true,
-        paidValue: true,
-        totalValue: true
-      },
+        attendance: {
+          select: {
+            typeDay: true
+          }
+        },
+        booking: {
+          select: {
+            extract: {
+              select: {
+                value: true
+              }
+            }
+          }
+        }
+      }
     })
   }
 
 
-  var totalPays: { id: number; extracts: number; value: Decimal | null; paidValue: Decimal | null; totalValue: Decimal | null; }[] = []
-  pays.forEach((element:any, index:number) => {
-    totalPays.push({
-      id: element.ownerId,
-      extracts: pays[index]._count.id,
-      value: pays[index]._sum.value,
-      paidValue: pays[index]._sum.paidValue,
-      totalValue: pays[index]._sum.totalValue,
-    })
+  var totalPays: { owner: number; total: number | null; others: number | null; daycareTotal: number | null; grooming: number | null; fullday: number; halfday: number } | null = null
+  var grooming:number = 0.0
+    var daycareTotal:number = 0.0
+    var fullDay = 0
+    var halfDay = 0
+    var others:number = 0
+    var total:number = 0
+  pays.forEach((element: any, index: number) => {
+    
+
+    total += Number(element.value)
+    if(element.attendance!= undefined && element.attendance != null) {
+      daycareTotal+=Number(element.value)
+      if(element.attendance.typeDay == 'HD') {
+        halfDay += 1
+      }else{
+        fullDay += 1
+      }
+    }else if(element.booking!= undefined && element.booking != null) {
+      grooming += Number(element.booking.extract?.value)
+    }else {
+      others += Number(element.value)
+    }
+
+    
   })
 
+  totalPays = {
+      owner: ownerId,
+      total: total,
+      others: others,
+      daycareTotal: daycareTotal,
+      grooming: grooming,
+      fullday: fullDay,
+      halfday: halfDay
+    }
 
-  var todayAttendance:any = await prisma.extract.findFirst({
+
+  var todayAttendance: any = await prisma.extract.findFirst({
     where: {
       ownerId: ownerId,
       date: {
-          lte: dayjs().set('hour', 23).toISOString(),
-          gte: dayjs().set('hour', 1).toISOString()
+        lte: dayjs().set('hour', 23).toISOString(),
+        gte: dayjs().set('hour', 1).toISOString()
       },
       NOT: {
         attendance: null
@@ -504,8 +546,8 @@ async function filterAllExtractByOwner(extracts: any[], ownerId: number, startDa
     }
   })
 
-  if(todayAttendance != null && todayAttendance != undefined) {
-    todayAttendance = dayjs().diff(dayjs(todayAttendance.date), 'hour', true).toFixed(2) 
+  if (todayAttendance != null && todayAttendance != undefined) {
+    todayAttendance = dayjs().diff(dayjs(todayAttendance.date), 'hour', true).toFixed(2)
   }
 
 
@@ -707,7 +749,7 @@ async function deletePayment(id: number) {
 
 
 async function ownerPayingAllHandle(request: FastifyRequest<{ Body: CreatePaymentOwnerAllInput }>, reply: FastifyReply) {
-  try { 
+  try {
     //Paying list owed
     var moneyReturned = await ownerPayingAll(request.body)
     return reply.code(200).send(moneyReturned)
@@ -726,12 +768,12 @@ async function ownerPayingAll(input: CreatePaymentOwnerAllInput) {
   if (paidValue == 0) {
     return new Error('Paid value needs to be bigger than zero')
   }
-  if(typePaid.toUpperCase() != 'CASH'){
+  if (typePaid.toUpperCase() != 'CASH') {
     if (paidValue > salesValue) {
       return new Error('Card or Rev: Paid value needs to be less or the same than the sales value')
     }
   }
-  
+
   const owner = await prisma.owner.findUnique({
     where: {
       id: ownerId
@@ -806,7 +848,7 @@ async function ownerPayingAll(input: CreatePaymentOwnerAllInput) {
       sumPaids = sumPaids + Number(extracts[index].value)
     }
   }
-  if(sumPaids <= 0) 
+  if (sumPaids <= 0)
     await updateTillHandle(owner?.type == null ? 'D' : owner.type, typePaid, salesValue, sumPaids)
   return paidValues
 }
@@ -1015,7 +1057,7 @@ export async function updateTillHandle(typeTill: string, type: string, value: nu
   }
 }
 
-async function getLastPreviousPaymentHandle(request: FastifyRequest<{Querystring: { all: boolean, done: boolean, skip: number, }}>, reply: FastifyReply) {
+async function getLastPreviousPaymentHandle(request: FastifyRequest<{ Querystring: { all: boolean, done: boolean, skip: number, } }>, reply: FastifyReply) {
   try {
     return await getLastPreviousPayment(request, reply)
   } catch (err) {
@@ -1029,22 +1071,22 @@ async function getLastPreviousPayment(request: FastifyRequest<{ Querystring: { a
   const { all, done, skip } = request.query
 
   var lastPayments = null
-  if(all == true) {
+  if (all == true) {
     lastPayments = await prisma.extract.groupBy({
       by: ['date', "ownerId"],
       orderBy: {
         date: "desc",
-      }, 
-      _count: {id: true},
+      },
+      _count: { id: true },
       _sum: {
-          value: true,
-          paidValue: true,
-          totalValue: true
+        value: true,
+        paidValue: true,
+        totalValue: true
       },
       take: 100,
       skip: skip
     })
-  }else{
+  } else {
     lastPayments = await prisma.extract.groupBy({
       by: ['date', "ownerId"],
       orderBy: {
@@ -1052,18 +1094,18 @@ async function getLastPreviousPayment(request: FastifyRequest<{ Querystring: { a
       },
       where: {
         done: done
-      }, 
-      _count: {id: true},
+      },
+      _count: { id: true },
       _sum: {
-          value: true,
-          paidValue: true,
-          totalValue: true
+        value: true,
+        paidValue: true,
+        totalValue: true
       },
       take: 100,
       skip: skip
     })
   }
-  
+
 
   let ownerIds = lastPayments.map(pay => pay.ownerId);
 
@@ -1091,7 +1133,7 @@ async function getLastPreviousPayment(request: FastifyRequest<{ Querystring: { a
         id: pay.id,
         date: dayjs(element.date).toISOString(),
         name: pay.name,
-        dogsName: pay.dogs.map(dog => dog.nickname != undefined && dog.nickname != null  && dog.nickname.trim() != "" ? dog.nickname : dog.name).join(' - '),
+        dogsName: pay.dogs.map(dog => dog.nickname != undefined && dog.nickname != null && dog.nickname.trim() != "" ? dog.nickname : dog.name).join(' - '),
         extracts: element._count.id,
         value: element._sum.value,
         paidValue: element._sum.paidValue,

@@ -17,12 +17,12 @@ export function ButtonGroupList({listButtons, selectedButton ,selectButton} : Bu
 
   return(
     <ThemeProvider theme={theme}>
-      <ButtonGroup variant="outlined" aria-label="button group" sx={{background: "#f02a77", border: "1px solid #FFF", animation: "glow 1s infinite alternate"}} >
+      <ButtonGroup variant="outlined" aria-label="button group" sx={{background: "#f02a77" , border: "1px solid #FFF", animation: "glow 1s infinite alternate", borderRadius: "20px"}} >
         {
           listButtons.map((button)=> (
             button.key === selectedButton ? 
-              <Button key={button.key} onClick={() => onClickedButton(button)} sx={{width: '110px',color: '#f02a77', background: '#FFF', "&:hover": { color: "#f02a77", background: "#FFF" }}}>{button.name}</Button>
-              :<Button key={button.key} onClick={() => onClickedButton(button)} sx={{width: '110px',color: '#FFF', "&:hover": { color: "#f02a77", background: "#FFF" }}}>{button.name}</Button> 
+              <Button key={button.key} onClick={() => onClickedButton(button)} sx={{width: '110px',color: '#f02a77', background: '#FFF', borderRadius: "20px", "&:hover": { color: "#f02a77", background: "#FFF" }}}>{button.name}</Button>
+              :<Button key={button.key} onClick={() => onClickedButton(button)} sx={{width: '110px',color: '#FFF', borderRadius: "20px", "&:hover": { color: "#f02a77", background: "#FFF" }}}>{button.name}</Button> 
           ))
         }
       </ButtonGroup>

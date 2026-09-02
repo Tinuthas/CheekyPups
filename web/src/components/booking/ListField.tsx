@@ -127,8 +127,8 @@ export function ListField({ date, setDate, loading, setLoading }: ListFieldProps
       
       var staffDay: any = null
       if(calendar2 != null) {
-        calendar2.forEach((day:any) => {
-          if(day.start.includes(checkDateString.slice(0,4))) {
+        calendar2.forEach((day:any) => {         
+          if(day.start != undefined && day.start.includes(checkDateString.slice(0,4))) {
             var startDay = dayjs(day.start)
             if(checkDate.isSame(startDay)) {
               staffDay = isAlreadyFilled(staffDay, day.name)

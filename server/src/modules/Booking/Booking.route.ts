@@ -883,7 +883,8 @@ async function updateBookingEditTime(input: BookingUpdateTime, id: number) {
             }
           }
         },
-        time: stringDate
+        time: stringDate,
+        dateUpdated: dayjs().toISOString()
       }
     })
   return bookingResult

@@ -18,6 +18,9 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { DeleteModal } from "../DeleteModal";
 import { EditPayment } from "./EditPaymentModal";
 import { EditNotes } from "../booking/EditNotesModal";
+import { SummaryPayment } from "../SummaryPayment";
+import { InfoOwnerDetails } from "./InfoOwnerDetails";
+import { ButtonGroupList } from "../ButtonGroupList";
 
 
 interface PaysInfoListModalProps {
@@ -39,7 +42,7 @@ export const PaysInfoListModal = ({
   const [extracts, setExtracts] = useState([])
   const [owner, setOwner] = useState<any>(null)
   const [bookings, setBookings] = useState([])
-  const [totalPays, setTotalPays] = useState([])
+  const [totalPays, setTotalPays] = useState(null)
   const [todayAttendance, setTodayAttendance] = useState(null)
   const [openPayingModal, setOpenPayingModal] = useState(false)
   const [openEditingModal, setOpenEditingModal] = useState(false)
@@ -47,6 +50,8 @@ export const PaysInfoListModal = ({
   const [openDeletingModal, setOpenDeletingModal] = useState(false)
   const [openIndex, setOpenIndex] = useState(-1)
   const [openTotalPayingModal, setOpenTotalPayingModal] = useState(false)
+  const [searchButton, setSearchButton] = useState('G')
+
 
   useEffect(() => {
     callInit()
@@ -76,6 +81,9 @@ export const PaysInfoListModal = ({
       setBookings(listResponde.bookings)
       setTotalPays(listResponde.totalPays)
       setTodayAttendance(listResponde.todayAttendance)
+      if(listResponde.owner != null && listResponde.owner.type != null && listResponde.owner.type == 'D') {
+        setSearchButton('P')
+      }
       setLoading(false)
     }).catch((err: AxiosError) => {
       const data = err.response?.data as { message: string }
@@ -95,6 +103,9 @@ export const PaysInfoListModal = ({
     return promise
   }
 
+  function selectOrders(value: any) {
+    setSearchButton(value)
+  }
 
   function deleteDataRow(id: number) {
     setLoading(true)
@@ -206,7 +217,7 @@ export const PaysInfoListModal = ({
           <span>
             {renderedCellValue != null && renderedCellValue != undefined ?
               dayjs(String(renderedCellValue)).format('DD/MM/YYYY HH:mm')
-            : ""}
+              : ""}
           </span>
         </>
       )
@@ -283,7 +294,7 @@ export const PaysInfoListModal = ({
       Cell: ({ renderedCellValue, row }) => (
         <>
           <div className="flex flex-row justify-between">
-            {row.original.done ? null : 
+            {row.original.done ? null :
               <div className="w-full cursor-pointer" onClick={() => {
                 setOpenPayingModal(true)
                 setOpenIndex(row.original.id)
@@ -292,7 +303,7 @@ export const PaysInfoListModal = ({
               </div>
             }
 
-            
+
             <div className="w-full cursor-pointer" onClick={() => {
               setOpenEditingModal(true)
               setOpenIndex(row.original.id)
@@ -300,7 +311,7 @@ export const PaysInfoListModal = ({
               <EditIcon sx={iconSmallStyle} />
             </div>
 
-            {row.original.done ? null : 
+            {row.original.done ? null :
               <div className="w-full cursor-pointer" onClick={() => {
                 setOpenDeletingModal(true)
                 setOpenIndex(row.original.id)
@@ -308,9 +319,9 @@ export const PaysInfoListModal = ({
                 <DeleteIcon sx={iconSmallStyle} />
               </div>
             }
-            
+
           </div>
-          
+
           {row.original.id == openIndex && openPayingModal ?
             <PaymentAllModal
               open={openPayingModal}
@@ -326,7 +337,7 @@ export const PaysInfoListModal = ({
               open={openEditingModal}
               onClose={() => setOpenEditingModal(false)}
               onSubmit={(values) => updateDataRow(values)}
-              payInfo={{id: row.original.id, description: row.original.description, sales: row.original.value, paid: row.original.done, valuePaid: row.original.paidValue, type: row.original.type}}
+              payInfo={{ id: row.original.id, description: row.original.description, sales: row.original.value, paid: row.original.done, valuePaid: row.original.paidValue, type: row.original.type }}
             //name={row.original.name}
             />
             : null}
@@ -384,12 +395,12 @@ export const PaysInfoListModal = ({
       size: 90,
       Cell: ({ renderedCellValue, row }) => (
         <>
-          {renderedCellValue != ""?
-          <>
-            <span className="font-semibold">{'€ '}</span>
-            <span className="text-green-600 font-semibold">{renderedCellValue}</span>
-          </>
-          : null}
+          {renderedCellValue != "" ?
+            <>
+              <span className="font-semibold">{'€ '}</span>
+              <span className="text-green-600 font-semibold">{renderedCellValue}</span>
+            </>
+            : null}
         </>
       )
     },
@@ -419,13 +430,13 @@ export const PaysInfoListModal = ({
               <EditIcon sx={iconSmallStyle} />
             </div>
           </div>
-        
+
           {row.original.id == openIndex && openEditingBookModal ?
             <EditNotes
               open={openEditingBookModal}
               onClose={() => setOpenEditingBookModal(false)}
               onSubmit={(values) => updateBookingDataRow(values)}
-              ownerDog={{id: row.original.id, notes: row.original.notes, job: 'FG'}}
+              ownerDog={{ id: row.original.id, notes: row.original.notes, job: 'FG' }}
             //name={row.original.name}
             />
             : null}
@@ -458,166 +469,110 @@ export const PaysInfoListModal = ({
               <>
                 <div key='InfoList' className="w-full text-sm md:text-base text-neutral-700">
                   {owner != null ?
-                    <div key='infoOwner' className="flex flex-col p-3 border-2 border-neutral-200 rounded-3xl">
-                      <div className="flex flex-col mb-3 px-2">
-                        <div className="flex flex-col md:flex-row">
-                          <div className="md:w-80 md:mt-1">
-                            <span className="font-semibold mt-1 ">Owner: </span>
-                            <span>{owner.name}</span>
-                          </div>
-                          <div className="md:ml-5 md:w-80 mt-1 ">
-                            <span className="font-semibold">Second Owner: </span>
-                            <span>{owner.secondOwner}</span>
-                          </div>
+                    //<InfoOwnerDetails owner={owner} />
+                    <div id="OwnerInfo" className="group transition-all transition-discrete delay-100 duration-300 ease-in-out hover:-translate-y-1">
+                      <div>
+                        <div id="ownerName" className="flex justify-center">
+                          <span></span>
+                          <span className="font-medium text-xl">{owner != null ? `${owner.name} - ${owner.phoneOne}` : null}</span>
                         </div>
-                        <div className="flex flex-col md:flex-row mt-1 ">
-                          <div className="md:w-80">
-                            <span className="font-semibold">Phone: </span>
-                            <span>{owner.phoneOne}</span>
-                          </div>
-                          <div className="md:ml-5 md:w-80 mt-1 ">
-                            <span className="font-semibold">Second Phone: </span>
-                            <span>{owner.phoneTwo != null && owner.phoneTwo != undefined ? owner.phoneTwo : ""}</span>
-                          </div>
-                        </div>
-                        <div className="flex flex-col md:flex-row mt-1  ">
-                          <div className="md:w-80">
-                            <span className="font-semibold">Email: </span>
-                            <span>{owner.emailAddress == null || owner.emailAddress == undefined ? "" : owner.emailAddress}</span>
-                          </div>
-                          <div className="md:ml-5 md:w-80 mt-1 ">
-                            <span className="font-semibold">Address: </span>
-                            <span>{owner.address != null && owner.address != undefined ? owner.address : ""}</span>
-                          </div>
-                        </div>
-                        <div className="mt-1">
-                          <span className="font-semibold">Notes: </span>
-                          <span>{owner.notes != null && owner.notes != undefined ? owner.notes : ""}</span>
-                        </div>
+                        {owner != null && owner.dogs != null ?
+                          <>
+                            {owner.dogs.map((dog: any) => (
+                              <div className="flex justify-center">
+                                <span></span>
+                                <span className="font-medium text-md">{dog.name} - {dog.breed}</span>
+                              </div>
+                            ))}
+                          </>
+                          : null}
                       </div>
-                      {owner.dogs.map((dog: any) => (
-                        <div key={`Dog_${dog.name}`}>
-                          <div className="flex flex-col p-2 mt-2 border-2 border-neutral-200 rounded-xl" key={dog.id}>
-                            <div className="flex flex-col md:flex-row ">
-                              <div className="md:w-60 md:mt-1">
-                                <span className="font-semibold">Dog: </span>
-                                <span>{dog.name}</span>
-                              </div>
-                              <div className="md:ml-5 md:w-60 mt-1">
-                                <span className="font-semibold">Breed: </span>
-                                <span>{dog.breed}</span>
-                              </div>
-                              <div className="md:ml-5 md:w-70 mt-1">
-                                <span className="font-semibold">Birthday: </span>
-                                <span>{dog.birthdayDate != null && dog.birthdayDate != ""? `${dayjs(dog.birthdayDate).format('DD/MM/YYYY')} ${dayjs().diff(dayjs(dog.birthdayDate), 'years')} yrs ${(dayjs().diff(dayjs(dog.birthdayDate), 'months', true) % 12).toFixed(2)} mon`:""}</span>
-                              </div>
-                            </div>
-                            <div className="flex flex-col md:flex-row mt-1">
-                              <div className="md:w-60">
-                                <span className="font-semibold">Nickname: </span>
-                                <span>{dog.nickname != null && dog.nickname != undefined ? dog.nickname : ""}</span>
-                              </div>
-                              <div className="md:ml-5 md:w-60 mt-1 ">
-                                <span className="font-semibold">Gender: </span>
-                                <span>{dog.gender != null && dog.gender != undefined ? dog.gender : ""}</span>
-                              </div>
-                              <div className="md:ml-5 md:w-60 mt-1 ">
-                                <span className="font-semibold">Colour: </span>
-                                <span>{dog.colour != null && dog.colour != undefined ? dog.colour : ""}</span>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-
+                      <div className="group-hover:transition-all group-hover:delay-100 ease-in invisible group-hover:visible h-0 group-hover:h-full">
+                        <InfoOwnerDetails owner={owner} />
+                      </div>
                     </div>
                     : null}
                 </div>
-                {totalPays.length > 0 ?
+                {totalPays != null ?
+                  <div className="xl:px-20">
+                    <SummaryPayment info={totalPays} />
+                  </div>
+                  : null}
+                {totalPays != null ?
                   <div className="px-5 mt-5">
-                      <div className="flex flex-col">
-                        <div className="w-full text-center text-xl">
-                          <button className="bg-pinkBackground text-white p-1 px-5 font-semibold hover:bg-white hover:text-pinkBackground hover:border hover:border-pinkBackground" onClick={() => setOpenTotalPayingModal(true)}>
-                            <span className="">Total Owed: </span>
-                            <span className="">{'€ '}</span>
-                            <span className="">{(totalPays[0] as {totalValue:string}).totalValue}</span>
+                    <div className="flex flex-col">
+                      <div className="w-full text-center text-xl">
+                        <button className="bg-pinkBackground text-white p-1 px-5 font-semibold hover:bg-white hover:text-pinkBackground hover:border hover:border-pinkBackground" onClick={() => setOpenTotalPayingModal(true)}>
+                          <span className="">Total: </span>
+                          <span className="">{'€ '}</span>
+                          <span className="">{(totalPays as any).total}</span>
+                        </button>
+                        {todayAttendance != null && todayAttendance != undefined ?
+                          <button className="bg-white text-pinkBackground ml-3 p-1 px-5 font-semibold hover:bg-white hover:text-pinkBackground hover:border hover:border-pinkBackground">
+                            <span>Hrs: </span>
+                            <span>{todayAttendance}</span>
                           </button>
-                          {todayAttendance != null && todayAttendance!= undefined ? 
-                            <button className="bg-white text-pinkBackground ml-3 p-1 px-5 font-semibold hover:bg-white hover:text-pinkBackground hover:border hover:border-pinkBackground">
-                              <span>Hrs: </span>
-                              <span>{todayAttendance}</span>
-                            </button>
-                          :null}
-
-                          {openTotalPayingModal ?
-                              <PaymentAllModal
-                                key={'PayingTotalOwnedAll'}
-                                open={openTotalPayingModal}
-                                onClose={() => setOpenTotalPayingModal(false)}
-                                onSubmit={(values) => handlePayingAllRow(values)}
-                                ownerDog={{ owner: owner.name, id: (totalPays[0] as {id:number}).id, sales: Number((totalPays[0] as {totalValue:string}).totalValue)}}
-                              />
                           : null}
+
+                        {openTotalPayingModal ?
+                          <PaymentAllModal
+                            key={'PayingTotalOwnedAll'}
+                            open={openTotalPayingModal}
+                            onClose={() => setOpenTotalPayingModal(false)}
+                            onSubmit={(values) => handlePayingAllRow(values)}
+                            ownerDog={{ owner: owner.name, id: (totalPays[0] as { id: number }).id, sales: Number((totalPays[0] as { totalValue: string }).totalValue) }}
+                          />
+                          : null}
+                      </div>
+                    </div>
+                  </div>
+                  : null}
+
+                {owner != null ?
+                  <>
+                    <div className="mt-6 flex w-full justify-center rounded m-1 bg-white">
+                      <ButtonGroupList listButtons={[{ key: "P", name: "Payments" }, { key: "G", name: "Grooming" }, { key: "D", name: "Daycare" }]} selectButton={(value) => selectOrders(value)} selectedButton={searchButton} />
+                    </div>
+                    {searchButton == 'P' ?
+                      <div id="Payments">
+                        <h4 className="font-medium text-xl text-center font-borsok text-pinkBackground p-2">Payments</h4>
+                        <div className="md:flex bg-white w-full mt-3 rounded">
+                          <DataTableCustom
+                            headers={headersExtracts}
+                            titleCreate=""
+                            disableActions={true}
+                            data={extracts}
+                            setData={(data: any) => setExtracts(data)}
+                            title={"Last Payments"}
+                            deleteRow={id => deleteDataRow(id)}
+                            searchCalendar={(data) => changeCalendarDates(data)}
+                            calendarData={[dateStart, dateEnd, selectDateType]}
+                            updateRow={data => updateDataRow(data)} />
                         </div>
-                      </div> 
-                  </div>
-                : null}
-                
-              {owner != null && owner.type != null && owner.type != undefined && owner.type == 'D'?
-                <>
-                  <div className="md:flex bg-white w-full mt-6 rounded">
-                    <DataTableCustom
-                      headers={headersExtracts}
-                      titleCreate=""
-                      disableActions={true}
-                      data={extracts}
-                      setData={(data: any) => setExtracts(data)}
-                      title={"Last Payments"}
-                      deleteRow={id => deleteDataRow(id)}
-                      searchCalendar={(data) => changeCalendarDates(data)}
-                      calendarData={[dateStart, dateEnd, selectDateType]}
-                      updateRow={data => updateDataRow(data)} />
-                  </div>
-                  <div className="md:flex bg-white w-full mt-6 rounded">
-                    <DataTableCustom
-                      headers={headersBookings}
-                      titleCreate=""
-                      disableActions={true}
-                      data={bookings}
-                      setData={(data: any) => setBookings(data)}
-                      title={"Booking Appointments"}
-                      deleteRow={id => deleteDataRow(id)}
-                      updateRow={data => updateDataRow(data)} />
-                  </div>
-                </>
-                :
-                <>
-                  <div className="md:flex bg-white w-full mt-6 rounded">
-                    <DataTableCustom
-                      headers={headersBookings}
-                      titleCreate=""
-                      disableActions={true}
-                      data={bookings}
-                      setData={(data: any) => setBookings(data)}
-                      title={"Booking Appointments"}
-                      deleteRow={id => deleteDataRow(id)}
-                      updateRow={data => updateDataRow(data)} />
-                  </div>
-                  <div className="md:flex bg-white w-full mt-6 rounded">
-                    <DataTableCustom
-                      headers={headersExtracts}
-                      titleCreate=""
-                      disableActions={true}
-                      data={extracts}
-                      setData={(data: any) => setExtracts(data)}
-                      title={"Last Payments"}
-                      deleteRow={id => deleteDataRow(id)}
-                      searchCalendar={(data) => changeCalendarDates(data)}
-                      calendarData={[dateStart, dateEnd, selectDateType]}
-                      updateRow={data => updateDataRow(data)} />
-                  </div>
-                </> 
-                }
+                      </div>
+                      : searchButton == 'G' ?
+                        <div id="Grooming">
+                          <h4 className="font-medium text-xl text-center font-borsok text-pinkBackground p-2">Grooming</h4>
+                          <div className="md:flex bg-white w-full mt-3 rounded">
+                            <DataTableCustom
+                              headers={headersBookings}
+                              titleCreate=""
+                              disableActions={true}
+                              data={bookings}
+                              setData={(data: any) => setBookings(data)}
+                              title={"Booking Appointments"}
+                              deleteRow={id => deleteDataRow(id)}
+                              updateRow={data => updateDataRow(data)} />
+                          </div>
+                        </div>
+                        : searchButton == 'D' ?
+                          <div id="Daycare">
+                            <h4 className="font-medium text-xl text-center font-borsok text-pinkBackground p-2">Daycare</h4>
+                          </div>
+                          : null}
+
+                  </>
+                  : null}
               </>
             }
           </DialogContent>

@@ -199,7 +199,7 @@ export function PreviousPay() {
       <h3 className="font-medium text-3xl md:text-5xl text-pinkBackground font-borsok">Last Payments</h3>
       {loading ? <div className="w-full flex justify-center"><Loading /> </div> :
         <>
-          <div className="md:flex w-fit rounded m-1 bg-white">
+          <div className="md:flex w-fit rounded m-1 ">
             <ButtonGroupList listButtons={[{ key: "O", name: "Opened" }, { key: "C", name: "Closed" }, { key: "A", name: "All" }]} selectButton={(value) => selectOrders(value)} selectedButton={searchButton} />
           </div>
           <div className="md:flex bg-white w-full mt-4 rounded">

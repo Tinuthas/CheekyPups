@@ -10,6 +10,7 @@ import { vaccineRoutes } from './modules/Vaccine/Vaccine.route'
 import { paymentRoutes } from './modules/Payment/Payment.route'
 import { bookingRoutes } from './modules/Booking/Booking.route'
 import { preferenceRoutes } from './modules/Preferences/Preferences.route'
+import { infoRoutes } from './modules/Info/Info.route'
 
 
 export async function appRoutes(app: FastifyInstance){
@@ -22,6 +23,7 @@ export async function appRoutes(app: FastifyInstance){
   app.register(paymentRoutes, {prefix: 'api/payment'})
   app.register(bookingRoutes, {prefix: '/api/booking'})
   app.register(preferenceRoutes, {prefix: '/api/preference'})
+  app.register(infoRoutes, {prefix: '/api/info'})
 
 }
 
