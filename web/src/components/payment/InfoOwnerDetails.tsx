@@ -139,7 +139,13 @@ export function InfoOwnerDetails({ owner }: InfoOwnerDetailsProps) {
               </div>
             </div>
           </div>*/}
-              {owner.notes != undefined && owner.notes != null && owner.notes.trim() != '' ?
+              
+
+            </div>
+          ))}
+        </> : null}
+
+        {owner.notes != undefined && owner.notes != null && owner.notes.trim() != '' ?
                 <>
                   <div className="md:px-10 mt-4 mb-4">
                     <div className="h-[1px] w-[625px] md:w-full my-1 bg-neutral-300"></div>
@@ -164,10 +170,6 @@ export function InfoOwnerDetails({ owner }: InfoOwnerDetailsProps) {
                 </div>
               </div>
 
-
-            </div>
-          ))}
-        </> : null}
     </div>
 
   )
