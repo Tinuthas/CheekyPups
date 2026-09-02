@@ -492,7 +492,7 @@ async function filterAllExtractByOwner(extracts: any[], ownerId: number, startDa
   }
 
 
-  var totalPays: { owner: number; total: number | null; others: number | null; daycareTotal: number | null; grooming: number | null; fullday: number; halfday: number } | null = null
+  var totalPays: { owner: any; total: number | null; others: number | null; daycareTotal: number | null; grooming: number | null; fullday: number; halfday: number } | null = null
   var grooming:number = 0.0
     var daycareTotal:number = 0.0
     var fullDay = 0
@@ -520,7 +520,7 @@ async function filterAllExtractByOwner(extracts: any[], ownerId: number, startDa
   })
 
   totalPays = {
-      owner: ownerId,
+      owner: ownerInfo,
       total: total,
       others: others,
       daycareTotal: daycareTotal,

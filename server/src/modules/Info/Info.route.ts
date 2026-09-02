@@ -66,6 +66,7 @@ async function getInfoAll(code: string) {
     select: {
       id: true,
       name: true,
+      type: true,
       dogs: {
         select: {
           name: true,

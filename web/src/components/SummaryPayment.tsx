@@ -11,19 +11,19 @@ export function SummaryPayment({ info }: SummaryPaymentProps) {
       <div className="bg-pinkBackground w-full h-[1px] mt-2 mb-1"></div>
       <div id="summary" className="mb-4 text-medium w-full ">
         <h4 className="font-medium text-xl text-center font-borsok text-pinkBackground m-2">Summary</h4>
-        {info != null && info.owner != null && info.daycareTotal != null ?
+        {info != null && info.owner != null && info.daycareTotal != null && info.owner.type == 'D' ?
           <div className="flex justify-between">
             <span>Daycare </span>
             <span>{`€${info.daycareTotal}`}</span>
           </div>
           : null}
-        {info != null && info.owner != null && info.fullday != null && info.fullday != 0 ?
+        {info != null && info.owner != null && info.fullday != null && info.fullday != 0 && info.owner.type == 'D'?
           <div className="flex justify-between ml-7 text-sm">
             <span>Full Days (D): </span>
             <span className="">{`${info.fullday}`}</span>
           </div>
           : null}
-        {info != null && info.owner != null && info.halfday != null ?
+        {info != null && info.owner != null && info.halfday != null && info.halfday != 0 && info.owner.type == 'D'?
           <div className="flex justify-between ml-7 text-sm">
             <span>Half Days (½D): </span>
             <span className="">{`${info.halfday}`}</span>

@@ -1,11 +1,17 @@
 import dayjs from "dayjs"
 import { useState } from "react"
+import { theme, iconStyle } from "../../lib/theme";
+import EditIcon from '@mui/icons-material/Edit';
+import LinkRounded from '@mui/icons-material/LinkRounded';
+import React from "react";
 
 interface InfoOwnerDetailsProps {
   owner: any,
 }
 
 export function InfoOwnerDetails({ owner }: InfoOwnerDetailsProps) {
+
+  const [getLinkModal, setGetLinkModal] = React.useState(false);
 
   return (
     <div key='infoOwner' className="flex flex-col p-3 border-2 border-neutral-200 rounded-3xl w-[650px] md:w-full mt-1">
@@ -133,10 +139,9 @@ export function InfoOwnerDetails({ owner }: InfoOwnerDetailsProps) {
               </div>
             </div>
           </div>*/}
-
               {owner.notes != undefined && owner.notes != null && owner.notes.trim() != '' ?
                 <>
-                  <div className="md:px-10 mt-4">
+                  <div className="md:px-10 mt-4 mb-4">
                     <div className="h-[1px] w-[625px] md:w-full my-1 bg-neutral-300"></div>
                   </div>
                   <div className="flex justify-center my-1 mx-4">
@@ -145,6 +150,21 @@ export function InfoOwnerDetails({ owner }: InfoOwnerDetailsProps) {
                   </div>
                 </>
                 : null}
+              <div>
+                <div className="w-full flex mt-4 mb-4 justify-center">
+                  <div className="h-[1px] w-96 my-1 bg-neutral-300"></div>
+                </div>
+                <div id="actionsButtonInfo" className="flex justify-center">
+                  <button className="mr-3" onClick={() => setGetLinkModal(true)}>
+                    <EditIcon sx={iconStyle} />
+                  </button>
+                  <button onClick={() => setGetLinkModal(true)}>
+                    <LinkRounded sx={iconStyle} />
+                  </button>
+                </div>
+              </div>
+
+
             </div>
           ))}
         </> : null}
