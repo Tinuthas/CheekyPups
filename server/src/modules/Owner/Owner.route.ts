@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { string } from "zod";
 import { prisma } from "../../lib/prisma";
-import { $ref, CreateOwnerInput, FilterOwnerInput, FilterOwnerTypeInput, OwnerDogsCreateInput, OwnerTranferingData, UpdateOwnerInput } from "./Owner.schema";
+import { $ref, CreateOwnerInput, FilterOwnerInput, FilterOwnerTypeInput, OwnerDogsCreateInput, OwnerEditCreditData, OwnerTranferingData, UpdateOwnerInput } from "./Owner.schema";
 
 export async function ownerRoutes(app: FastifyInstance) {
   
@@ -58,6 +58,13 @@ export async function ownerRoutes(app: FastifyInstance) {
     },
     preHandler: [app.authenticate]
   }, tranferingDataOwnerHandle)
+
+  app.post('/credit', {
+    schema: {
+      body: $ref('ownerEditCredit')
+    },
+    preHandler: [app.authenticate]
+  }, editCreditHandle)
 }
 
 async function getAllOwners() {
@@ -366,4 +373,27 @@ async function tranferingDataOwner(input: OwnerTranferingData) {
   })
 
   return fromUpdatedOwner
+}
+
+async function editCreditHandle(request:FastifyRequest<{Body: OwnerEditCreditData}>, reply: FastifyReply) {
+  try{
+    return await editCredit(request.body)
+  }catch(err) {
+    console.log(err)
+    reply.code(400).send('Error in editing owner credit')
+  }
+}
+
+async function editCredit(input: OwnerEditCreditData) {
+
+  const owner = await prisma.owner.update({
+    where: {
+      id: input.id
+    },
+    data: {
+      credit: input.credit
+    }
+  })
+
+  return owner
 }

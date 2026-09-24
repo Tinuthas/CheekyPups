@@ -21,7 +21,7 @@ export const PaymentAllModal = ({
 }: PaymentAllModalProps) => {
 
   const [ownerName, setOwnerName] = useState(ownerDog.owner)
-  const [ownerId, setOwnerId] = useState(ownerDog.id)
+  const [id, setId] = useState(ownerDog.id)
   const [sales, setSales] = useState(ownerDog.sales)
   const [valuePaid, setValuePaid] = useState(ownerDog.sales)
 
@@ -32,11 +32,11 @@ export const PaymentAllModal = ({
         key={"FinishingCreateModal"}
         columns={[
           {
-            accessorKey: 'ownerId',
-            label: 'OwnerID',
+            accessorKey: 'id',
+            label: 'id',
             name: '',
             type: "number",
-            value: ownerId,
+            value: id,
             noEdit: true,
             noShow: true,
             gridXS: 12, gridMS: 6,

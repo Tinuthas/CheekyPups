@@ -36,6 +36,7 @@ model Owner {
   address      String?
   notes        String?
   type         String?
+  credit       Decimal?
   dogs         Dog[]
   extracts     Extract[]
 

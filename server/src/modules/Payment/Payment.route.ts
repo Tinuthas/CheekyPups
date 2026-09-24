@@ -2,7 +2,7 @@ import { Decimal } from "@prisma/client/runtime";
 import dayjs from "dayjs";
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { prisma } from "../../lib/prisma";
-import { $ref, ChangingLastTillInput, CreateNewTillInput, CreatePaymentOwnerAllInput, PaidOwnerInput, PayOwnerInput, TotalOwnerInput, UpdatePaymentInput } from "./Payment.schema";
+import { $ref, ChangingLastTillInput, CreateNewTillInput, CreatePaymentOwnerAllInput, CreatePaymentOwnerExtractInput, PaidOwnerInput, PayOwnerInput, TotalOwnerInput, UpdatePaymentInput } from "./Payment.schema";
 
 export async function paymentRoutes(app: FastifyInstance) {
 
@@ -69,6 +69,13 @@ export async function paymentRoutes(app: FastifyInstance) {
     },
     preHandler: [app.authenticate]
   }, ownerPayingAllHandle)
+
+  app.post('/owner/extract', {
+    schema: {
+      body: $ref('createPaymentOwnerExtract'),
+    },
+    preHandler: [app.authenticate]
+  }, ownerExtractPayingAllHandle)
 
   app.get('/till', {
     preHandler: [app.authenticate]
@@ -428,7 +435,7 @@ async function filterAllExtractByOwner(extracts: any[], ownerId: number, startDa
 
   const filterBookings = bookings.map(({ id, time, status, dog, notes, extract, dateUpdated }) => ({
     id,
-    date: dayjs(time).format('DD/MM/YYYY HH:mm'),
+    date: dayjs(time),
     dogName: dog != null ? dog.name : "",
     status: status,
     notes: notes,
@@ -493,41 +500,41 @@ async function filterAllExtractByOwner(extracts: any[], ownerId: number, startDa
 
 
   var totalPays: { owner: any; total: number | null; others: number | null; daycareTotal: number | null; grooming: number | null; fullday: number; halfday: number } | null = null
-  var grooming:number = 0.0
-    var daycareTotal:number = 0.0
-    var fullDay = 0
-    var halfDay = 0
-    var others:number = 0
-    var total:number = 0
+  var grooming: number = 0.0
+  var daycareTotal: number = 0.0
+  var fullDay = 0
+  var halfDay = 0
+  var others: number = 0
+  var total: number = 0
   pays.forEach((element: any, index: number) => {
-    
+
 
     total += Number(element.value)
-    if(element.attendance!= undefined && element.attendance != null) {
-      daycareTotal+=Number(element.value)
-      if(element.attendance.typeDay == 'HD') {
+    if (element.attendance != undefined && element.attendance != null) {
+      daycareTotal += Number(element.value)
+      if (element.attendance.typeDay == 'HD') {
         halfDay += 1
-      }else{
+      } else {
         fullDay += 1
       }
-    }else if(element.booking!= undefined && element.booking != null) {
+    } else if (element.booking != undefined && element.booking != null) {
       grooming += Number(element.booking.extract?.value)
-    }else {
+    } else {
       others += Number(element.value)
     }
 
-    
+
   })
 
   totalPays = {
-      owner: ownerInfo,
-      total: total,
-      others: others,
-      daycareTotal: daycareTotal,
-      grooming: grooming,
-      fullday: fullDay,
-      halfday: halfDay
-    }
+    owner: ownerInfo,
+    total: total,
+    others: others,
+    daycareTotal: daycareTotal,
+    grooming: grooming,
+    fullday: fullDay,
+    halfday: halfDay
+  }
 
 
   var todayAttendance: any = await prisma.extract.findFirst({
@@ -550,8 +557,51 @@ async function filterAllExtractByOwner(extracts: any[], ownerId: number, startDa
     todayAttendance = dayjs().diff(dayjs(todayAttendance.date), 'hour', true).toFixed(2)
   }
 
+  const daycareDaysAll = await prisma.attendance.findMany({
+    take: 30,
+    where: {
+      dog: {
+        ownerId: ownerId
+      }
+    },
+    orderBy: {
+      day: {
+        date: 'desc'
+      }
+    },
+    select: {
+      id: true,
+      day: {
+        select: {
+          date: true,
+        }
+      },
+      paid: true,
+      typeDay: true,
+      dog: {
+        select: {
+          name: true,
+        }
+      },
+      extract: {
+        select: {
+          description: true,
+        }
+      }
+    }
+  })
 
-  return { extracts: filterExtracts, owner: ownerInfo, bookings: filterBookings, totalPays: totalPays, todayAttendance: todayAttendance }
+  const filterDaycare = daycareDaysAll.map(({ id, day, dog, extract, typeDay, paid }) => ({
+    id,
+    date: dayjs(day.date),
+    dogName: dog != null ? dog.name : "",
+    notes: extract != null ? extract.description : "",
+    typeDay: typeDay,
+    paid: paid
+
+  }))
+
+  return { extracts: filterExtracts, owner: ownerInfo, bookings: filterBookings, totalPays: totalPays, todayAttendance: todayAttendance, daycareDays: filterDaycare }
 }
 
 async function getTotalHandle(request: FastifyRequest<{ Querystring: TotalOwnerInput }>, reply: FastifyReply) {
@@ -853,6 +903,109 @@ async function ownerPayingAll(input: CreatePaymentOwnerAllInput) {
   return paidValues
 }
 
+
+async function ownerExtractPayingAllHandle(request: FastifyRequest<{ Body: CreatePaymentOwnerExtractInput }>, reply: FastifyReply) {
+  try {
+    //Paying list owed
+    var moneyReturned = await ownerPayingExtract(request.body)
+    return reply.code(200).send(moneyReturned)
+  } catch (err) {
+    console.log(err)
+    reply.code(400).send('Error in payment')
+  }
+}
+
+async function ownerPayingExtract(input: CreatePaymentOwnerExtractInput) {
+  const { id, salesValue, paidValue, typePaid } = input
+
+  if (paidValue < salesValue) {
+    return new Error('Paid value needs to be bigger than the sales value')
+  }
+  if (paidValue == 0) {
+    return new Error('Paid value needs to be bigger than zero')
+  }
+  if (typePaid.toUpperCase() != 'CASH') {
+    if (paidValue > salesValue) {
+      return new Error('Card or Rev: Paid value needs to be less or the same than the sales value')
+    }
+  }
+
+  var extract = await prisma.extract.findUnique({
+    where: {
+      id: Number(id)
+    },
+    include: {
+      Owner: true,
+    }
+  })
+
+  if (extract == null)
+    throw Error('Payment not found')
+
+  var date = dayjs().toISOString()
+
+  if (extract.attendanceId != undefined && extract.attendanceId != null) {
+    extract = await prisma.extract.update({
+      where: { id: extract.id },
+      data: {
+        paidValue: extract.value,
+        totalValue: 0,
+        done: true,
+        date,
+        type: typePaid,
+        attendance: {
+          connect: {
+            id: Number(extract.attendanceId)
+          },
+          update: {
+            paid: true
+          }
+        },
+      },
+      include: {
+        Owner:true
+      }
+    })
+  } else if (extract.bookingId != undefined && extract.bookingId != null) {
+    extract = await prisma.extract.update({
+      where: { id: extract.id },
+      data: {
+        paidValue: extract.value,
+        totalValue: 0,
+        done: true,
+        date,
+        type: typePaid,
+        booking: {
+          connect: {
+            id: Number(extract.bookingId)
+          },
+          update: {
+            status: 'done'
+          }
+        }
+      },
+      include: {
+        Owner:true
+      }
+    })
+  } else {
+    extract = await prisma.extract.update({
+      where: { id: extract.id },
+      data: {
+        paidValue: extract.value,
+        totalValue: 0,
+        done: true,
+        date,
+        type: typePaid,
+      },
+      include: {
+        Owner:true
+      }
+    })
+  }
+  await updateTillHandle(extract.Owner.type == null ? 'D' : extract.Owner.type, String(typePaid), Number(salesValue), Number(paidValue))
+  return extract
+}
 
 async function getLastTillChangesHandle(request: FastifyRequest, reply: FastifyReply) {
   try {

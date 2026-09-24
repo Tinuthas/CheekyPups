@@ -21,6 +21,7 @@ import { EditNotes } from "../booking/EditNotesModal";
 import { SummaryPayment } from "../SummaryPayment";
 import { InfoOwnerDetails } from "./InfoOwnerDetails";
 import { ButtonGroupList } from "../ButtonGroupList";
+import { EditCreditModal } from "./EditCreditModal";
 
 
 interface PaysInfoListModalProps {
@@ -42,14 +43,17 @@ export const PaysInfoListModal = ({
   const [extracts, setExtracts] = useState([])
   const [owner, setOwner] = useState<any>(null)
   const [bookings, setBookings] = useState([])
+  const [daycareDays, setDaycareDays] = useState([])
   const [totalPays, setTotalPays] = useState(null)
   const [todayAttendance, setTodayAttendance] = useState(null)
+  const [ownerCredit, setOwnerCredit] = useState(0)
   const [openPayingModal, setOpenPayingModal] = useState(false)
   const [openEditingModal, setOpenEditingModal] = useState(false)
   const [openEditingBookModal, setOpenEditingBookModal] = useState(false)
   const [openDeletingModal, setOpenDeletingModal] = useState(false)
   const [openIndex, setOpenIndex] = useState(-1)
   const [openTotalPayingModal, setOpenTotalPayingModal] = useState(false)
+  const [openCreditEditModal, setOpenCreditEditModal] = useState(false)
   const [searchButton, setSearchButton] = useState('G')
 
 
@@ -81,7 +85,9 @@ export const PaysInfoListModal = ({
       setBookings(listResponde.bookings)
       setTotalPays(listResponde.totalPays)
       setTodayAttendance(listResponde.todayAttendance)
-      if(listResponde.owner != null && listResponde.owner.type != null && listResponde.owner.type == 'D') {
+      setDaycareDays(listResponde.daycareDays)
+      setOwnerCredit(listResponde.owner.credit)
+      if (listResponde.owner != null && listResponde.owner.type != null && listResponde.owner.type == 'D') {
         setSearchButton('P')
       }
       setLoading(false)
@@ -90,6 +96,15 @@ export const PaysInfoListModal = ({
       toast.error(`${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
       setLoading(false)
     })
+  }
+
+  function closeInterModals() {
+    setOpenPayingModal(false)
+    setOpenEditingModal(false)
+    setOpenEditingBookModal(false)
+    setOpenDeletingModal(false)
+    setOpenCreditEditModal(false)
+    setOpenIndex(-1)
   }
 
   function changeCalendarDates(data: any[]) {
@@ -184,6 +199,60 @@ export const PaysInfoListModal = ({
       setLoading(true)
       const promise = new Promise((resolve, reject) => {
         api.post('payment/owner', values, {
+          headers: {
+            Authorization: getToken()
+          }
+        }).then(response => {
+          toast.success(`Payments done`, { position: "top-center", autoClose: 1000, })
+          callInit()
+          resolve(`Payment Done`);
+          setLoading(false)
+        }).catch((err: AxiosError) => {
+          const data = err.response?.data as { message: string }
+          toast.error(`${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
+          setLoading(false)
+        })
+      })
+      return promise
+
+    } catch (e) {
+      toast.error(`Unidentified error`, { position: "top-center", autoClose: 5000, })
+    }
+
+  }
+
+   function handleEditCreditValue(values: any) {
+    try {
+      setLoading(true)
+      const promise = new Promise((resolve, reject) => {
+        api.post('owners/credit', values, {
+          headers: {
+            Authorization: getToken()
+          }
+        }).then(response => {
+          toast.success(`Credit Edited`, { position: "top-center", autoClose: 1000, })
+          callInit()
+          resolve(`Credit Edited`);
+          setLoading(false)
+        }).catch((err: AxiosError) => {
+          const data = err.response?.data as { message: string }
+          toast.error(`${data.message || err.message}`, { position: "top-center", autoClose: 5000, })
+          setLoading(false)
+        })
+      })
+      return promise
+
+    } catch (e) {
+      toast.error(`Unidentified error`, { position: "top-center", autoClose: 5000, })
+    }
+
+  }
+
+  function handlePayingExtractRow(values: any) {
+    try {
+      setLoading(true)
+      const promise = new Promise((resolve, reject) => {
+        api.post('payment/owner/extract', values, {
           headers: {
             Authorization: getToken()
           }
@@ -325,9 +394,9 @@ export const PaysInfoListModal = ({
           {row.original.id == openIndex && openPayingModal ?
             <PaymentAllModal
               open={openPayingModal}
-              onClose={() => setOpenPayingModal(false)}
-              onSubmit={(values) => handlePayingAllRow(values)}
-              ownerDog={{ owner: owner.name, id: owner.id, sales: row.original.value }}
+              onClose={() => closeInterModals()}
+              onSubmit={(values) => handlePayingExtractRow(values)}
+              ownerDog={{ owner: owner.name, id: row.original.id, sales: row.original.value}}
             //name={row.original.name}
             />
             : null}
@@ -335,7 +404,7 @@ export const PaysInfoListModal = ({
           {row.original.id == openIndex && openEditingModal ?
             <EditPayment
               open={openEditingModal}
-              onClose={() => setOpenEditingModal(false)}
+              onClose={() => closeInterModals()}
               onSubmit={(values) => updateDataRow(values)}
               payInfo={{ id: row.original.id, description: row.original.description, sales: row.original.value, paid: row.original.done, valuePaid: row.original.paidValue, type: row.original.type }}
             //name={row.original.name}
@@ -345,7 +414,7 @@ export const PaysInfoListModal = ({
           {row.original.id == openIndex && openDeletingModal ?
             <DeleteModal
               open={openDeletingModal}
-              onClose={() => setOpenDeletingModal(false)}
+              onClose={() => closeInterModals()}
               onSubmit={() => deleteDataRow(row.original.id)}
             //name={row.original.name}
             />
@@ -361,6 +430,15 @@ export const PaysInfoListModal = ({
       header: 'Appointments',
       size: 130,
       enableEditing: false,
+       Cell: ({ renderedCellValue, row }) => (
+        <>
+          <span>
+            {renderedCellValue != null && renderedCellValue != undefined ?
+              dayjs(String(renderedCellValue)).format('DD/MM/YYYY HH:mm')
+              : ""}
+          </span>
+        </>
+      )
     },
     {
       accessorKey: 'dogName',
@@ -434,7 +512,7 @@ export const PaysInfoListModal = ({
           {row.original.id == openIndex && openEditingBookModal ?
             <EditNotes
               open={openEditingBookModal}
-              onClose={() => setOpenEditingBookModal(false)}
+              onClose={() => closeInterModals()}
               onSubmit={(values) => updateBookingDataRow(values)}
               ownerDog={{ id: row.original.id, notes: row.original.notes, job: 'FG' }}
             //name={row.original.name}
@@ -443,8 +521,72 @@ export const PaysInfoListModal = ({
         </>
       )
     }
-
   ]
+
+  const headersDaycareDays: MRT_ColumnDef<any>[] = [
+    {
+      accessorKey: 'date',
+      header: 'Date',
+      size: 150,
+      enableEditing: false,
+       Cell: ({ renderedCellValue, row }) => (
+        <>
+          <span>
+            {renderedCellValue != null && renderedCellValue != undefined ?
+              dayjs(String(renderedCellValue)).format('DD/MM/YYYY')
+              : ""}
+          </span>
+        </>
+      )
+    },
+    {
+      accessorKey: 'dogName',
+      header: 'Dog Name',
+      size: 200,
+      enableEditing: false,
+    },
+    {
+      accessorKey: 'typeDay',
+      header: 'Type',
+      size: 100,
+      enableEditing: false,
+      Cell: ({ renderedCellValue, row }) => (
+        <>
+          {String(renderedCellValue).includes('HD') ?
+              <span className="text-stone-600 font-semibold w-full text-center">{'D½'}</span>
+            : 
+              <span className="text-stone-600 font-semibold w-full text-center">{'D'}</span>
+           }
+        </>
+      )
+    },
+    {
+      accessorKey: 'paid',
+      header: 'Paid',
+      size: 100,
+      enableEditing: false,
+      Cell: ({ renderedCellValue, row }) => (
+        <>
+          {String(renderedCellValue).includes('true') ?
+              <span className="text-stone-600 font-semibold w-full text-center">{'X'}</span>
+            : 
+              <span className=" font-semibold"></span>
+
+           }
+
+        </>
+      )
+    },
+    {
+      accessorKey: 'notes',
+      header: 'Notes',
+      size: 250,
+      enableEditing: false,
+    },
+    
+  ]
+
+
 
   return (
     <ThemeProvider theme={theme}>
@@ -498,19 +640,27 @@ export const PaysInfoListModal = ({
                     <SummaryPayment info={totalPays} />
                   </div>
                   : null}
-                {totalPays != null ?
+                {totalPays != null || todayAttendance != null || ownerCredit != null ?
                   <div className="px-5 mt-5">
                     <div className="flex flex-col">
                       <div className="w-full text-center text-xl">
+                       {totalPays != null ?
                         <button className="bg-pinkBackground text-white p-1 px-5 font-semibold hover:bg-white hover:text-pinkBackground hover:border hover:border-pinkBackground" onClick={() => setOpenTotalPayingModal(true)}>
                           <span className="">Total: </span>
                           <span className="">{'€ '}</span>
                           <span className="">{(totalPays as any).total}</span>
                         </button>
+                        : null}
                         {todayAttendance != null && todayAttendance != undefined ?
                           <button className="bg-white text-pinkBackground ml-3 p-1 px-5 font-semibold hover:bg-white hover:text-pinkBackground hover:border hover:border-pinkBackground">
                             <span>Hrs: </span>
                             <span>{todayAttendance}</span>
+                          </button>
+                          : null}
+                        {ownerCredit != undefined || owner.type == 'D'  ?
+                          <button className="bg-white text-pinkBackground ml-3 p-1 px-5 font-semibold hover:bg-white hover:text-pinkBackground hover:border hover:border-pinkBackground" onClick={() => setOpenCreditEditModal(true)}>
+                            <span>Credit: </span>
+                            <span>{`€ ${ownerCredit == null ? 0 : ownerCredit}`}</span>
                           </button>
                           : null}
 
@@ -518,9 +668,19 @@ export const PaysInfoListModal = ({
                           <PaymentAllModal
                             key={'PayingTotalOwnedAll'}
                             open={openTotalPayingModal}
-                            onClose={() => setOpenTotalPayingModal(false)}
+                            onClose={() => closeInterModals()}
                             onSubmit={(values) => handlePayingAllRow(values)}
                             ownerDog={{ owner: owner.name, id: (totalPays as any).owner.id, sales: Number((totalPays as any).total) }}
+                          />
+                          : null}
+
+                          {openCreditEditModal ?
+                          <EditCreditModal
+                            key={'Edit Credit Modal'}
+                            open={openCreditEditModal}
+                            onClose={() => closeInterModals()}
+                            onSubmit={(values) => handleEditCreditValue(values)}
+                            ownerDog={{id: (totalPays as any).owner.id, credit: Number(ownerCredit) }}
                           />
                           : null}
                       </div>
@@ -531,7 +691,16 @@ export const PaysInfoListModal = ({
                 {owner != null ?
                   <>
                     <div className="mt-6 flex w-full justify-center rounded m-1 bg-white">
-                      <ButtonGroupList listButtons={[{ key: "P", name: "Payments" }, { key: "G", name: "Grooming" }, { key: "D", name: "Daycare" }]} selectButton={(value) => selectOrders(value)} selectedButton={searchButton} />
+                      {daycareDays != undefined && daycareDays != null && daycareDays.length > 0 ?
+                        bookings != undefined && bookings != null && bookings.length > 0 ?
+                          <ButtonGroupList listButtons={[{ key: "P", name: "Payments" }, { key: "G", name: "Grooming" }, { key: "D", name: "Daycare" }]} selectButton={(value) => selectOrders(value)} selectedButton={searchButton} />
+                        : 
+                          <ButtonGroupList listButtons={[{ key: "P", name: "Payments" }, { key: "D", name: "Daycare" }]} selectButton={(value) => selectOrders(value)} selectedButton={searchButton} />
+                      : bookings != undefined && bookings != null && bookings.length > 0 ?
+                          <ButtonGroupList listButtons={[{ key: "P", name: "Payments" }, { key: "G", name: "Grooming" }]} selectButton={(value) => selectOrders(value)} selectedButton={searchButton} />
+                        :
+                          <ButtonGroupList listButtons={[{ key: "P", name: "Payments" }]} selectButton={(value) => selectOrders(value)} selectedButton={searchButton} />
+                        }
                     </div>
                     {searchButton == 'P' ?
                       <div id="Payments">
@@ -568,6 +737,18 @@ export const PaysInfoListModal = ({
                         : searchButton == 'D' ?
                           <div id="Daycare">
                             <h4 className="font-medium text-xl text-center font-borsok text-pinkBackground p-2">Daycare</h4>
+                            <div className="md:flex bg-white w-full mt-3 rounded">
+                            <DataTableCustom
+                              headers={headersDaycareDays}
+                              titleCreate=""
+                              disableActions={true}
+                              data={daycareDays}
+                              setData={(data: any) => setDaycareDays(data)}
+                              title={"Daycare"}
+                              //deleteRow={id => deleteDataRow(id)}
+                              //updateRow={data => updateDataRow(data)} 
+                              />
+                          </div>
                           </div>
                           : null}
 

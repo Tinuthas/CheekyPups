@@ -75,6 +75,11 @@ const ownerTranferingData = z.object({
   toOwnerId: z.number()
 })
 
+const ownerEditCredit = z.object({
+  id: z.number(),
+  credit: z.number()
+})
+
 
 export type UpdateOwnerInput = z.infer<typeof updateOwnerBody>
 
@@ -88,6 +93,8 @@ export type OwnerDogsCreateInput = z.infer<typeof createOwnerDogsSchema>
 
 export type OwnerTranferingData = z.infer<typeof ownerTranferingData>
 
+export type OwnerEditCreditData = z.infer<typeof ownerEditCredit>
+
 export const {schemas: ownerSchemas, $ref} = buildJsonSchemas({
   createOwnerSchema,
   createOwnerResponseSchema,
@@ -96,5 +103,6 @@ export const {schemas: ownerSchemas, $ref} = buildJsonSchemas({
   filterOwnerName,
   filterTypeOwner,
   createOwnerDogsSchema,
-  ownerTranferingData
+  ownerTranferingData,
+  ownerEditCredit
 }, { $id: "OwnerSchemas" })

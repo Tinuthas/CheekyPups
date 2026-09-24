@@ -77,6 +77,13 @@ const createPaymentOwnerAll = z.object({
   paidValue: z.number(),
 })
 
+const createPaymentOwnerExtract = z.object({
+  id: z.number(),
+  typePaid: z.string(),
+  salesValue: z.number(),
+  paidValue: z.number(),
+})
+
 const createTillNewDate = z.object({
   newValue: z.number(),
   description: z.string(),
@@ -95,6 +102,7 @@ export type PayOwnerInput = z.infer<typeof createPayBody>
 export type PaidOwnerInput = z.infer<typeof createPayPaidBody>
 export type UpdatePaymentInput = z.infer<typeof updatePaymentBody>
 export type CreatePaymentOwnerAllInput = z.infer<typeof createPaymentOwnerAll>
+export type CreatePaymentOwnerExtractInput = z.infer<typeof createPaymentOwnerExtract>
 export type CreateNewTillInput = z.infer<typeof createTillNewDate>
 export type ChangingLastTillInput = z.infer<typeof changingLastTill>
 
@@ -110,6 +118,7 @@ export const {schemas: paymentSchemas, $ref} = buildJsonSchemas({
   statusDoneExtracts,
   previousInfo,
   createPaymentOwnerAll,
+  createPaymentOwnerExtract,
   createTillNewDate,
   changingLastTill
 }, { $id: "PaymentSchemas" })
