@@ -32,8 +32,8 @@ export const PaymentAllModal = ({
         key={"FinishingCreateModal"}
         columns={[
           {
-            accessorKey: 'id',
-            label: 'id',
+            accessorKey: 'ownerId',
+            label: 'ownerId',
             name: '',
             type: "number",
             value: id,
