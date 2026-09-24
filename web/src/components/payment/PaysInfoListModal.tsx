@@ -103,6 +103,7 @@ export const PaysInfoListModal = ({
     setOpenEditingModal(false)
     setOpenEditingBookModal(false)
     setOpenDeletingModal(false)
+    setOpenTotalPayingModal(false)
     setOpenCreditEditModal(false)
     setOpenIndex(-1)
   }
