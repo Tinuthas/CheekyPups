@@ -13,6 +13,15 @@ export function InfoOwnerDetails({ owner }: InfoOwnerDetailsProps) {
 
   const [getLinkModal, setGetLinkModal] = React.useState(false);
 
+  function getPhoneSeparated(phone:any) {
+  
+    if(phone == null)
+      return phone
+    if(phone.trim().length != 10) 
+      return phone
+    return `${phone.slice(0,3)} ${phone.slice(3,6)} ${phone.slice(6,10)}`
+  }
+
   return (
     <div key='infoOwner' className="flex flex-col p-3 border-2 border-neutral-200 rounded-3xl w-[650px] md:w-full mt-1">
       {/*
@@ -62,9 +71,9 @@ export function InfoOwnerDetails({ owner }: InfoOwnerDetailsProps) {
           </div>
           <div id="OwnerDetailsMainRow" className="w-[640px] md:w-full flex justify-center text-center">
             <span className="w-36">{owner.name}</span>
-            <span className="w-36">{owner.phoneOne}</span>
+            <span className="w-36">{getPhoneSeparated(owner.phoneOne)}</span>
             <span className="w-36">{owner.secondOwner}</span>
-            <span className="w-36">{owner.phoneTwo}</span>
+            <span className="w-36">{getPhoneSeparated(owner.phoneTwo)}</span>
           </div>
           <div id="columnsOwnerOtherDetails" className="w-[640px] md:w-full flex justify-center text-center mt-1">
             <span className="font-semibold w-36">Email</span>

@@ -12,7 +12,7 @@ export function ItemListColumnsField() {
       <div className="w-[120px] ml-2 self-center text-center">
         <h5>Owner</h5>
       </div>
-      <div className="w-[120px] ml-2 self-center text-center">
+      <div className="w-[140px] ml-2 self-center text-center">
         <h5>Phone</h5>
       </div>
       <div className="w-[120px] ml-2 self-center text-center">

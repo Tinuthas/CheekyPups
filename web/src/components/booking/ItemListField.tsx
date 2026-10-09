@@ -130,6 +130,15 @@ export function ItemListField({ id, time, job, status, ownerId, dogId, ownerName
       return offered
   }
 
+  function getPhoneSeparated(phone:any) {
+  
+    if(phone == null)
+      return phone
+    if(phone.trim().length != 10) 
+      return phone
+    return `${phone.slice(0,3)} ${phone.slice(3,6)} ${phone.slice(6,10)}`
+  }
+
 
   return (
     <>
@@ -178,10 +187,10 @@ export function ItemListField({ id, time, job, status, ownerId, dogId, ownerName
               <InfoItemButton children={<h5 className="p-7">{ownerName}</h5>} id={Number(ownerId)} onClose={() => {}}/>
             : <h5 className="p-10">{ownerName}</h5>}  
           </div>
-          <div className="w-[120px] ml-2  self-center text-center">
+          <div className="w-[140px] ml-2  self-center text-center">
             {ownerId!= null && ownerId != 0 && dogName != null && dogName != "" ? 
-              <RemindersButton children={<h5 className="p-5">{phone}</h5>} id={Number(ownerId)} bookingId={Number(id)} onClose={() => {}}/>
-            : <h5 className="">{phone}</h5>}
+              <RemindersButton children={<h5 className="p-5">{getPhoneSeparated(phone)}</h5>} id={Number(ownerId)} bookingId={Number(id)} onClose={() => {}}/>
+            : <h5 className="">{getPhoneSeparated(phone)}</h5>}
           </div>
           <div className="w-[120px] ml-2  self-center text-center">
             <h5>{dogName}</h5>
@@ -319,7 +328,7 @@ export function ItemListField({ id, time, job, status, ownerId, dogId, ownerName
                   <h5 className="">2nd Phone:</h5>
                 </div>
                 <div className="mr-5">
-                  <h5 className="">{secondPhone}</h5>
+                  <h5 className="">{getPhoneSeparated(secondPhone)}</h5>
                 </div>
               </>
             : null}

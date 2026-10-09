@@ -278,6 +278,15 @@ export const PaysInfoListModal = ({
 
   }
 
+   function getPhoneSeparated(phone:any) {
+  
+    if(phone == null)
+      return phone
+    if(phone.trim().length != 10) 
+      return phone
+    return `${phone.slice(0,3)} ${phone.slice(3,6)} ${phone.slice(6,10)}`
+  }
+
   const headersExtracts: MRT_ColumnDef<any>[] = [
     {
       accessorKey: 'date',
@@ -654,7 +663,7 @@ export const PaysInfoListModal = ({
                       <div>
                         <div id="ownerName" className="flex justify-center">
                           <span></span>
-                          <span className="font-medium text-xl">{owner != null ? `${owner.name} - ${owner.phoneOne}` : null}</span>
+                          <span className="font-medium text-xl">{owner != null ? `${owner.name} - ${getPhoneSeparated(owner.phoneOne)}` : null}</span>
                         </div>
                         {owner != null && owner.dogs != null ?
                           <>
