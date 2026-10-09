@@ -601,7 +601,29 @@ async function filterAllExtractByOwner(extracts: any[], ownerId: number, startDa
 
   }))
 
-  return { extracts: filterExtracts, owner: ownerInfo, bookings: filterBookings, totalPays: totalPays, todayAttendance: todayAttendance, daycareDays: filterDaycare }
+  const receives = await prisma.extract.groupBy({
+      by: ['date', 'ownerId', 'type'],
+      where: {
+        ownerId: ownerId,
+        done: true,
+      },
+      orderBy: {
+        date: "desc",
+      },
+      _count: { id: true },
+      _sum: {
+        value: true,
+      },
+      take: 20,
+    })
+
+  const filterReceives = receives.map(({ date, type, _sum }) => ({
+    date: dayjs(date),
+    type: type,
+    value: _sum.value
+  }))
+
+  return { extracts: filterExtracts, owner: ownerInfo, bookings: filterBookings, totalPays: totalPays, todayAttendance: todayAttendance, daycareDays: filterDaycare, receives: filterReceives }
 }
 
 async function getTotalHandle(request: FastifyRequest<{ Querystring: TotalOwnerInput }>, reply: FastifyReply) {

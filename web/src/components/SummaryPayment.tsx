@@ -7,7 +7,7 @@ interface SummaryPaymentProps {
 export function SummaryPayment({ info }: SummaryPaymentProps) {
 
   return (
-    <div>
+    <div className="w-[400px] md:w-[550px]">
       <div className="bg-pinkBackground w-full h-[1px] mt-2 mb-1"></div>
       <div id="summary" className="mb-4 text-medium w-full ">
         <h4 className="font-medium text-xl text-center font-borsok text-pinkBackground m-2">Summary</h4>

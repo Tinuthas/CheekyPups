@@ -44,6 +44,7 @@ export const PaysInfoListModal = ({
   const [owner, setOwner] = useState<any>(null)
   const [bookings, setBookings] = useState([])
   const [daycareDays, setDaycareDays] = useState([])
+  const [receives, setReceives] = useState([])
   const [totalPays, setTotalPays] = useState(null)
   const [todayAttendance, setTodayAttendance] = useState(null)
   const [ownerCredit, setOwnerCredit] = useState(0)
@@ -86,6 +87,7 @@ export const PaysInfoListModal = ({
       setTotalPays(listResponde.totalPays)
       setTodayAttendance(listResponde.todayAttendance)
       setDaycareDays(listResponde.daycareDays)
+      setReceives(listResponde.receives)
       setOwnerCredit(listResponde.owner.credit)
       if (listResponde.owner != null && listResponde.owner.type != null && listResponde.owner.type == 'D') {
         setSearchButton('P')
@@ -425,6 +427,41 @@ export const PaysInfoListModal = ({
     }
   ]
 
+  const headersReceives: MRT_ColumnDef<any>[] = [
+    {
+      accessorKey: 'date',
+      header: 'Date',
+      size: 130,
+      enableEditing: false,
+      Cell: ({ renderedCellValue, row }) => (
+        <>
+          <span>
+            {renderedCellValue != null && renderedCellValue != undefined ?
+              dayjs(String(renderedCellValue)).format('DD/MM/YYYY HH:mm')
+              : ""}
+          </span>
+        </>
+      )
+    },
+    {
+      accessorKey: 'value',
+      header: 'Amount',
+      size: 90,
+      Cell: ({ renderedCellValue, row }) => (
+        <>
+          <span className="font-semibold">{'€ '}</span>
+          <span className="text-green-600 font-semibold">{renderedCellValue}</span>
+        </>
+      )
+    },
+    {
+      accessorKey: 'type',
+      header: 'Type',
+      size: 85,
+    },
+  ]
+
+
   const headersBookings: MRT_ColumnDef<any>[] = [
     {
       accessorKey: 'date',
@@ -600,7 +637,7 @@ export const PaysInfoListModal = ({
               "& .MuiPaper-root": {
                 width: "100%",
                 margin: "auto",
-                maxWidth: "1200px",  // Set your width here
+                maxWidth: "1400px",  // Set your width here
               },
             },
           }}>
@@ -637,7 +674,7 @@ export const PaysInfoListModal = ({
                     : null}
                 </div>
                 {totalPays != null ?
-                  <div className="xl:px-20">
+                  <div className="xl:px-20 flex justify-center">
                     <SummaryPayment info={totalPays} />
                   </div>
                   : null}
@@ -694,13 +731,13 @@ export const PaysInfoListModal = ({
                     <div className="mt-6 flex w-full justify-center rounded m-1 bg-white">
                       {daycareDays != undefined && daycareDays != null && daycareDays.length > 0 ?
                         bookings != undefined && bookings != null && bookings.length > 0 ?
-                          <ButtonGroupList listButtons={[{ key: "P", name: "Payments" }, { key: "G", name: "Grooming" }, { key: "D", name: "Daycare" }]} selectButton={(value) => selectOrders(value)} selectedButton={searchButton} />
+                          <ButtonGroupList listButtons={[{ key: "P", name: "Payments" }, { key: "R", name: "Receives" }, { key: "G", name: "Grooming" }, { key: "D", name: "Daycare" }]} selectButton={(value) => selectOrders(value)} selectedButton={searchButton} />
                         : 
-                          <ButtonGroupList listButtons={[{ key: "P", name: "Payments" }, { key: "D", name: "Daycare" }]} selectButton={(value) => selectOrders(value)} selectedButton={searchButton} />
+                          <ButtonGroupList listButtons={[{ key: "P", name: "Payments" }, { key: "R", name: "Receives" }, { key: "D", name: "Daycare" }]} selectButton={(value) => selectOrders(value)} selectedButton={searchButton} />
                       : bookings != undefined && bookings != null && bookings.length > 0 ?
-                          <ButtonGroupList listButtons={[{ key: "P", name: "Payments" }, { key: "G", name: "Grooming" }]} selectButton={(value) => selectOrders(value)} selectedButton={searchButton} />
+                          <ButtonGroupList listButtons={[{ key: "P", name: "Payments" }, { key: "R", name: "Receives" } , { key: "G", name: "Grooming" }]} selectButton={(value) => selectOrders(value)} selectedButton={searchButton} />
                         :
-                          <ButtonGroupList listButtons={[{ key: "P", name: "Payments" }]} selectButton={(value) => selectOrders(value)} selectedButton={searchButton} />
+                          <ButtonGroupList listButtons={[{ key: "P", name: "Payments" }, { key: "R", name: "Receives" }]} selectButton={(value) => selectOrders(value)} selectedButton={searchButton} />
                         }
                     </div>
                     {searchButton == 'P' ?
@@ -720,6 +757,19 @@ export const PaysInfoListModal = ({
                             updateRow={data => updateDataRow(data)} />
                         </div>
                       </div>
+                      : searchButton == 'R' ?
+                        <div id="Receives">
+                          <h4 className="font-medium text-xl text-center font-borsok text-pinkBackground p-2">Receives</h4>
+                          <div className="md:flex bg-white w-full mt-3 rounded">
+                            <DataTableCustom
+                              headers={headersReceives}
+                              titleCreate=""
+                              disableActions={true}
+                              data={receives}
+                              setData={(data: any) => setReceives(data)}
+                              title={"Receives"} />
+                          </div>
+                        </div>
                       : searchButton == 'G' ?
                         <div id="Grooming">
                           <h4 className="font-medium text-xl text-center font-borsok text-pinkBackground p-2">Grooming</h4>
